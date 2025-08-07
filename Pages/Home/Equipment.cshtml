@@ -1,0 +1,528 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Home.EquipmentModel
+@using Microsoft.AspNetCore.Authorization
+@{
+    Layout = "_Layout1";
+    int idForDelete = 0;
+    int ModeOfUpdate = 1; // 1 - оборудование 2 - производство 3 - производство оборудования
+    string Redirection = "/Add/Equipment/NewEquipment";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Table</title>
+    <style>
+
+        /* Стили для таблицы */
+        /* Основные стили для таблицы */
+        /*table {
+                            margin-top: 20px;
+                            width: 66%;
+                            border-collapse: collapse;
+                            background-color: white;
+                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                            font-size: 0.85em;
+                            margin: 0 auto; /* Центрируем таблицу
+                        }*/
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            /*Новый атрибут*/
+            /*min-height: 40px;*/
+        }
+
+        th {
+            background-color: #007b9d;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        tr:hover {
+            background-color: #e8e8e8;
+        }
+
+        /*Новый атрибут 01.12.2024*/
+        input {
+            max-width: 100%; /* Ограничиваем ширину input до 100% от ширины ячейки */
+            overflow: hidden; /* Прячем содержимое, которое не помещается в поле ввода */
+            text-overflow: ellipsis; /* Добавляем многоточие в случае переполнения */
+        }
+
+        /* Панель выбора столбцов */
+        .column-selection {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center; /* Центрируем панель */
+        }
+
+            .column-selection label {
+                margin-right: 15px;
+                font-size: 1em;
+            }
+
+        /* Панель инструментов (поиск и фильтры) */
+        .toolbar {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center; /*space-between;*/
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .toolbar input,
+            .toolbar select {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .toolbar button {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                color: white;
+                background-color: #007b9d;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .toolbar button:hover {
+                    background-color: #005f73;
+                }
+
+        /* Кнопки действия в таблице */
+        .action-buttons {
+            display: flex;
+            justify-content: left; /* Центрируем кнопки по горизонтали */
+        }
+
+            .action-buttons button {
+                padding: 6px 10px;
+                font-size: 0.8em;
+                margin: 0 4px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .action-buttons button.delete {
+                    background-color: #e74c3c;
+                    color: white;
+                }
+
+                    .action-buttons button.delete:hover {
+                        background-color: #c0392b;
+                    }
+
+                .action-buttons button.update {
+                    background-color: #27ae60;
+                    color: white;
+                }
+
+                    .action-buttons button.update:hover {
+                        background-color: #229954;
+                    }
+
+        table {
+            margin-top: 20px;
+            width: 90%; /* Устанавливаем ширину 80%, чтобы она была одинаковой для таблицы и тулбара */
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 0.85em;
+            margin: 0 auto; /* Центрируем таблицу */
+        }
+
+        .toolbar {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center; /* Центрирование всего контента */
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between; /* Элементы распределяются по ширине */
+            width: 100%; /* Ограничиваем ширину */
+            align-items: center; /* Выравнивание элементов по вертикали */
+            gap: 20px; /* Расстояние между элементами */
+        }
+
+        .column-selection {
+            display: flex;
+            gap: 20px; /* Расстояние между чекбоксами */
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 20px; /* Расстояние между полем поиска и кнопками */
+            align-items: center; /* Выравнивание по вертикали */
+        }
+
+            /* Стили для поля поиска */
+            .search-filters input[type="text"] {
+                padding: 8px 12px;
+                font-size: 1em;
+                width: 250px; /* Ограничение ширины поля поиска */
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            /* Стили для кнопок */
+            .search-filters button {
+                padding: 8px 12px;
+                font-size: 1em;
+                background-color: #007b9d;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .search-filters button:hover {
+                    background-color: #005f73;
+                }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <form method="get">
+            <div class="filter-container">
+                
+                @if (User.IsInRole("Пользователь") || User.IsInRole("Администратор"))
+                {
+                    <div class="column-selection">
+
+                        <div>
+                            <input type="checkbox" asp-for="isEquipmentVisible" id="isEquipmentVisible" name="isEquipmentVisible" />
+                            <label for="isEquipmentVisible">Оборудование</label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" asp-for="isManufactureVisible" id="isManufactureVisible" name="isManufactureVisible" />
+                            <label for="isManufactureVisible">Производство</label>
+                        </div>
+
+                    </div>
+                }
+                <!--<div class="search-filters">  Болшие отступы слева и справа-->
+                <input type="text" name="searchQuery" placeholder="Поиск..."  value="@Model.SearchQuery"  />
+                <select name="filterCategory">
+					<option value=0>Все категории</option>
+
+                    @if (Model.isEquipmentVisible)
+                    {
+                        <option value=1>Название</option>
+                        <option value=2>Модель</option>
+                        <option value=3>Описание</option>
+                        <option value=4>Вид</option>
+                        <option value=5>Статус</option>
+
+                        Redirection = "/Add/Equipment/NewEquipment";
+                        ModeOfUpdate = 1;
+                    }
+
+                    @if (Model.isManufactureVisible)
+                    {
+                        <option value=6>Адрес</option>
+                        <option value=7>Город</option>
+                        <option value=8>Страна</option>
+
+                        Redirection = "/Add/Equipment/NewManufacturer";
+                        ModeOfUpdate = 2;
+                    }
+
+                    @if (Model.isEquipmentVisible && Model.isManufactureVisible)
+                    {
+                        <option value=9>Дата покупки</option>
+                        <option value=10>Гарантийная дата</option>
+
+                        Redirection = "/Add/Equipment/NewEquipment";
+                        ModeOfUpdate = 3;
+                    }
+
+                </select>
+
+                <select asp-for="OrderBy">
+                    <option value=0>Сортировка отсутствует</option>
+
+                    @if (Model.isEquipmentVisible)
+                    {
+                        <option value=1>Название</option>
+                        <option value=2>Модель</option>
+                        <option value=3>Описание</option>
+                        <option value=4>Вид</option>
+                        <option value=5>Статус</option>
+
+                        Redirection = "/Add/Equipment/NewEquipment";
+                        ModeOfUpdate = 1;
+                    }
+
+                    @if (Model.isManufactureVisible)
+                    {
+                        <option value=6>Адрес</option>
+                        <option value=7>Город</option>
+                        <option value=8>Страна</option>
+
+                        Redirection = "/Add/Equipment/NewManufacturer";
+                        ModeOfUpdate = 2;
+                    }
+
+                    @if (Model.isEquipmentVisible && Model.isManufactureVisible)
+                    {
+                        <option value=9>Дата покупки</option>
+                        <option value=10>Гарантийная дата</option>
+
+                        Redirection = "/Add/Equipment/NewEquipment";
+                        ModeOfUpdate = 3;
+                    }
+
+                </select>
+
+                <select asp-for="Ascending">
+                    <option value=true>По возрастанию</option>
+                    <option value=false>По убыванию</option>
+                </select>
+
+                <button type="submit">Применить</button>
+
+                @if (User.IsInRole("Администратор"))
+                {
+                    <button type="submit" formaction=@Redirection target="_blank">Добавить</button>
+                }
+
+            </div>
+            <!--</div>-->
+        </form>
+    </div>
+
+    <form method="get">
+        <table>
+            <tr>
+                @if (Model.isEquipmentVisible)
+                {
+                    <th data-column="Name">Название</th>
+                    <th data-column="Model">Модель</th>
+                    <th data-column="Description">Описание</th>
+                    <th data-column="Kind">Вид</th>
+                    <th data-column="Status">Статус</th>
+                }
+
+                @if (Model.isManufactureVisible)
+                {
+                    <th data-column="Email">Почта</th>
+                    <th data-column="PhoneNumber">Номер телефона</th>
+                    <th data-column="Address">Адрес</th>
+                    <th data-column="City">Город</th>
+                    <th data-column="Country">Страна</th>
+                }
+
+                @if (Model.isEquipmentVisible && Model.isManufactureVisible)
+                {
+                    <th data-column="PurchaseDate">Дата покупки</th>
+                    <th data-column="GuaranteeDate">Гарантийная дата</th>
+                }
+
+                @if (User.IsInRole("Администратор"))
+                {
+                    <th data-column="Kind">Действия</th>
+                }
+            </tr>
+            @foreach (var product in Model.EquipmentList)
+            {
+                <tr>
+                    @if (Model.isEquipmentVisible)
+                    {
+                        <td data-column="Name">@product.Equipment.Name</td>
+                        <td data-column="Model">@product.Equipment.Model</td>
+                        <td data-column="Description">@product.Equipment.Description</td>
+                        <td data-column="Kind">@product.Equipment.Kind</td>
+                        <td data-column="Status">@product.Equipment.Status</td>
+
+                        idForDelete = product.Equipment.idEquipment;
+                    }
+
+
+                    @if (Model.isManufactureVisible)
+                    {
+                        <td data-column="Email">@product.Manufacturer.email</td>
+                        <td data-column="PhoneNumber">@product.Manufacturer.PhoneNumber</td>
+                        <td data-column="Address">@product.Manufacturer.Address</td>
+                        <td data-column="City">@product.Manufacturer.City</td>
+                        <td data-column="Country">@product.Manufacturer.Country</td>
+
+                        idForDelete = product.Manufacturer.idManufacturer;
+                    }
+
+                    @if (Model.isEquipmentVisible && Model.isManufactureVisible)
+                    {
+                        <td data-column="PurchaseDate">@product.PurchaseDate</td>
+                        <td data-column="GuaranteeDate">@product.GuaranteeDate</td>
+
+                        idForDelete = product.idEquipmentManufacturer;
+                    }
+                    
+
+                    @if (User.IsInRole("Администратор"))
+                    {
+                        <td class="action-buttons">
+                            <button type="button" name="Update" class="update" value=@idForDelete onclick="editRow(this)">Изменить</button>
+                            <button type="submit" name="Delete" class="delete" value=@idForDelete>Удалить</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </form>
+
+    <script>
+        function editRow(button) {
+            const row = button.closest('tr');
+            const cells = row.querySelectorAll('td[data-column]');
+
+            cells.forEach(cell => {
+                const columnName = cell.getAttribute('data-column');
+                const currentValue = cell.textContent.trim();
+
+                if (columnName === 'Kind') {
+                    const select = document.createElement('select');
+                    const options = [
+                        { value: 'Аналитическое', text: 'Аналитическое' },
+                        { value: 'Измерительное', text: 'Измерительное' },
+                        { value: 'Контрольное', text: 'Контрольное' },
+                        { value: 'Лабораторное', text: 'Лабораторное' }
+                    ];
+
+                    options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        if (option.text === currentValue) optionElement.selected = true;
+                        select.appendChild(optionElement);
+                    });
+
+                    cell.innerHTML = '';
+                    cell.appendChild(select);
+                } else if (columnName === 'Status') {
+                    const select = document.createElement('select');
+                    const options = [
+                        { value: 'Свободно', text: 'Свободно' },
+                        { value: 'Используется', text: 'Используется' },
+                        { value: 'Калибруется', text: 'Калибруется' },
+                        { value: 'В ремонте', text: 'В ремонте' },
+                        { value: 'Неисправно', text: 'Неисправно' }
+                    ];
+
+                    options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        if (option.text === currentValue) optionElement.selected = true;
+                        select.appendChild(optionElement);
+                    });
+
+                    cell.innerHTML = '';
+                    cell.appendChild(select);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentValue;
+                    cell.innerHTML = '';
+                    cell.appendChild(input);
+                }
+            });
+
+            button.textContent = 'Сохранить';
+            button.onclick = () => saveRow(button);
+        }
+
+        function saveRow(button) {
+            const row = button.closest('tr');
+            const cells = row.querySelectorAll('td[data-column]');
+            const updatedValues = {};
+
+            cells.forEach(cell => {
+                const columnName = cell.getAttribute('data-column');
+                const input = cell.querySelector('input');
+                const select = cell.querySelector('select');
+
+                if (input) {
+                    updatedValues[columnName] = input.value.trim();
+                    cell.textContent = input.value.trim();
+                } else if (select) {
+                    updatedValues[columnName] = select.value.trim();
+                    cell.textContent = select.options[select.selectedIndex].text;
+                } else {
+                    updatedValues[columnName] = cell.textContent.trim();
+                }
+            });
+
+            // cells.forEach((cell, index) => {
+            //     const columnName = cell.getAttribute('data-column');
+            //     const input = cell.querySelector('input, select');
+            //     const select = cell.querySelector('select');
+
+            //     if (input) {
+            //         if (input.tagName === 'SELECT') {
+            //             updatedValues.push(input.value.trim()); Для <select> добавляем значение
+            //             cell.textContent = input.options[input.selectedIndex].text; Устанавливаем текст выбранного значения
+            //         } else if (input.tagName === 'INPUT') {
+            //             updatedValues.push(input.value.trim()); Для <input> добавляем значение
+            //             cell.textContent = input.value.trim(); Устанавливаем текст в ячейку
+            //         }
+            //     } else {
+            //         updatedValues.push(cell.textContent.trim()); Если ячейка не редактировалась
+            //     }
+            // });
+
+
+            const idReagent = button.value; 
+            const Mode = @ModeOfUpdate
+
+            fetch(`/Home/Equipment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    Id: idReagent,
+                    ModeOfUpdate : Mode,
+                    Name : updatedValues["Name"],
+                    Model: updatedValues["Model"],
+                    Description: updatedValues["Description"],
+                    Kind: updatedValues["Kind"],
+                    Status: updatedValues["Status"],
+                    Email: updatedValues["Email"],
+                    PhoneNumber: updatedValues["PhoneNumber"],
+                    Address: updatedValues["Address"],
+                    City: updatedValues["City"],
+                    Country: updatedValues["Country"],
+                    PurchaseDate: updatedValues["PurchaseDate"],
+                    GuaranteeDate: updatedValues["GuaranteeDate"]
+                })
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Ошибка обновления данных.');
+                })
+                .catch(error => alert(error.message));
+
+            button.textContent = 'Изменить';
+            button.onclick = () => editRow(button);
+        }
+
+    </script>
+</body>
+</html>

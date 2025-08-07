@@ -1,0 +1,314 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Home.ExperimentModel
+@{
+    Layout = "_Layout1";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Table</title>
+    <style>
+
+        /* Стили для таблицы */
+        /* Основные стили для таблицы */
+        /*table {
+                            margin-top: 20px;
+                            width: 66%;
+                            border-collapse: collapse;
+                            background-color: white;
+                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                            font-size: 0.85em;
+                            margin: 0 auto; /* Центрируем таблицу
+                        }*/
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            /*Новый атрибут*/
+            /*min-height: 40px;*/
+        }
+
+        th {
+            background-color: #007b9d;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        tr:hover {
+            background-color: #e8e8e8;
+        }
+
+        
+        /*Новый атрибут 01.12.2024*/
+        input {
+            max-width: 100%; /* Ограничиваем ширину input до 100% от ширины ячейки */
+            overflow: hidden; /* Прячем содержимое, которое не помещается в поле ввода */
+            text-overflow: ellipsis; /* Добавляем многоточие в случае переполнения */
+        }
+
+        /* Панель выбора столбцов */
+        .column-selection {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center; /* Центрируем панель */
+        }
+
+            .column-selection label {
+                margin-right: 15px;
+                font-size: 1em;
+            }
+
+        /* Панель инструментов (поиск и фильтры) */
+        .toolbar {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center; /*space-between;*/
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .toolbar input,
+            .toolbar select {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .toolbar button {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                color: white;
+                background-color: #007b9d;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .toolbar button:hover {
+                    background-color: #005f73;
+                }
+
+        /* Кнопки действия в таблице */
+        .action-buttons {
+            display: flex;
+            justify-content: left; /* Центрируем кнопки по горизонтали */
+        }
+
+            .action-buttons button {
+                padding: 6px 10px;
+                font-size: 0.8em;
+                margin: 0 4px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .action-buttons button.delete {
+                    background-color: #e74c3c;
+                    color: white;
+                }
+
+                    .action-buttons button.delete:hover {
+                        background-color: #c0392b;
+                    }
+
+                .action-buttons button.update {
+                    background-color: #27ae60;
+                    color: white;
+                }
+
+                    .action-buttons button.update:hover {
+                        background-color: #229954;
+                    }
+
+        table {
+            margin-top: 20px;
+            width: 90%; /* Устанавливаем ширину 80%, чтобы она была одинаковой для таблицы и тулбара */
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 0.85em;
+            margin: 0 auto; /* Центрируем таблицу */
+        }
+
+        .toolbar {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center; /* Центрирование всего контента */
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between; /* Элементы распределяются по ширине */
+            width: 100%; /* Ограничиваем ширину */
+            align-items: center; /* Выравнивание элементов по вертикали */
+            gap: 20px; /* Расстояние между элементами */
+        }
+
+        .column-selection {
+            display: flex;
+            gap: 20px; /* Расстояние между чекбоксами */
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 20px; /* Расстояние между полем поиска и кнопками */
+            align-items: center; /* Выравнивание по вертикали */
+        }
+
+            /* Стили для поля поиска */
+            .search-filters input[type="text"] {
+                padding: 8px 12px;
+                font-size: 1em;
+                width: 250px; /* Ограничение ширины поля поиска */
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            /* Стили для кнопок */
+            .search-filters button {
+                padding: 8px 12px;
+                font-size: 1em;
+                background-color: #007b9d;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .search-filters button:hover {
+                    background-color: #005f73;
+                }
+
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <form method="get">
+            <div class="search-filters"> 
+                <input type="text" name="searchQuery" placeholder="Поиск..." value="@Model.SearchQuery"/>
+
+                <select name="filterCategory">
+                    <option value=0>Все категории</option>
+                    <option value=1>Название эксперимента</option>
+                    <option value=2>Описание</option>
+                    <option value=3>Начало эксперимента</option>
+                    <option value=4>Конец эксперимента</option>
+                    <option value=5>Результат</option>
+                    <option value=6>Статус</option>
+                </select>
+
+                <select asp-for="OrderBy">
+                    <option value=0>Сортировка отсутствует</option>
+                    <option value=1>Название эксперимента</option>
+                    <option value=2>Описание</option>
+                    <option value=3>Начало эксперимента</option>
+                    <option value=4>Конец эксперимента</option>
+                    <option value=5>Результат</option>
+                    <option value=6>Статус</option>
+                </select>
+
+                <select asp-for="Ascending">
+                    <option value=true>По возрастанию</option>
+                    <option value=false>По убыванию</option>
+                </select>
+                    
+                <button type="submit">Применить</button>
+			</div>
+        </form>
+    </div>
+
+	<form method="get">
+        <table>
+            <tr>
+                <th>Название эксперимента</th>
+                <th>Описание</th>
+                <th>Начало эксперимента</th>
+                <th>Конец эксперимента</th>
+                <th>Результат</th>
+                <th>Статус</th>
+                @if (User.IsInRole("Администратор") || User.IsInRole("Пользователь"))
+                {
+                    <th class="sticky-column">Действия</th>
+                }
+            </tr>
+            @foreach (var product in Model.Experiments)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.StartDate</td>
+                    <td>@product.EndDate</td>
+                    <td>@product.Result</td>
+                    <td>@product.Status</td>
+                    <!--Излишен один if-->
+                    @if (User.IsInRole("Администратор") || User.IsInRole("Пользователь"))
+                    {
+                        <td class="action-buttons">
+                            
+                            @if (User.IsInRole("Пользователь"))
+                            {
+                                <button type="submit" name="Update" class="update" value=@product.idExperiment>Просмотреть</button> <!--onclick="editRow(this)"-->
+                            }
+
+
+							@if (User.IsInRole("Администратор"))
+							{
+                              <!--<input type="number" id="recordId" name="id" required>-->
+								<button type="submit" name="Update" class="update" value=@product.idExperiment>Изменить</button> <!--onclick="editRow(this)"-->
+                                <button type="submit" name="Delete" class="delete" value=@product.idExperiment>Удалить</button>
+
+                                <!---->
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+		</table>
+	</form>
+    <script>
+        function editRow(button) {
+
+            const idValue = button.value;
+
+            fetch('/Home/Experiment', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: idValue // передаем только id
+                })
+            })
+            .then(response => response.json()) // ожидаем JSON-ответ от сервера
+                .then(data => {
+                    // Логика после получения ответа от сервера
+                    if (data.success) {
+                        console.log('Эксперимент обновлен');
+                        // Возможно, обновить UI или перенаправить пользователя
+                    } else {
+                        console.error('Ошибка обновления эксперимента');
+                    }
+                })
+                .catch(error => {
+                    // Обработка ошибок сети
+                    console.error('Ошибка при запросе:', error);
+                });
+        }
+    </script>
+</body>
+</html>

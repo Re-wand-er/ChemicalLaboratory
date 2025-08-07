@@ -1,0 +1,242 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Home.RegistrationModel
+@{
+    Layout = "_Layout1";
+}
+
+<style>
+    .centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .registration-container {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem; 
+    }
+
+    .myform {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 0.5rem; 
+        font-size: 1.5rem; 
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0.5rem; 
+    }
+
+    .myform {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem; 
+    }
+
+    label {
+        margin-bottom: 0.2rem; 
+        color: #555;
+        font-size: 0.85rem; 
+    }
+
+    input, select {
+        padding: 0.5rem; 
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    button {
+        background-color: #1877f2;
+        color: white;
+        padding: 0.6rem; 
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        width: 100%;
+        margin-top: 0.5rem; 
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .visible {
+        display: block;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding-top: 5px;
+        margin-left: auto;
+    }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+    .login-link {
+        text-align: center;
+        margin-top: 0.5rem; 
+    }
+</style>
+
+
+<div class="centered">
+    <div class="registration-container">
+        <h2>Регистрация</h2>
+        <form id="registration-form" method="post">
+            <div class="form-row">
+                <label for="first-name">Имя:</label>
+                <input type="text" id="first-name" name="firstName" value="@Model.firstName" required>
+
+                <label for="form-row">Фамилия:</label>
+				<input type="text" id="middle-name" name="middleName" value="@Model.middleName">
+            </div>
+            
+            <div class="form-row">
+                <label for="last-name">Отчество:</label>
+                <input type="text" id="last-name" name="lastName" value="@Model.lastName" required>
+            </div>
+
+            <div class="form-row">
+                <label for="email">Почта:</label>
+                <input type="email" id="email" name="email" value="@Model.email" required>
+            </div>
+
+            <div class="myform">
+                <label>Пол:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="Sex" value="М" required> Мужчина
+                    </label>
+                    <label>
+                        <input type="radio" name="Sex" value="Ж" required> Женщина
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="position">Рабочая должность:</label>
+                <select id="position" name="position" required>
+                    <option value="">Выбрать должность:</option>
+                    <option value="Лаборант">Лаборант</option>
+                    <option value="Лабораторный техник">Лабораторный техник</option>
+                    <option value="Исследователь">Исследователь</option>
+                    <option value="Научный сотрудник">Научный сотрудник</option>
+                    <option value="Химик">Химик</option>
+                    <option value="Биотехнолог">Биотехнолог</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="WorkSchedule">Рабочее расписание:</label>
+                <select id="position" name="workSchedule" required>
+                    <option value="1">8:00 - 16:00</option>
+                    <option value="2">16:00 - 0:00</option>
+                    <option value="3">0:00 - 8:00</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="reg-login">Логин:</label>
+                <input type="text" id="reg-login" name="Login" value="@Model.Login" required>
+            </div>
+
+            <div class="form-row">
+                <label for="reg-password">Пароль:</label>
+                <input type="password" id="reg-password" name="Password" value="@Model.Password"  required>
+            </div>
+
+            <!--<div class="form-row">
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" >
+            </div>-->
+
+		    <div id="hidden-field">
+                <button type="submit" asp-page-handler="MessageCode">Прислать код идентификации</button> <!--asp-page-handler="MessageCode"-->
+                <input type="text" id="hidden-input" name="identificationCode" /> <!--class="hidden"-->
+            </div>
+
+            <h3 class="error-message">@Model.ErrorMessage</h3>
+
+			<button type="submit" asp-page-handler="Registration" name="">Зарегистрироваться</button> <!--onclick="showHiddenField()"-->
+        </form>
+
+        <div class="login-link">
+            <a href="@Url.Page("/Home/Authorisation")">Уже есть аккаунт? Войти здесь.</a>
+        </div>
+    </div>
+</div>
+<script>
+    // async function sendCode(event) {
+    //     event.preventDefault(); Предотвращаем переход по ссылке
+    //     const response = await fetch('/Home/Registration?handler=GetMessageCode', { method: 'POST' });
+
+    //     if (response.ok) {
+    //         const inputField = document.getElementById('hidden-input');
+    //         inputField.classList.remove('hidden');
+    //         inputField.focus(); Ставим фокус
+    //     } else {
+    //         alert('Не удалось отправить код.');
+    //     }
+    // }
+
+    async function sendCode(event) {
+        event.preventDefault(); // Предотвращаем переход по ссылке
+
+        const email = document.getElementById('email-input').value; // Получаем значение email из поля ввода
+
+        const response = await fetch('/Home/Registration?handler=GetMessageCode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Указываем формат данных
+            },
+            body: JSON.stringify({ email }) // Передаем email в теле запроса
+        });
+
+        if (response.ok) {
+            // const inputField = document.getElementById('hidden-input');
+            // inputField.classList.remove('hidden');
+            inputField.focus(); // Ставим фокус
+        } else {
+            alert('Не удалось отправить код.');
+        }
+    }
+</script>

@@ -1,0 +1,574 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Home.ReagentModel
+@{
+    Layout = "_Layout1";
+    ViewData["Title"] = "Таблица элементов";
+
+    int idForDelete = 0;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <style>
+        /* Стили для таблицы */
+        /* Основные стили для таблицы */
+        /*table {
+            margin-top: 20px;
+            width: 66%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 0.85em;
+            margin: 0 auto; /* Центрируем таблицу 
+        }*/
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007b9d;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        tr:hover {
+            background-color: #e8e8e8;
+        }
+
+        /* Панель выбора столбцов */
+        .column-selection {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center; /* Центрируем панель */
+        }
+
+            .column-selection label {
+                margin-right: 15px;
+                font-size: 1em;
+            }
+
+        /* Панель инструментов (поиск и фильтры) */
+        .toolbar {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;/*space-between;*/
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .toolbar input,
+            .toolbar select {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .toolbar button {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                color: white;
+                background-color: #007b9d;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .toolbar button:hover {
+                    background-color: #005f73;
+                }
+
+        /* Кнопки действия в таблице */
+        .action-buttons {
+            display: flex;
+            justify-content: left; /* Центрируем кнопки по горизонтали */
+        }
+
+            .action-buttons button {
+                padding: 6px 10px;
+                font-size: 0.8em;
+                margin: 0 4px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .action-buttons button.delete {
+                    background-color: #e74c3c;
+                    color: white;
+                }
+
+                    .action-buttons button.delete:hover {
+                        background-color: #c0392b;
+                    }
+
+                .action-buttons button.update {
+                    background-color: #27ae60;
+                    color: white;
+                }
+
+                    .action-buttons button.update:hover {
+                        background-color: #229954;
+                    }
+
+        table {
+            margin-top: 20px;
+            width: 80%; /* Устанавливаем ширину 80%, чтобы она была одинаковой для таблицы и тулбара */
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 0.85em;
+            margin: 0 auto; /* Центрируем таблицу */
+        }
+
+        .toolbar {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center; /* Центрирование всего контента */
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between; /* Элементы распределяются по ширине */
+            width: 100%; /* Ограничиваем ширину */
+            align-items: center; /* Выравнивание элементов по вертикали */
+            gap: 20px; /* Расстояние между элементами */
+        }
+
+        .column-selection {
+            display: flex;
+            gap: 20px; /* Расстояние между чекбоксами */
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 20px; /* Расстояние между полем поиска и кнопками */
+            align-items: center; /* Выравнивание по вертикали */
+        }
+
+            /* Стили для поля поиска */
+            .search-filters input[type="text"] {
+                padding: 8px 12px;
+                font-size: 1em;
+                width: 250px; /* Ограничение ширины поля поиска */
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            /* Стили для кнопок */
+            .search-filters button {
+                padding: 8px 12px;
+                font-size: 1em;
+                background-color: #007b9d;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .search-filters button:hover {
+                    background-color: #005f73;
+                }
+
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <form method="get">
+            <!-- Контейнер для всех элементов -->
+            <div class="filter-container">
+                <!-- Панель для чекбоксов (по горизонтали) -->
+
+
+                @if (User.IsInRole("Пользователь") || User.IsInRole("Администратор"))
+                {
+                    <div class="column-selection">
+                        <div>
+                            <input type="checkbox" asp-for="isReagentVisible" id="isReagentVisible" name="isReagentVisible" />
+                            <label for="isReagentVisible">Реагенты</label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" asp-for="isManufactureVisible" id="isManufactureVisible" name="isManufactureVisible" />
+                            <label for="isManufactureVisible">Производство</label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" asp-for="isSupplierVisible" id="isSupplierVisible" name="isSupplierVisible" />
+                            <label for="isSupplierVisible">Поставщик</label>
+                        </div>
+                    </div>
+                }
+
+                <!-- Поле для поиска и кнопки (по горизонтали) -->
+                <div class="search-filters">
+                    <input type="text" name="searchQuery" placeholder="Поиск..." value="@Model.SearchQuery" />
+
+                    <select asp-for="FilterCategory">
+                        <option value=0>Нет категорий для поиска</option>
+                        @if (Model.isReagentVisible)
+                        {
+                            <!--<option value=1>Плотность</option>-->
+                            <option value=2>Название реагента</option>
+                            <option value=3>Химическая формула</option>
+                            <!--<option value=4>Масса</option>-->
+                            <option value=5>Классификация</option>
+                            <!--<option value=6>Чистота</option>-->
+                        }
+
+                        @if (Model.isManufactureVisible)
+                        {
+                            <option value=7>Название производства</option>
+                            <option value=8>Почта призводителя</option>
+                            <option value=9>Адрес</option>
+                            <option value=10>Город</option>
+                            <option value=11>Страна</option>
+                        }
+
+                        @if (Model.isSupplierVisible)
+                        {
+                            <option value=12>Название поставщика</option>
+                            <option value=13>Почта поставщика</option>
+                            <option value=14>Телефонный номер</option>
+                        }
+
+                    </select>
+
+                    <select asp-for="OrderBy">
+                        <option value=0>Сортировка отсутствует</option>
+                        @if (Model.isReagentVisible)
+                        { 
+                            <option value=1>Плотность</option>
+                            <option value=2>Название реагента</option>
+                            <option value=3>Химическая формула</option>
+                            <option value=4>Масса</option>
+                            <option value=5>Классификация</option>
+                            <option value=6>Чистота</option>
+                        }
+
+                        @if (Model.isManufactureVisible)
+                        {
+                            <option value=7>Название производства</option>
+                            <option value=8>Почта призводителя</option>
+                            <option value=9>Адрес</option>
+                            <option value=10>Город</option>
+                            <option value=11>Страна</option>
+                        }
+
+                        @if (Model.isSupplierVisible)
+                        {
+                            <option value=12>Название поставщика</option>
+                            <option value=13>Почта поставщика</option>
+                            <option value=14>Телефонный номер</option>
+                        }
+
+                    </select>
+
+                    <select asp-for="Ascending">
+                        <option value=true>По возрастанию</option>
+                        <option value=false>По убыванию</option>
+                    </select>
+
+                    <button type="submit">Применить</button>
+
+                    @if (User.IsInRole("Администратор"))
+                    {
+                        <button type="submit" formaction="/Add/NewReagent" target="_blank">Добавить</button>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+	
+	<form method="get">
+
+        <table>
+            <thead>
+                <tr>
+                    @if (Model.isReagentVisible)
+                    {
+                        <th class="density-column" width="7">Плотность</th>
+                        <th class="name-column">Название реагента</th>
+                        <th class="formula-column" width="12">Химическая формула</th>
+                        <th class="mass-column">Масса</th>
+                        <th width="13">Дата производства</th>
+                        <th >Серия</th>
+                        <th >Классификация</th>
+                        <th >Чистота</th>
+                    }
+
+                    @if (Model.isManufactureVisible)
+                    {
+                        <th>Название производства</th>
+                        <th width="20">Почта производителя</th>
+                        <th>Адрес</th>
+                        <th>Город</th>
+                        <th>Страна</th>
+                    }
+
+                    @if (Model.isSupplierVisible)
+                    {
+                        <th>Название поставщика</th>
+                        <th>Почта поставщика</th>
+                        <th>Телефонный номер</th>
+                    }
+
+                    @if (User.IsInRole("Администратор"))
+                    {
+                       <th>Действия</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.ReagentManufacturers)//ReagentList
+                {
+                    <tr>
+                        @if (Model.isReagentVisible)
+                        {
+                            <td class="density-column">@product.Reagent.Dansity</td>
+                            <td class="name-column">@product.Reagent.Name</td>
+                            <td class="formula-column">@product.Reagent.ChemicalFormula</td>
+							<td class="mass-column" >
+								@product.Reagent.Mass
+							</td>
+
+                            <td>@product.DateOfManufacture</td>
+                            <td>@product.series</td>
+                            <td>@product.PurityClassification</td>
+                            <td>@product.PurityDegree</td>
+
+                            idForDelete = @product.idReagManuf;
+                        }
+
+                        @if (Model.isManufactureVisible)
+                        {
+                            <td>@product.Manufacturer.Name</td>
+                            <td>@product.Manufacturer.Email</td>
+                            <td>@product.Manufacturer.Address</td>
+                            <td>@product.Manufacturer.City</td>
+                            <td>@product.Manufacturer.Country</td>
+
+                            idForDelete = @product.Manufacturer.idRManufacturerDataModel;
+                        }
+
+                        @if (Model.isSupplierVisible)
+                        {
+                            <td>@product.Supplier.Name</td>
+                            <td>@product.Supplier.email</td>
+                            <td>@product.Supplier.PhoneNumber</td>
+
+                            idForDelete = @product.Supplier.idSupplier;
+                        }
+
+                        @if (Model.isManufactureVisible && Model.isSupplierVisible)
+                        {
+                           idForDelete = @product.Manufacturer.idRManufacturerDataModel;
+                        }
+
+                        @if (Model.isReagentVisible && Model.isManufactureVisible)
+                        {
+                            idForDelete = @product.idReagManuf;
+                        }
+
+                        @if (Model.isReagentVisible && Model.isSupplierVisible)
+                        {
+                            idForDelete = @product.idReagManuf;
+                        }
+
+                        @if (Model.isReagentVisible && Model.isManufactureVisible && Model.isSupplierVisible)
+                        {
+                            idForDelete = @product.idReagManuf;
+                        }
+
+                        @if (User.IsInRole("Администратор"))
+                        {   
+                            <td class="action-buttons">
+                                <button type="button" name="Update" class="update" value=@product.Reagent.idReagent onclick="editRow(this)">Изменить</button>
+                                <button type="submit" name="Delete" class="delete" value=@idForDelete>Удалить</button>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+
+    <script>
+        // function editRow(button) {
+        //     const row = button.closest('tr'); Находим строку таблицы, к которой относится кнопка
+        //     const cells = row.querySelectorAll('td:not(.action-buttons)'); Находим все ячейки в строке, исключая ячейки с действиями
+
+        //     Преобразуем каждую ячейку в поле для ввода
+        //     cells.forEach(cell => {
+        //         const currentValue = cell.textContent.trim();
+        //         cell.innerHTML = `<input type="text" value="${currentValue}" />`;
+        //     });
+
+        //     Меняем текст на кнопке "Изменить" на "Сохранить"
+        //     button.textContent = "Сохранить";
+        //     button.onclick = () => saveRow(button); При клике на "Сохранить" вызываем метод saveRow
+        // }
+
+        // function saveRow(button) {
+        //     const row = button.closest('tr'); Находим строку таблицы
+        //     const cells = row.querySelectorAll('td:not(.action-buttons)'); Находим все ячейки в строке
+        //     const updatedValues = [];
+
+        //     Получаем обновленные значения из полей ввода
+        //     cells.forEach(cell => {
+        //         const input = cell.querySelector('input');
+        //         if (input) {
+        //             updatedValues.push(input.value.trim()); Добавляем новые значения в массив
+        //             cell.textContent = input.value.trim(); Возвращаем обновленное значение в ячейку
+        //         } else {
+        //             updatedValues.push(cell.textContent.trim()); Если поле не было редактируемым
+        //         }
+        //     });
+
+        //     Отправляем обновленные данные на сервер через Fetch API
+        //     const idReagent = button.value; ID реагента из кнопки
+
+        //     const dansityValue = parseFloat(updatedValues[0].replace(',', '.')); 
+        //     const massValue = parseFloat(updatedValues[3].replace(',', '.')); 
+
+        //     fetch(`/Home/Reagent`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json"
+        //         },
+        //         body: JSON.stringify({
+        //             idReagent: idReagent,
+        //             Dansity: dansityValue,
+        //             Name: updatedValues[1],
+        //             ChemicalFormula: updatedValues[2],
+        //             Mass: massValue
+        //         })
+        //     })
+        //         .then(response => {
+        //             if (response.ok) {
+        //                 alert("Данные успешно обновлены!");
+        //             } else {
+        //                 throw new Error("Ошибка обновления данных.");
+        //             }
+        //         })
+        //         .catch(error => alert(error.message));
+
+        //     Возвращаем кнопку к состоянию "Изменить"
+        //     button.textContent = "Изменить";
+        //     button.onclick = () => editRow(button); Снова вызываем метод editRow при клике на кнопку
+        // }
+
+        function editRow(button) {
+            const row = button.closest('tr'); // Находим строку таблицы, к которой относится кнопка
+            const cells = row.querySelectorAll('td:not(.action-buttons)'); // Находим все ячейки в строке, исключая ячейки с действиями
+
+            // Преобразуем каждую ячейку в поле для ввода
+            cells.forEach((cell, index) => {
+                const currentValue = cell.textContent.trim();
+
+                if (index === 3) { // Для полей int добавляем проверку
+                    const numberValue = currentValue && !isNaN(currentValue) ? currentValue : "0"; // Значение по умолчанию
+                    cell.innerHTML = `<input type="number" min="0" value="${numberValue}" />`;
+                } else {
+                    cell.innerHTML = `<input type="text" value="${currentValue}" />`;
+                }
+
+                if (index === 7) { // Для полей int добавляем проверку
+                    const numberValue = currentValue && !isNaN(currentValue) ? currentValue : "0"; // Значение по умолчанию
+                    cell.innerHTML = `<input type="text" min="0" max="100" value="${currentValue}" />`;
+                } else {
+                    cell.innerHTML = `<input type="text" value="${currentValue}" />`;
+                }
+
+                const input = cell.querySelector('input');
+                if (index === 3 || index === 7) {
+
+                    input.addEventListener('input', () => {
+                        // Разрешаем ввод только цифр и запятой
+                        input.value = input.value.replace(/[^0-9,]/g, '');
+
+                        // Убираем отрицательные значения
+                        if (input.value.startsWith('-')) {
+                            input.value = input.value.slice(1);
+                        }
+
+                        // Проверяем количество запятых — допускается только одна
+                        const commaCount = (input.value.match(/,/g) || []).length;
+                        if (commaCount > 1) {
+                            input.value = input.value.slice(0, input.value.lastIndexOf(','));
+                        }
+                    });
+                }
+            });
+
+            // Меняем текст на кнопке "Изменить" на "Сохранить"
+            button.textContent = "Сохранить";
+            button.onclick = () => saveRow(button); // При клике на "Сохранить" вызываем метод saveRow
+        }
+
+        function saveRow(button) {
+            const row = button.closest('tr'); // Находим строку таблицы
+            const cells = row.querySelectorAll('td:not(.action-buttons)'); // Находим все ячейки в строке
+            const updatedValues = [];
+
+            // Получаем обновленные значения из полей ввода
+            cells.forEach(cell => {
+                const input = cell.querySelector('input');
+                if (input) {
+                    updatedValues.push(input.value.trim()); // Добавляем новые значения в массив
+                    cell.textContent = input.value.trim(); // Возвращаем обновленное значение в ячейку
+                } else {
+                    updatedValues.push(cell.textContent.trim()); // Если поле не было редактируемым
+                }
+            });
+
+            // Отправляем обновленные данные на сервер через Fetch API
+            const idReagent = button.value; // ID реагента из кнопки
+
+            const dansityValue = parseFloat(updatedValues[0].replace(',', '.'));
+            const massValue = parseFloat(updatedValues[3].replace(',', '.'));
+
+            fetch(`/Home/Reagent`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idReagent: idReagent,
+                    Dansity: dansityValue,
+                    Name: updatedValues[1],
+                    ChemicalFormula: updatedValues[2],
+                    Mass: massValue
+                })
+            })
+            // .then(response => {
+            //     if (response.ok) {
+            //         alert("Данные успешно обновлены!");
+            //     } else {
+            //         throw new Error("Ошибка обновления данных.");
+            //     }
+            // })
+            // .catch(error => alert(error.message));
+
+            // Возвращаем кнопку к состоянию "Изменить"
+            button.textContent = "Изменить";
+            button.onclick = () => editRow(button); // Снова вызываем метод editRow при клике на кнопку
+        }
+
+
+    </script>
+</body>
+</html>

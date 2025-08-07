@@ -1,0 +1,32 @@
+﻿    .notification-popup {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #dff0d8;
+        color: #3c763d;
+        padding: 15px 25px;
+        border: 1px solid #d6e9c6;
+        border-radius: 6px;
+        z-index: 9999;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: fadeOut 5s forwards;
+    }
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+
+        80% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+            display: none;
+        }
+    }
+
+

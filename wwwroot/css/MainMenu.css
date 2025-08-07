@@ -1,0 +1,100 @@
+﻿/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #d4e9e3;
+}
+
+/* Page wrapper */
+#page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header styles */
+#header-wrapper {
+    background-color: #007294;
+    padding: 1rem 0;
+}
+
+/*.centered {
+    display: flex;*/ /* Используем Flexbox */
+    /*justify-content: center;*/ /* Центрируем по горизонтали */
+/*}*/
+
+.container {
+    width: 90%;
+    max-width: 2800px;
+    margin: 0 auto;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#logo {
+    color: white;
+    text-decoration: none;
+    vertical-align: central;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Navigation styles */
+#nav {
+    display: flex;
+    gap: 1rem;
+}
+
+    #nav a {
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+
+        #nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+/* Main content area */
+menu {
+    flex: 1 0 auto;
+    padding: 2rem 0;
+}
+
+/* Footer styles */
+.min-h-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+#copyright {
+    background-color: #f0f0f0;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+    #copyright a {
+        color: #0066cc;
+        text-decoration: none;
+    }
+
+        #copyright a:hover {
+            text-decoration: underline;
+        }

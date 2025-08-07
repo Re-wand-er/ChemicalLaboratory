@@ -1,0 +1,101 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Home.AutomatizationModel
+@{
+	Layout = "_Layout1";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Концентрация вещества</title>
+    <style>
+
+       .onlyForYou{
+            margin: 20px;
+            font-size: 26px;
+       }
+
+        .group{
+            display: flex;
+            gap: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: black;
+        }
+
+        .input-group input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .group button{
+
+            height: 40px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom:0px;
+            margin-top: auto;
+            width: 6%;
+            cursor:pointer;
+        }
+
+        .output-group {
+            display: flex;
+            gap: 20px;
+            margin-right:0px;
+            margin-left: auto;
+        }        
+
+
+    </style>
+</head>
+<body>
+
+	<div class="container">
+		<h1 class="onlyForYou">Концентрация вещества</h1>
+        <!-- Поле для ввода реактива -->
+        <form method="post">
+            <div class="group">
+                <div class="input-group">
+                    <label for="reactive">Химическая формула:</label>
+                    <input type="text" id="reactive" asp-for="ChemicalFormula" placeholder="Название реактива">
+                </div>
+
+                <div class="input-group">
+                    <label for="concentration">Концентрация вещества (%):</label>
+                    <input type="number" id="concentration" asp-for="Concentration" placeholder="Введите концентрацию" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="volume">Объем готового реактива (см^3):</label>
+                    <input type="number" id="volume" asp-for="Volume" placeholder="Введите объем" step="0.01">
+                </div>
+
+				<button type="submit" asp-page-handler="Calculate">Рассчитать</button><!--name="Calculate" class="Calculate"-->
+
+                <div class="output-group">
+                    <div class="input-group">
+                        <label for="volume">Необходимая масса (г.):</label>
+                        <input type="number" id="volume" asp-for="Massa" placeholder="Необходимая масса" step="0.01" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="volume">Объем воды (см^3):</label>
+                        <input type="number" id="volume" asp-for="WaterVolume" placeholder="Необходимый объем" step="0.01" readonly>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

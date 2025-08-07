@@ -1,0 +1,274 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Add.NewUserModel
+@{
+	Layout = "_Layout1";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица реагентов</title>
+    <style>
+        table {
+            margin-top: 20px;
+            width: 66%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 0.85em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007b9d;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        tr:hover {
+            background-color: #e8e8e8;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .toolbar {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toolbar input, .toolbar select {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .toolbar button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            color: white;
+            background-color: #007b9d;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .toolbar button:hover {
+            background-color: #005f73;
+        }
+
+        .action-buttons button {
+            padding: 6px 10px;
+            font-size: 0.8em;
+            margin: 0 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-buttons button.delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .action-buttons button.delete:hover {
+            background-color: #c0392b;
+        }
+
+        .action-buttons button.update {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .action-buttons button.update:hover {
+            background-color: #229954;
+        }
+    </style>
+</head>
+<body>
+	<form method="post" asp-page-handler="Insert">
+        <div class="toolbar">
+	    		<button onclick ="addRow()">Новая запись</button><!---->
+		<!--</form><form method="post" >-->
+            
+                <button type="submit">Добавить реагент в базу данных</button>
+	    	
+        </div>
+
+        <h3 class="error-message">@Model.ErrorMessage</h3>
+	<!--<form method="post" id="reagentForm" asp-page-handler="AddNewItem">-->
+        <table>
+            <thead>
+                <tr>
+                    <th>Наименование</th>
+                    <th>Плотность</th>
+                    <th>Химическая формула</th>
+                    <th>Масса</th>
+                    <th>Дата производства</th>
+                    <th>Серийный номер</th>
+                    <th>Чистота</th>
+                    <th>Классификация</th>
+                    <th>Производство</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="reagentTableBody">
+                
+                    <tr>
+                        <td><input type="text" name="NewReagents[0].Name"  required></td>
+                        <td><input type="number" id="Dansity" step="0.01" min="0" name="NewReagents[0].Dansity" required></td>
+                        <td><input type="text" name="NewReagents[0].ChemicalFormula"  required></td>
+                        <td><input type="number" id="Mass" step="0.01" min="0" name="NewReagents[0].Mass"  required></td>
+                        <td><input type="date" name="NewReagents[0].DateOfManufacture" required></td>
+                        <td><input type="text" name="NewReagents[0].series"  required></td>
+                        <td><input type="number" id="Purity" step="0.01" name="NewReagents[0].PurityDegree" min="0" max="100" required></td>
+                        <td>
+                            <select name="NewReagents[0].PurityClassification" required>
+                                <option value=1>Технический</option>
+                                <option value=2>Чистый</option>
+                                <option value=3>Чистый для анализа</option>
+                                <option value=4>Химически чистый</option>
+                                <option value=5>Спектрально чистый</option>
+                                <option value=6>Особо чистый</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="NewReagents[0].idManufacture" onchange="toggleProductionFields(this)">
+                                <option value=null>Нет производства</option>
+                                <option value=1>АО ХимПродукт</option>
+                                <option value=2>ООО ХимТехнологии</option>
+                                <option value=3>БелХимПром</option>
+                                <option value=4>Институт Химических Реактивов</option>
+                                <option value=5>НПФ Реактив</option>
+                                <option value=6>ТОВ ХимЛаб</option>
+                                <option value=7>КазХимТрейд</option>
+                                <option value=8>УзХимСнаб</option>
+                                <option value=9>ООО РеактивПром</option>
+                                <option value=10>АрмХимТех</option>
+                            </select>
+
+                        <div class="production-details" style="display: none;">
+                            <input type="text" name="NewReagents[0].SupplierName" placeholder="Название поставщика">
+                            <input type="email" name="NewReagents[0].SupplierMail" placeholder="Эл. почта поставщика">
+                            <input type="tel" name="NewReagents[0].SupplierPhone" placeholder="Телефон поставщика">
+                            </div>
+                        </td>
+                        <td class="action-buttons">
+						<!--<button type="button" class="update">Обновить</button>-->
+                            <button type="button" class="delete" onclick="deleteRow(this)">Удалить</button>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <script>
+
+        function addRow() {
+            const tableBody = document.getElementById("reagentTableBody");
+            const rowCount = tableBody.rows.length;
+            const newRow = tableBody.rows[0].cloneNode(true);
+
+            newRow.querySelectorAll("input, select").forEach((input) => {
+                input.value = ""; // Сбрасываем значение для новых записей
+                const name = input.getAttribute("name");
+                if (name) {
+                    input.setAttribute("name", name.replace(/\[\d+\]/, `[${rowCount}]`)); // Меняем индекс
+                }
+            });
+
+            tableBody.appendChild(newRow);
+        }
+
+        function deleteRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+
+        function toggleProductionFields(select) {
+            const row = select.closest("tr");
+            const productionDetails = row.querySelector(".production-details");
+            const supplierDetails = row.querySelector(".supplier-details");
+
+            if (select.value === "manual") {
+                productionDetails.style.display = "block";
+                supplierDetails.style.display = "block";
+            } else if (select.value) {
+                productionDetails.style.display = "block";
+                supplierDetails.style.display = "none";
+            } else {
+                productionDetails.style.display = "none";
+                supplierDetails.style.display = "none";
+            }
+        }
+
+        // Проверка на правильность ввода
+
+        // Функция для проверки, что число не отрицательное
+        // function validateNonNegative(value) {
+        //     return value >= 0;  Проверка на неотрицательность
+        // }
+
+        // Функция для проверки, что число не отрицательное и не больше 100
+        // function validateNonNegativeAndMax100(value) {
+        //     return value >= 0 && value <= 100;  Проверка на неотрицательность и не больше 100
+        // }
+
+        // Получаем элементы полей
+        // const field1 = document.getElementById('Dansity');
+        // const field2 = document.getElementById('Mass');
+        // const field3 = document.getElementById('Purity');
+
+        // Обработчик для первого поля
+        // field1.addEventListener('input', function () {
+        //     const value = parseFloat(this.value); Преобразуем в число
+        //     if (!validateNonNegative(value)) {
+        //         this.setCustomValidity("Число должно быть неотрицательным.");
+        //     } else {
+        //         this.setCustomValidity("");
+        //     }
+        // });
+
+        // Обработчик для второго поля
+        // field2.addEventListener('input', function () {
+        //     const value = parseFloat(this.value); Преобразуем в число
+        //     if (!validateNonNegative(value)) {
+        //         this.setCustomValidity("Число должно быть неотрицательным.");
+        //     } else {
+        //         this.setCustomValidity("");
+        //     }
+        // });
+
+        // Обработчик для третьего поля
+        // field3.addEventListener('input', function () {
+        //     const value = parseFloat(this.value); Преобразуем в число
+        //     if (!validateNonNegativeAndMax100(value)) {
+        //         this.setCustomValidity("Число должно быть неотрицательным и не больше 100.");
+        //     } else {
+        //         this.setCustomValidity("");
+        //     }
+        // });
+    </script>
+</body>
+</html>
+

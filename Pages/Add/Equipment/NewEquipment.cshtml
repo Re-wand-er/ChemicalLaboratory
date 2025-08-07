@@ -1,0 +1,207 @@
+﻿@page
+@model NewEquipmentModel
+@{
+    Layout = "_Layout1";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица реагентов</title>
+    <style>
+        table {
+            margin-top: 20px;
+            width: 66%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 0.85em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007b9d;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        tr:hover {
+            background-color: #e8e8e8;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .toolbar {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toolbar input, .toolbar select {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .toolbar button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            color: white;
+            background-color: #007b9d;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .toolbar button:hover {
+            background-color: #005f73;
+        }
+
+        .action-buttons button {
+            padding: 6px 10px;
+            font-size: 0.8em;
+            margin: 0 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-buttons button.delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .action-buttons button.delete:hover {
+            background-color: #c0392b;
+        }
+
+        .action-buttons button.update {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .action-buttons button.update:hover {
+            background-color: #229954;
+        }
+    </style>
+</head>
+<body>
+	<form method="post" asp-page-handler="Insert">
+        <div class="toolbar">
+	    		<button onclick ="addRow()">Новая запись</button><!---->
+		<!--</form><form method="post" >-->
+            
+                <button type="submit">Добавить реагент в базу данных</button>
+	    	
+        </div>
+
+        <h3 class="error-message">@Model.ErrorMessage</h3>
+	<!--<form method="post" id="reagentForm" asp-page-handler="AddNewItem">-->
+        <table>
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Модель</th>
+                    <th>Описание</th>
+                    <th>Вид</th>
+                    <th>Статус</th>
+                    <th>Производитель</th>
+                    <th>Дата покупки</th>
+                    <th>Гарантийный срок</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="reagentTableBody">
+                
+                    <tr>
+                    <td><input type="text" name="NewEquipment[0].Name" required></td>
+                    <td><input type="text" name="NewEquipment[0].Model" required></td>
+                    <td><input type="text" name="NewEquipment[0].Description" required></td>
+                    <td>
+                        <select name="NewEquipment[0].Kind" required>
+                            <option value="Аналитическое">Аналитическое</option>
+                            <option value="Измерительное">Измерительное</option>
+                            <option value="Контрольное">Контрольное</option>
+                            <option value="Лабораторное">Лабораторное</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="NewEquipment[0].Status" required>
+                            <option value="Свободно">Свободно</option>
+                            <option value="Используется">Используется</option>
+                            <option value="Калибруется">Калибруется</option>
+                            <option value="В ремонте">В ремонте</option>
+                            <option value="Неисправно">Неисправно</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="NewEquipment[0].Id">
+                            <option value=0>Нет производителя</option>
+                            @foreach (var option in Model.ManufactureName)
+                            {
+                                <option value=@option.Value>@option.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input type="date" name="NewEquipment[0].PurchaseDate" required></td>
+                    <td><input type="date" name="NewEquipment[0].GuaranteeDate"></td>
+                    <td class="action-buttons">
+					<!--<button type="button" class="update">Обновить</button>-->
+                        <button type="button" class="delete" onclick="deleteRow(this)">Удалить</button>
+                    </td>
+                    </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <script>
+
+        function addRow() {
+            const tableBody = document.getElementById("reagentTableBody");
+            const rowCount = tableBody.rows.length;
+            const newRow = tableBody.rows[0].cloneNode(true);
+
+            newRow.querySelectorAll("input, select").forEach((input) => {
+                input.value = ""; // Сбрасываем значение для новых записей
+                const name = input.getAttribute("name");
+                if (name) {
+                    input.setAttribute("name", name.replace(/\[\d+\]/, `[${rowCount}]`)); // Меняем индекс
+                }
+            });
+
+            tableBody.appendChild(newRow);
+        }
+
+        function deleteRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>
+
