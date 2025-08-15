@@ -1,3 +1,5 @@
+using ChemicalLaboratory.Domain;
+using ChemicalLaboratory.Domain.ORM;
 using ChemicalLaboratory.Domain.UserServices;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,18 @@ namespace ChemicalLaboratory
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<IUserService, UserService>();
+
+//------------------------------------------------------------------------------------------------------------
+            builder.Services.AddDbContext<ORMSQLCommand>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped(typeof(BaseRepository<>));
+            builder.Services.AddScoped<ReagentRepository>();
+//------------------------------------------------------------------------------------------------------------
+
+//============ бпелеммн ======================================================================================
+
+//============ бпелеммн ======================================================================================
 
             builder.Services.AddRazorPages(options =>
             {

@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ChemicalLaboratory.Models.Reagent;
+using Reag = ChemicalLaboratory.Models.NewModels.Reagent;
 using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Models.People;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using ChemicalLaboratory.Domain.ORM;
+using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace ChemicalLaboratory.Pages.Home
 {
@@ -14,8 +18,15 @@ namespace ChemicalLaboratory.Pages.Home
     [Authorize]
 	public class ReagentModel : PageModel
     {
+        private readonly ReagentRepository _reagentRepository;
+        public ReagentModel(ReagentRepository reagentRepository)
+        {
+            _reagentRepository = reagentRepository;
+        }
+
         [BindProperty]
         public List<ReagentManufacturer>? ReagentManufacturers { get; set; }
+        //public List<Reag>? ReagentManufacturers { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string? SearchQuery { get; set; }
@@ -43,8 +54,9 @@ namespace ChemicalLaboratory.Pages.Home
         [BindProperty]
         public Dictionary<int, ReagentDataModel> UpdatedItems { get; set; } = new();
 
-        public IActionResult  /*void*/ OnGet(string searchQuery)
+        public async /*IActionResult*/  void OnGet(string searchQuery)
         {
+            string? sqlCommand = null;
             ReagentManufacturers = new List<ReagentManufacturer>();
 
 			if (Request.Query.TryGetValue("Delete", out var deleteValue))
@@ -66,74 +78,58 @@ namespace ChemicalLaboratory.Pages.Home
             if (isReagentVisible && isManufactureVisible && isSupplierVisible) 
             {
                 ParamOfKind = 7;
-                ReagentManufacturers = LoadItems("select \r\n\t*, \r\n\trsr.Name  as ReagentName, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail,\r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail\r\n\tfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsrm.idPurity = rsp.idPurity\r\njoin ReagentSchema.Manufacturer as rsm on rsrm.idManufacturer = rsm.IdManufacturer\r\njoin ReagentSchema.Supplier rss on rss.idManufacturer = rsm.IdManufacturer \r\n");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select \r\n\t*, \r\n\trsr.Name  as ReagentName, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail,\r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail\r\n\tfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsrm.idPurity = rsp.idPurity\r\njoin ReagentSchema.Manufacturer as rsm on rsrm.idManufacturer = rsm.IdManufacturer\r\njoin ReagentSchema.Supplier rss on rss.idManufacturer = rsm.IdManufacturer \r\n";
             }
-
-            if (isReagentVisible && isSupplierVisible)
+            else if (isReagentVisible && isSupplierVisible)
             {
                 ParamOfKind = 6;
-                ReagentManufacturers = LoadItems("select \r\n\trsr.idReagent, rsr.Dansity, rsr.Name as ReagentName, rsr.ChemicalFormula, rsr.mass, \r\n\trsrm.DateOfManufacture, rsrm.series, rsp.Classification, rsrm.PurityDegree,\r\n\trss.idSupplier, rss.email as SupplierEmail, rss.Name  as SupplierName, rss.PhoneNumber\r\n\tfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsrm.idPurity = rsp.idPurity\r\njoin ReagentSchema.Manufacturer as rsm on rsrm.idManufacturer = rsm.IdManufacturer\r\njoin ReagentSchema.Supplier rss on rss.idManufacturer = rsm.IdManufacturer ");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select \r\n\trsr.idReagent, rsr.Dansity, rsr.Name as ReagentName, rsr.ChemicalFormula, rsr.mass, \r\n\trsrm.DateOfManufacture, rsrm.series, rsp.Classification, rsrm.PurityDegree,\r\n\trss.idSupplier, rss.email as SupplierEmail, rss.Name  as SupplierName, rss.PhoneNumber\r\n\tfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsrm.idPurity = rsp.idPurity\r\njoin ReagentSchema.Manufacturer as rsm on rsrm.idManufacturer = rsm.IdManufacturer\r\njoin ReagentSchema.Supplier rss on rss.idManufacturer = rsm.IdManufacturer ";
             }
-
-            if (isManufactureVisible && isSupplierVisible)
+            else if (isManufactureVisible && isSupplierVisible)
             {
                 ParamOfKind = 5;
-                ReagentManufacturers = LoadItems("select \r\n\t*, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail,\r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail \r\nfrom ReagentSchema.Manufacturer rsm \r\njoin ReagentSchema.Supplier rss on rsm.IdManufacturer = rss.idManufacturer ");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select \r\n\t*, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail,\r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail \r\nfrom ReagentSchema.Manufacturer rsm \r\njoin ReagentSchema.Supplier rss on rsm.IdManufacturer = rss.idManufacturer ";
             }
-
-            if (isReagentVisible && isManufactureVisible)
+            else if (isReagentVisible && isManufactureVisible)
             {
                 ParamOfKind = 4;
-                ReagentManufacturers = LoadItems("select *, \r\n\trsr.Name  as ReagentName, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail\r\nfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsp.idPurity = rsrm.idPurity\r\njoin ReagentSchema.Manufacturer rsm on rsrm.idManufacturer = rsm.IdManufacturer");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select *, \r\n\trsr.Name  as ReagentName, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail\r\nfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsp.idPurity = rsrm.idPurity\r\njoin ReagentSchema.Manufacturer rsm on rsrm.idManufacturer = rsm.IdManufacturer";
             }
-
-            if (isSupplierVisible)
+            else if (isSupplierVisible)
             {
                 ParamOfKind = 3;
-                ReagentManufacturers = LoadItems("select \r\n\t*, \r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail \r\nfrom ReagentSchema.Supplier as rss");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select \r\n\t*, \r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail \r\nfrom ReagentSchema.Supplier as rss";
             }
-
-            if (isManufactureVisible)
+            else if (isManufactureVisible)
             {
                 ParamOfKind = 2;
-                ReagentManufacturers = LoadItems("select \r\n\t*, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail\r\nfrom ReagentSchema.Manufacturer as rsm");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select \r\n\t*, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail\r\nfrom ReagentSchema.Manufacturer as rsm";
             }
-
-           if (isReagentVisible)
+            else if (isReagentVisible)
             {
                 ParamOfKind = 1;
-                ReagentManufacturers = LoadItems("select *, rsr.Name  as ReagentName from ReagentSchema.Reagent rsr join ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent join ReagentSchema.Purity rsp on rsp.idPurity = rsrm.idPurity");
-				ListOrder(OrderBy, Ascending);
-                Filter(SearchQuery);
-                return Page();
+                sqlCommand = "select *, rsr.Name  as ReagentName from ReagentSchema.Reagent rsr join ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent join ReagentSchema.Purity rsp on rsp.idPurity = rsrm.idPurity";
             }
-			ListOrder(OrderBy, Ascending);
+
+            if (sqlCommand is not null) 
+            {
+                ReagentManufacturers = LoadItems(sqlCommand);
+                ListOrder(OrderBy, Ascending);
+                Filter(SearchQuery);
+                //return Page();
+            }
 
             /*if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                ReagentManufacturers = ReagentManufacturers.Where(i => i.Reagent.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
             }*/
+            ListOrder(OrderBy, Ascending);
             Filter(SearchQuery);
 
-           return new JsonResult(new { success = false });
+            foreach (var i in  await NewLoadItems())
+                Console.WriteLine();
+
+            //return new JsonResult(new { success = false });
         }
 
         public async Task<IActionResult> OnPost([FromBody] ReagentDataModel updatedReagent)
@@ -143,10 +139,14 @@ namespace ChemicalLaboratory.Pages.Home
            return new JsonResult(new { success = true });
         }
 
+        private async Task<IEnumerable<Reag>> NewLoadItems()
+        {
+            return await _reagentRepository.GetReagent(); 
+        }
+
         private List<ReagentManufacturer/*ReagentDataModel*/> LoadItems( string query)
         {
-           // return SQLCommand.GetReagent(); // Метод для получения данных из базы
-            return SQLCommand.GetDataFromReagentSchema(query); // Метод для получения данных из базы
+           return SQLCommand.GetDataFromReagentSchema(query); // Метод для получения данных из базы
         }
 
         public IActionResult Filter(string? filt)
@@ -280,9 +280,9 @@ namespace ChemicalLaboratory.Pages.Home
 			return Page();
 		}
 
-		static List<T> SortList<T, TKey>(List<T> list, Func<T, TKey> keySelector, bool ascending = true)
+		static List<T> SortList<T, TKey>(List<T>? list, Func<T, TKey> keySelector, bool ascending = true)
         {
-            return ascending ? list.OrderBy(keySelector).ToList() : list.OrderByDescending(keySelector).ToList();
+            return ascending ? list!.OrderBy(keySelector).ToList() : list!.OrderByDescending(keySelector).ToList();
         }
     }
 }
