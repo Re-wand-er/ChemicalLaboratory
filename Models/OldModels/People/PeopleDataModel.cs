@@ -1,4 +1,5 @@
 ﻿using ChemicalLaboratory.Models.Experiment;
+using System.ComponentModel.DataAnnotations;
 
 namespace ChemicalLaboratory.Models.People
 {
@@ -12,12 +13,20 @@ namespace ChemicalLaboratory.Models.People
         public string FirstName                    { get; set; } = "";
         public string MiddleName                   { get; set; } = "";
         public string LastName                     { get; set; } = "";
-        public string email                        { get; set; } = "";
+
+        [EmailAddress]
+        public string Email                        { get; set; } = "";
         public string Sex                          { get; set; } = ""; 
         public string SystemRole                   { get; set; } = "";
         public string JobPosition                  { get; set; } = "";
+
+        [Required]
+        [StringLength(50, MinimumLength = 3)]
         public string Login                        { get; set; } = "";
-        public string PasswordHash                 { get; set; } = "";
+
+        [Required]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$")]
+        public string? Password                     { get; set; }
 
         public PeopleDataModel() { }
 

@@ -18,11 +18,6 @@ namespace ChemicalLaboratory.Pages.Home
     [Authorize]
 	public class ReagentModel : PageModel
     {
-        private readonly ReagentRepository _reagentRepository;
-        public ReagentModel(ReagentRepository reagentRepository)
-        {
-            _reagentRepository = reagentRepository;
-        }
 
         [BindProperty]
         public List<ReagentManufacturer>? ReagentManufacturers { get; set; }
@@ -126,8 +121,8 @@ namespace ChemicalLaboratory.Pages.Home
             ListOrder(OrderBy, Ascending);
             Filter(SearchQuery);
 
-            foreach (var i in  await NewLoadItems())
-                Console.WriteLine();
+            //foreach (var i in  await NewLoadItems())
+            //    Console.WriteLine();
 
             //return new JsonResult(new { success = false });
         }
@@ -139,10 +134,10 @@ namespace ChemicalLaboratory.Pages.Home
            return new JsonResult(new { success = true });
         }
 
-        private async Task<IEnumerable<Reag>> NewLoadItems()
-        {
-            return await _reagentRepository.GetReagent(); 
-        }
+        //private async Task<IEnumerable<Reag>> NewLoadItems()
+        //{
+        //    return await _reagentRepository.GetReagent(); 
+        //}
 
         private List<ReagentManufacturer/*ReagentDataModel*/> LoadItems( string query)
         {

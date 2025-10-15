@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using ChemicalLaboratory.Domain;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Caching.Memory;
 using ChemicalLaboratory.Models.People;
 using System.Text.RegularExpressions;
@@ -12,37 +13,14 @@ namespace ChemicalLaboratory.Pages.Home
     {
         int IdMarker = 0;
 
-        public PeopleDataModel people { get; set; } = new PeopleDataModel();
-
         [BindProperty]
-        public string? firstName { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string middleName { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string lastName { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string email { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string Sex { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string Position { get; set; } = string.Empty;
+        public PeopleDataModel People { get; set; } = new PeopleDataModel();
 
         [BindProperty]
         public string identificationCode { get; set; } = string.Empty;
 
         [BindProperty]
         public int workSchedule { get; set; } = 0;
-
-        [BindProperty]
-        public string Login { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string Password { get; set; } = string.Empty;
 
         [BindProperty]
         public string ErrorMessage { get; set; } = string.Empty;
@@ -58,7 +36,7 @@ namespace ChemicalLaboratory.Pages.Home
 
             if(identificationCode != JsonRequest.Instance(IdMarker).id.ToString()) { ErrorMessage = "Неправильно введен код идентификации!"; return Page(); }
 
-            if (!IsValidPassword(Password))
+            if (!IsValidPassword(People.Password))
             {
                 ErrorMessage = "Пароль не подходит. \nДолжен быть один Главный, специальный, строчной символ и число";
                 return Page();
@@ -81,14 +59,14 @@ namespace ChemicalLaboratory.Pages.Home
                         {*/
 
                             command.Parameters.AddWithValue("@idWorkSchedule", workSchedule);
-                            command.Parameters.AddWithValue("@FirstName", firstName);
-                            command.Parameters.AddWithValue("@MiddleName", middleName);
-                            command.Parameters.AddWithValue("@LastName", lastName);
-                            command.Parameters.AddWithValue("@email", email);
-                            command.Parameters.AddWithValue("@Sex", Sex);
-                            command.Parameters.AddWithValue("@JobPosition", Position);
-                            command.Parameters.AddWithValue("@Login", Login);
-                            command.Parameters.AddWithValue("@PasswordHash", Password./*GetHashCode().*/ToString());
+                            command.Parameters.AddWithValue("@FirstName", People.FirstName);
+                            command.Parameters.AddWithValue("@MiddleName", People.MiddleName);
+                            command.Parameters.AddWithValue("@LastName", People.LastName);
+                            command.Parameters.AddWithValue("@email", People.Email);
+                            command.Parameters.AddWithValue("@Sex", People.Sex);
+                            command.Parameters.AddWithValue("@JobPosition", People.JobPosition);
+                            command.Parameters.AddWithValue("@Login", People.Login);
+                            command.Parameters.AddWithValue("@PasswordHash", People.Password./*GetHashCode().*/ToString());
 
                             int rowsAffected = await command.ExecuteNonQueryAsync();
                             if (rowsAffected > 0) return RedirectToPage("/Home/Authorisation");
@@ -121,7 +99,7 @@ namespace ChemicalLaboratory.Pages.Home
             string subject = "Код идентификации:";
             string body = "<h2>Пожалуйста введите ваш код в окне приложения.</h2><h3>Ваш идентификационный номер: </h3>" + IdMarker;
 
-            await MailSender.SendMailToEmail(email, subject, body);
+            await MailSender.SendMailToEmail(People.Email, subject, body);
 
 
             return Page();

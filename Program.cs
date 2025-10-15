@@ -1,3 +1,4 @@
+using EFCore;
 using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Domain.ORM;
 using ChemicalLaboratory.Domain.UserServices;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using EFCore.Services;
 
 
 namespace ChemicalLaboratory
@@ -20,16 +22,17 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<IUserService, UserService>();
 
 //------------------------------------------------------------------------------------------------------------
-            builder.Services.AddDbContext<ORMSQLCommand>(options =>
+            //builder.Services.AddDbContext<ORMSQLCommand>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddDbContext<DataBaseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped(typeof(BaseRepository<>));
-            builder.Services.AddScoped<ReagentRepository>();
+            builder.Services.AddScoped<IPeopleService, PeopleService>();
+
+            //builder.Services.AddScoped(typeof(BaseRepository<>));
+            //builder.Services.AddScoped<BaseRepository, ReagentRepository>();
 //------------------------------------------------------------------------------------------------------------
-
-//============ бпелеммн ======================================================================================
-
-//============ бпелеммн ======================================================================================
 
             builder.Services.AddRazorPages(options =>
             {
@@ -54,8 +57,8 @@ namespace ChemicalLaboratory
             //            });
 
             builder.Services.AddRazorPages();
-            
-
+           
+           
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

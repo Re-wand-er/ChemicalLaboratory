@@ -269,7 +269,7 @@
                     <td>@product.MiddleName</td>
 		    		<td>@product.LastName</td>
 		    		<td>@product.Sex</td>
-		    		<td>@product.email</td>
+		    		<td>@product.Email</td>
                     <td>@product.JobPosition</td>
                     <td>@product.IdWorkShedule.WorkShift</td>
                     <td>@product.IdWorkShedule.StartTime</td>
@@ -278,7 +278,7 @@
                     {
                         <td>@product.SystemRole</td>
                         <td>@product.Login</td>
-                       <!--<td>@product.PasswordHash</td>-->
+                       <!--<td>@product.Password</td>-->
                     }
                 
 
@@ -435,7 +435,7 @@
                     updatedValues.push(cell.textContent.trim()); // Если ячейка не редактировалась
                 }
             });
-
+            
             // Отправляем обновленные данные на сервер
             const idPeople = button.value; // ID пользователя из кнопки
 
@@ -454,8 +454,8 @@
                     JobPosition: updatedValues[5],
                     WorkShift: updatedValues[6], 
                     SystemRole: updatedValues[9], 
-                    Login: updatedValues[10],     
-                    PasswordHash: updatedValues[11] 
+                    Login: updatedValues[10]     
+                    //PasswordHash: updatedValues[11] 
                 })
             })
                 .then(response => {

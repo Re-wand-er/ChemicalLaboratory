@@ -124,22 +124,23 @@
         <form id="registration-form" method="post">
             <div class="form-row">
                 <label for="first-name">Имя:</label>
-                <input type="text" id="first-name" name="firstName" value="@Model.firstName" required>
+                <input type="text" id="first-name" name="firstName" asp-for="People.FirstName" required>
 
                 <label for="form-row">Фамилия:</label>
-				<input type="text" id="middle-name" name="middleName" value="@Model.middleName">
+				<input type="text" id="middle-name" name="middleName" asp-for="People.MiddleName">
             </div>
             
             <div class="form-row">
                 <label for="last-name">Отчество:</label>
-                <input type="text" id="last-name" name="lastName" value="@Model.lastName" required>
+                <input type="text" id="last-name" name="lastName" asp-for="People.LastName" required>
             </div>
 
             <div class="form-row">
                 <label for="email">Почта:</label>
-                <input type="email" id="email" name="email" value="@Model.email" required>
+                <input type="email" id="email" name="email" asp-for="People.Email" required>
             </div>
 
+            <!-------Не хранит состояние, поэтому при return Page() сбрасывается-------------->
             <div class="myform">
                 <label>Пол:</label>
                 <div class="radio-group">
@@ -153,8 +154,8 @@
             </div>
 
             <div class="form-row">
-                <label for="position">Рабочая должность:</label>
-                <select id="position" name="position" required>
+                <label for="JobPosition">Рабочая должность:</label>
+                <select asp-formaction="JobPosition" name="JobPosition" required>
                     <option value="">Выбрать должность:</option>
                     <option value="Лаборант">Лаборант</option>
                     <option value="Лабораторный техник">Лабораторный техник</option>
@@ -164,6 +165,7 @@
                     <option value="Биотехнолог">Биотехнолог</option>
                 </select>
             </div>
+            <!-------Не хранит состояние, поэтому при return Page() сбрасывается-------------->
 
             <div class="form-row">
                 <label for="WorkSchedule">Рабочее расписание:</label>
@@ -176,12 +178,12 @@
 
             <div class="form-row">
                 <label for="reg-login">Логин:</label>
-                <input type="text" id="reg-login" name="Login" value="@Model.Login" required>
+                <input type="text" id="reg-login" name="Login" asp-for="People.Login" required>
             </div>
 
             <div class="form-row">
                 <label for="reg-password">Пароль:</label>
-                <input type="password" id="reg-password" name="Password" value="@Model.Password"  required>
+                <input type="password" id="reg-password" name="Password" asp-for="People.Password"  required>
             </div>
 
             <!--<div class="form-row">

@@ -1,16 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using ChemicalLaboratory.Models;
+using EFCore.DTOs;
 using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Models.People;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using ChemicalLaboratory.Models.Reagent;
+using EFCore.Services;
 
 namespace ChemicalLaboratory.Pages.Home
 {
     [Authorize(Roles ="Администратор")]
     public class PeopleModel : PageModel
     {
+        private readonly IPeopleService _peopleService; 
+
+        public PeopleModel(IPeopleService peopleService)
+        {
+            _peopleService = peopleService;
+        }
+
         [BindProperty]
         public List<PeopleDataModel>? PeopleList { get; set; }
 
@@ -73,10 +81,12 @@ namespace ChemicalLaboratory.Pages.Home
             }
         }
 
-        public async Task<IActionResult> OnPost([FromBody] People updatedReagent)
+        public async Task<IActionResult> OnPost([FromBody] PeopleDTO updatedPeople)
         {
-            await SQLCommand.UpdatePeopleRecord(updatedReagent);
+            await _peopleService.UpdateAsync(updatedPeople);
 
+            //await SQLCommand.UpdatePeopleRecord(updatedPeople);
+            
             return Page();
         }
 
@@ -101,7 +111,7 @@ namespace ChemicalLaboratory.Pages.Home
                     break;
 
                 case 5:
-                    PeopleList = SortList(PeopleList, p => p.email, ascending);
+                    PeopleList = SortList(PeopleList, p => p.Email, ascending);
                     break;
 
                 case 6:
@@ -130,7 +140,7 @@ namespace ChemicalLaboratory.Pages.Home
 
                 default: break;
             }
-
+            
             return Page();
         }
 
@@ -138,20 +148,5 @@ namespace ChemicalLaboratory.Pages.Home
         {
             return ascending ? list.OrderBy(keySelector).ToList() : list.OrderByDescending(keySelector).ToList();
         }
-    }
-
-    public class People
-    {
-        public int IdPeople { get; set; }
-        public string? FirstName { get; set; }
-        public string? MiddleName { get; set; }
-        public string? LastName { get; set; }
-        public string? Sex { get; set; }
-        public string? Email { get; set; }
-        public string? JobPosition { get; set; }
-        public int? WorkShift { get; set; }
-        public string? SystemRole { get; set; }
-        public string? Login { get; set; }
-        public string? PasswordHash { get; set; }
     }
 }

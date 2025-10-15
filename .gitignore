@@ -3,3 +3,4 @@ Dockerfile*
 /bin
 /obj
 /wwwroot/lib/*
+.json

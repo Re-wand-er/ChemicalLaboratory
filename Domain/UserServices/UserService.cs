@@ -44,12 +44,12 @@ namespace ChemicalLaboratory.Domain.UserServices
                         user.FirstName      = reader.GetString(3);
                         user.MiddleName     = reader.GetString(4);
                         user.LastName       = reader.GetString(5);
-                        user.email          = reader.GetString(6);
+                        user.Email          = reader.GetString(6);
                         user.Sex            = reader.GetString(7);
                         user.SystemRole     = reader.GetString(8);
                         user.JobPosition    = reader.GetString(9);
                         user.Login          = reader.GetString(10);
-                        user.PasswordHash   = reader.GetString(11);
+                        user.Password   = reader.GetString(11);
                     }
                     else
                     {

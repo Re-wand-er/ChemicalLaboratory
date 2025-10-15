@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using EFCore.DTOs;
 using ChemicalLaboratory.Models.People;
 using ChemicalLaboratory.Pages.Add;
 using Microsoft.Data.SqlClient;
@@ -70,12 +71,12 @@ namespace ChemicalLaboratory.Domain
                 FirstName = reader.GetString(3),
                 MiddleName = reader.GetString(4),
                 LastName = reader.GetString(5),
-                email = reader.GetString(6),
+                Email = reader.GetString(6),
                 Sex = reader.GetString(7),
                 SystemRole = reader.GetString(8),
                 JobPosition = reader.GetString(9),
                 Login = reader.GetString(10),
-                PasswordHash = reader.GetString(11),
+                Password = ColumnExists(reader, "PasswordHash") ? Convert.ToString(reader["PasswordHash"]) : null,
 
                 IdWorkShedule = new WorkScheduleDataModel
                 {
@@ -279,7 +280,7 @@ namespace ChemicalLaboratory.Domain
             }
         }
 
-        public async static /*void*/ Task UpdatePeopleRecord(People reagentDataModel)
+        public async static /*void*/ Task UpdatePeopleRecord(PeopleDTO reagentDataModel)
         {
             const string query = "UPDATE PeopleSchema.People\n" +
                 "SET\r\n    FirstName = @FirstName,\r\n    MiddleName = @MiddleName,\r\n\tLastName = @LastName," +
@@ -564,7 +565,7 @@ namespace ChemicalLaboratory.Domain
                 string subject = "⚠️ Низкий уровень реагентов";
                 string body = "Следующие реагенты требуют пополнения:\n\n" + string.Join("\n", lowStockReagents);
 
-                await SendMailToEmail( UserProfile.Instance(0).User.email, subject, body);
+                await SendMailToEmail( UserProfile.Instance(0).User.Email, subject, body);
             }
         }
         public static void UpdatePeoplePassword(string Password, string Login, string Email)

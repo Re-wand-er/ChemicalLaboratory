@@ -76,12 +76,12 @@ namespace ChemicalLaboratory.Models.People
                         User.FirstName      = reader["FirstName"]    != DBNull.Value ? Convert.ToString(reader["FirstName"])    : "";
                         User.MiddleName     = reader["MiddleName"]   != DBNull.Value ? Convert.ToString(reader["MiddleName"])   : "";
                         User.LastName       = reader["LastName"]     != DBNull.Value ? Convert.ToString(reader["LastName"])     : "";
-                        User.email          = reader["email"]        != DBNull.Value ? Convert.ToString(reader["email"])        : "";
+                        User.Email          = reader["email"]        != DBNull.Value ? Convert.ToString(reader["email"])        : "";
                         User.Sex            = reader["Sex"]          != DBNull.Value ? Convert.ToString(reader["Sex"])          : "";
                         User.SystemRole     = reader["SystemRole"]   != DBNull.Value ? Convert.ToString(reader["SystemRole"])   : "";
                         User.JobPosition    = reader["JobPosition"]  != DBNull.Value ? Convert.ToString(reader["JobPosition"])  : "";
                         User.Login          = reader["Login"]        != DBNull.Value ? Convert.ToString(reader["Login"])        : "";
-                        User.PasswordHash   = reader["PasswordHash"] != DBNull.Value ? Convert.ToString(reader["PasswordHash"]) : "";
+                        User.Password   = reader["PasswordHash"] != DBNull.Value ? Convert.ToString(reader["PasswordHash"]) : "";
                         // Рабочая смена
                         User.IdWorkShedule.idWorkSchedule = reader["idWorkSchedule"] != DBNull.Value ? Convert.ToInt32 (reader["idWorkSchedule"]) : 0;
                         User.IdWorkShedule.WorkShift      = reader["WorkShift"]      != DBNull.Value ? Convert.ToString(reader["WorkShift"])      : "";

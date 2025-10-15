@@ -59,7 +59,8 @@ namespace ChemicalLaboratory.Pages.Home
 			if (Password == null) 
             { 
                 ModelState.AddModelError(string.Empty, "Пароль не может быть пустым!");
-                ErrorMessage = "Пароль не может быть пустым!"; return Page(); 
+                ErrorMessage = "Пароль не может быть пустым!";
+                return Page(); 
             }
 			// Проверка учетных данных
 			var user = _userService.ValidateUser(Login, Password);
@@ -67,7 +68,6 @@ namespace ChemicalLaboratory.Pages.Home
             {
                 ModelState.AddModelError(string.Empty, "Неверное имя пользователя или пароль.");
                 ErrorMessage = "Неверный логин или пароль!";
-
 				return Page();
             }
 

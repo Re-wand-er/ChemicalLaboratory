@@ -1,4 +1,5 @@
 using ChemicalLaboratory.Pages.Home;
+using EFCore.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -9,7 +10,7 @@ namespace ChemicalLaboratory.Pages.Add
     public class NewPeopleModel : PageModel
     {
         [BindProperty(SupportsGet = true)]
-        public List<People> NewPeople { get; set; } = new();
+        public List<PeopleDTO> NewPeople { get; set; } = new();
         public string ErrorMessage { get; set; } = string.Empty;
         public void OnGet()
         {
@@ -22,7 +23,7 @@ namespace ChemicalLaboratory.Pages.Add
                 // Собираем сообщения об ошибках для конкретных полей
                 var errorMessages = new List<string>();
 
-                foreach (var state in ModelState)
+                foreach (var state in ModelState) 
                 {
                     var fieldName = state.Key; // Имя поля
                     var errors = state.Value.Errors; // Список ошибок для этого поля
