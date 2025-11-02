@@ -1,15 +1,10 @@
 ﻿using EFCore.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EFCore.Configurations
 {
-    internal class ReagentManufacturerConfiguration :IEntityTypeConfiguration<ReagentManufacturer>
+    internal class ReagentManufacturerConfiguration : IEntityTypeConfiguration<ReagentManufacturer>
     {
         public void Configure(EntityTypeBuilder<ReagentManufacturer> builder)
         {

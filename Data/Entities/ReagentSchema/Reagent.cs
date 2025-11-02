@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EFCore.Entities
+﻿namespace EFCore.Entities
 {
     internal class Reagent
     {
@@ -17,6 +10,6 @@ namespace EFCore.Entities
 
         public ICollection<ReagentManufacturer> ReagentManufacturers { get; set; } = new List<ReagentManufacturer>();
         public ICollection<ReagentExperiment> ReagentExperiments { get; set; } = new List<ReagentExperiment>();
-        
+
     }
 }

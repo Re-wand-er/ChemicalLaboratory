@@ -1,24 +1,22 @@
-﻿using System.Data;
-using EFCore.DTOs;
-using ChemicalLaboratory.Models.People;
-using ChemicalLaboratory.Pages.Add;
-using Microsoft.Data.SqlClient;
-using ChemicalLaboratory.Models.Reagent;
+﻿using ChemicalLaboratory.Models;
 using ChemicalLaboratory.Models.Equipment;
 using ChemicalLaboratory.Models.Experiment;
+using ChemicalLaboratory.Models.People;
+using ChemicalLaboratory.Models.Reagent;
+using ChemicalLaboratory.Pages.Add;
 using ChemicalLaboratory.Pages.Home;
+using EFCore.DTOs;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ChemicalLaboratory.Models;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using static ChemicalLaboratory.Domain.MailSender;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ChemicalLaboratory.Domain
 {
     public class SQLCommand
     {
 
-        public static string ip  = "WIN-OD2JJLP2EBU\\SQLSERVER2,1434"; // IP-адрес сервера
+        public static string ip = "WIN-OD2JJLP2EBU\\SQLSERVER2,1434"; // IP-адрес сервера
         public static string ip_2 = "WIN-OD2JJLP2EBU\\SERVER2,1435"; // IP-адрес сервера
         public static string Old_ConnectionString = "Server=" + ip_2 + ";Database=ChemicalLaboratory;TrustServerCertificate=True;User Id=test;Password=#root42;"; //User Id=Server #root42_
 
@@ -81,9 +79,9 @@ namespace ChemicalLaboratory.Domain
                 IdWorkShedule = new WorkScheduleDataModel
                 {
                     idWorkSchedule = reader.GetInt32(12),
-                    WorkShift      = reader.GetString(13),
-                    StartTime      = reader.GetTimeSpan(14),
-                    EndTime        = reader.GetTimeSpan(15),
+                    WorkShift = reader.GetString(13),
+                    StartTime = reader.GetTimeSpan(14),
+                    EndTime = reader.GetTimeSpan(15),
                 }
             });
         }
@@ -94,36 +92,38 @@ namespace ChemicalLaboratory.Domain
             return ExecuteQuery(query, reader => new ReagentManufacturer
             {
                 // Reagent
-                Reagent = new ReagentDataModel { 
-                    idReagent       = ColumnExists(reader, "idReagent")       ? Convert.ToInt32(reader["idReagent"])         : 0,
-                    Dansity         = ColumnExists(reader, "Dansity")         ? Convert.ToDecimal(reader["Dansity"])         : 0,
-                    Name            = ColumnExists(reader, "ReagentName")     ? Convert.ToString (reader["ReagentName"])     : "",
-                    ChemicalFormula = ColumnExists(reader, "ChemicalFormula") ? Convert.ToString (reader["ChemicalFormula"]) : "",
-                    Mass            = ColumnExists(reader, "mass")            ? Convert.ToDecimal(reader["mass"])            : 0,
+                Reagent = new ReagentDataModel
+                {
+                    idReagent = ColumnExists(reader, "idReagent") ? Convert.ToInt32(reader["idReagent"]) : 0,
+                    Dansity = ColumnExists(reader, "Dansity") ? Convert.ToDecimal(reader["Dansity"]) : 0,
+                    Name = ColumnExists(reader, "ReagentName") ? Convert.ToString(reader["ReagentName"]) : "",
+                    ChemicalFormula = ColumnExists(reader, "ChemicalFormula") ? Convert.ToString(reader["ChemicalFormula"]) : "",
+                    Mass = ColumnExists(reader, "mass") ? Convert.ToDecimal(reader["mass"]) : 0,
                 },
 
                 // Reagent & Manufacture
-                idReagManuf          = ColumnExists(reader, "IdReagManuf")       ? Convert.ToInt32   (reader["IdReagManuf"])           : 0,
-                DateOfManufacture    = ColumnExists(reader, "DateOfManufacture") ? Convert.ToDateTime(reader["DateOfManufacture"])     : DateTime.MinValue,
-                series               = ColumnExists(reader, "series")            ? Convert.ToString  (reader["series"])                : "",
-                PurityClassification = ColumnExists(reader, "Classification")    ? Convert.ToString  (reader["Classification"])        : "",
-                PurityDegree         = ColumnExists(reader, "PurityDegree")      ? Convert.ToDecimal (reader["PurityDegree"])          : 0,
+                idReagManuf = ColumnExists(reader, "IdReagManuf") ? Convert.ToInt32(reader["IdReagManuf"]) : 0,
+                DateOfManufacture = ColumnExists(reader, "DateOfManufacture") ? Convert.ToDateTime(reader["DateOfManufacture"]) : DateTime.MinValue,
+                series = ColumnExists(reader, "series") ? Convert.ToString(reader["series"]) : "",
+                PurityClassification = ColumnExists(reader, "Classification") ? Convert.ToString(reader["Classification"]) : "",
+                PurityDegree = ColumnExists(reader, "PurityDegree") ? Convert.ToDecimal(reader["PurityDegree"]) : 0,
 
                 Manufacturer = new RManufacturerDataModel
                 {
-                    idRManufacturerDataModel = ColumnExists(reader, "IdManufacturer")   ? Convert.ToInt32 (reader["IdManufacturer"])   : 0,
-                    Name                     = ColumnExists(reader, "ManufactureName")  ? Convert.ToString(reader["ManufactureName"])  : "",
-                    Email                    = ColumnExists(reader, "ManufactureEmail") ? Convert.ToString(reader["ManufactureEmail"]) : "",
-                    Address                  = ColumnExists(reader, "address")          ? Convert.ToString(reader["address"])          : "",
-                    City                     = ColumnExists(reader, "City")             ? Convert.ToString(reader["City"])             : "",
-                    Country                  = ColumnExists(reader, "country")          ? Convert.ToString(reader["country"])          : "",
+                    idRManufacturerDataModel = ColumnExists(reader, "IdManufacturer") ? Convert.ToInt32(reader["IdManufacturer"]) : 0,
+                    Name = ColumnExists(reader, "ManufactureName") ? Convert.ToString(reader["ManufactureName"]) : "",
+                    Email = ColumnExists(reader, "ManufactureEmail") ? Convert.ToString(reader["ManufactureEmail"]) : "",
+                    Address = ColumnExists(reader, "address") ? Convert.ToString(reader["address"]) : "",
+                    City = ColumnExists(reader, "City") ? Convert.ToString(reader["City"]) : "",
+                    Country = ColumnExists(reader, "country") ? Convert.ToString(reader["country"]) : "",
                 },
 
-                Supplier = new SupplierDataModel { 
-                    idSupplier               = ColumnExists(reader, "idSupplier")    ? Convert.ToInt32(reader["idSupplier"])     : 0,
-                    Name                     = ColumnExists(reader, "SupplierName")  ? Convert.ToString(reader["SupplierName"])  : "",
-                    email                    = ColumnExists(reader, "SupplierEmail") ? Convert.ToString(reader["SupplierEmail"]) : "",
-                    PhoneNumber              = ColumnExists(reader, "PhoneNumber")   ? Convert.ToString(reader["PhoneNumber"])   : "",
+                Supplier = new SupplierDataModel
+                {
+                    idSupplier = ColumnExists(reader, "idSupplier") ? Convert.ToInt32(reader["idSupplier"]) : 0,
+                    Name = ColumnExists(reader, "SupplierName") ? Convert.ToString(reader["SupplierName"]) : "",
+                    email = ColumnExists(reader, "SupplierEmail") ? Convert.ToString(reader["SupplierEmail"]) : "",
+                    PhoneNumber = ColumnExists(reader, "PhoneNumber") ? Convert.ToString(reader["PhoneNumber"]) : "",
                 }
             });
         }
@@ -131,8 +131,9 @@ namespace ChemicalLaboratory.Domain
         public static List<EquipmentManufacturer> GetDataFromEquipmentSchema(string query)
         {
             //string query = "SELECT * FROM ReagentSchema.Reagent";
-            return ExecuteQuery(query, reader => new EquipmentManufacturer { 
-            
+            return ExecuteQuery(query, reader => new EquipmentManufacturer
+            {
+
                 idEquipmentManufacturer = ColumnExists(reader, "idEquipmentManufacturer") ? Convert.ToInt32(reader["idEquipmentManufacturer"]) : 0,
                 PurchaseDate = ColumnExists(reader, "PurchaseDate") && reader["PurchaseDate"] != DBNull.Value
                                                                     ? DateOnly.FromDateTime(Convert.ToDateTime(reader["PurchaseDate"]))
@@ -145,75 +146,75 @@ namespace ChemicalLaboratory.Domain
                 Equipment = new EquipmentDataModel
                 {
                     idEquipment = ColumnExists(reader, "idEquipment") ? Convert.ToInt32(reader["idEquipment"]) : 0,
-                    Name        = ColumnExists(reader, "Name") ? Convert.ToString(reader["Name"]) : "",
+                    Name = ColumnExists(reader, "Name") ? Convert.ToString(reader["Name"]) : "",
                     Description = ColumnExists(reader, "Description") ? Convert.ToString(reader["Description"]) : "",
-                    Kind        = ColumnExists(reader, "kind") ? Convert.ToString(reader["kind"]) : "",
-                    Model       = ColumnExists(reader, "Model") ? Convert.ToString(reader["Model"]) : "",
-                    Status      = ColumnExists(reader, "Status") ? Convert.ToString(reader["Status"]) : "",
+                    Kind = ColumnExists(reader, "kind") ? Convert.ToString(reader["kind"]) : "",
+                    Model = ColumnExists(reader, "Model") ? Convert.ToString(reader["Model"]) : "",
+                    Status = ColumnExists(reader, "Status") ? Convert.ToString(reader["Status"]) : "",
                 },
 
                 Manufacturer = new EManufacturerDataModel
                 {
                     idManufacturer = ColumnExists(reader, "idManufacturer") ? Convert.ToInt32(reader["idManufacturer"]) : 0,
-                    Address        = ColumnExists(reader, "address") ? Convert.ToString(reader["address"]) : "",
-                    City           = ColumnExists(reader, "City") ? Convert.ToString(reader["City"]) : "",
-                    Country        = ColumnExists(reader, "Country") ? Convert.ToString(reader["Country"]) : "",
-                    email          = ColumnExists(reader, "email") ? Convert.ToString(reader["email"]) : "",
-                    PhoneNumber    = ColumnExists(reader, "PhoneNumber") ? Convert.ToString(reader["PhoneNumber"]) : "",
+                    Address = ColumnExists(reader, "address") ? Convert.ToString(reader["address"]) : "",
+                    City = ColumnExists(reader, "City") ? Convert.ToString(reader["City"]) : "",
+                    Country = ColumnExists(reader, "Country") ? Convert.ToString(reader["Country"]) : "",
+                    email = ColumnExists(reader, "email") ? Convert.ToString(reader["email"]) : "",
+                    PhoneNumber = ColumnExists(reader, "PhoneNumber") ? Convert.ToString(reader["PhoneNumber"]) : "",
                 }
             });
         }
 
-		public static List<EquipmentManufacturer> GetDataFromExperimentSchema(string query)
-		{
-			//string query = "SELECT * FROM ReagentSchema.Reagent";
-			return ExecuteQuery(query, reader => new EquipmentManufacturer
-			{
+        public static List<EquipmentManufacturer> GetDataFromExperimentSchema(string query)
+        {
+            //string query = "SELECT * FROM ReagentSchema.Reagent";
+            return ExecuteQuery(query, reader => new EquipmentManufacturer
+            {
 
-				idEquipmentManufacturer = ColumnExists(reader, "idEquipmentManufacturer") ? Convert.ToInt32(reader["idEquipmentManufacturer"]) : 0,
-				PurchaseDate = ColumnExists(reader, "PurchaseDate") && reader["PurchaseDate"] != DBNull.Value
-																	? DateOnly.FromDateTime(Convert.ToDateTime(reader["PurchaseDate"]))
-																	: default,
+                idEquipmentManufacturer = ColumnExists(reader, "idEquipmentManufacturer") ? Convert.ToInt32(reader["idEquipmentManufacturer"]) : 0,
+                PurchaseDate = ColumnExists(reader, "PurchaseDate") && reader["PurchaseDate"] != DBNull.Value
+                                                                    ? DateOnly.FromDateTime(Convert.ToDateTime(reader["PurchaseDate"]))
+                                                                    : default,
 
-				GuaranteeDate = ColumnExists(reader, "GuaranteeDate") && reader["GuaranteeDate"] != DBNull.Value
-																	? DateOnly.FromDateTime(Convert.ToDateTime(reader["GuaranteeDate"]))
-																	: default,
+                GuaranteeDate = ColumnExists(reader, "GuaranteeDate") && reader["GuaranteeDate"] != DBNull.Value
+                                                                    ? DateOnly.FromDateTime(Convert.ToDateTime(reader["GuaranteeDate"]))
+                                                                    : default,
 
-				Equipment = new EquipmentDataModel
-				{
-					idEquipment = ColumnExists(reader, "idEquipment") ? Convert.ToInt32(reader["idEquipment"]) : 0,
-					Name = ColumnExists(reader, "Name") ? Convert.ToString(reader["Name"]) : "",
-					Description = ColumnExists(reader, "Description") ? Convert.ToString(reader["Description"]) : "",
-					Kind = ColumnExists(reader, "kind") ? Convert.ToString(reader["kind"]) : "",
-					Model = ColumnExists(reader, "Model") ? Convert.ToString(reader["Model"]) : "",
-					Status = ColumnExists(reader, "Status") ? Convert.ToString(reader["Status"]) : "",
-				},
+                Equipment = new EquipmentDataModel
+                {
+                    idEquipment = ColumnExists(reader, "idEquipment") ? Convert.ToInt32(reader["idEquipment"]) : 0,
+                    Name = ColumnExists(reader, "Name") ? Convert.ToString(reader["Name"]) : "",
+                    Description = ColumnExists(reader, "Description") ? Convert.ToString(reader["Description"]) : "",
+                    Kind = ColumnExists(reader, "kind") ? Convert.ToString(reader["kind"]) : "",
+                    Model = ColumnExists(reader, "Model") ? Convert.ToString(reader["Model"]) : "",
+                    Status = ColumnExists(reader, "Status") ? Convert.ToString(reader["Status"]) : "",
+                },
 
-				Manufacturer = new EManufacturerDataModel
-				{
-					idManufacturer = ColumnExists(reader, "idManufacturer") ? Convert.ToInt32(reader["idManufacturer"]) : 0,
-					Address = ColumnExists(reader, "address") ? Convert.ToString(reader["address"]) : "",
-					City = ColumnExists(reader, "City") ? Convert.ToString(reader["City"]) : "",
-					Country = ColumnExists(reader, "Country") ? Convert.ToString(reader["Country"]) : "",
-					email = ColumnExists(reader, "email") ? Convert.ToString(reader["email"]) : "",
-					PhoneNumber = ColumnExists(reader, "PhoneNumber") ? Convert.ToString(reader["PhoneNumber"]) : "",
-				}
-			});
-		}
+                Manufacturer = new EManufacturerDataModel
+                {
+                    idManufacturer = ColumnExists(reader, "idManufacturer") ? Convert.ToInt32(reader["idManufacturer"]) : 0,
+                    Address = ColumnExists(reader, "address") ? Convert.ToString(reader["address"]) : "",
+                    City = ColumnExists(reader, "City") ? Convert.ToString(reader["City"]) : "",
+                    Country = ColumnExists(reader, "Country") ? Convert.ToString(reader["Country"]) : "",
+                    email = ColumnExists(reader, "email") ? Convert.ToString(reader["email"]) : "",
+                    PhoneNumber = ColumnExists(reader, "PhoneNumber") ? Convert.ToString(reader["PhoneNumber"]) : "",
+                }
+            });
+        }
 
-		public static List<ExperimentDataModel> GetExperiments() // переделается
+        public static List<ExperimentDataModel> GetExperiments() // переделается
         {
             string query = "select * from ExperimentSchema.Experiment";
             return ExecuteQuery(query, reader => new ExperimentDataModel
             {
                 idExperiment = reader.GetInt32(0),
                 Name = reader.GetString(1),
-                Description =  reader.GetString(2),
+                Description = reader.GetString(2),
                 StartDate = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
                 EndDate = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
                 Result = reader.IsDBNull(5) ? null : reader.GetString(5),
                 Status = reader.GetString(6)
-            }); 
+            });
         }
 
         // По сути можно просто иметь метод Get2FieldOption и передовать туда sql запрос
@@ -227,7 +228,7 @@ namespace ChemicalLaboratory.Domain
             });
         }
 
-        public static void DeleteRecord(string query, int id) 
+        public static void DeleteRecord(string query, int id)
         {
             using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
             {
@@ -247,7 +248,7 @@ namespace ChemicalLaboratory.Domain
             }
         }
 
-        public async static /*void*/ Task UpdateReagentRecord(ReagentDataModel reagentDataModel) 
+        public async static /*void*/ Task UpdateReagentRecord(ReagentDataModel reagentDataModel)
         {
             const string query = "UPDATE ReagentSchema.Reagent\r\n" +
                                     "SET \r\n" +
@@ -292,17 +293,17 @@ namespace ChemicalLaboratory.Domain
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@FirstName",      reagentDataModel.FirstName);
-                    command.Parameters.AddWithValue("@MiddleName",     reagentDataModel.MiddleName);
-                    command.Parameters.AddWithValue("@LastName",       reagentDataModel.LastName);
-                    command.Parameters.AddWithValue("@Sex",            reagentDataModel.Sex);
-                    command.Parameters.AddWithValue("@Email",          reagentDataModel.Email);
-                    command.Parameters.AddWithValue("@JobPosition",    reagentDataModel.JobPosition);
-                    command.Parameters.AddWithValue("@idWorkSchedule", reagentDataModel.WorkShift);
-                    command.Parameters.AddWithValue("@SystemRole",     reagentDataModel.SystemRole);
-                    command.Parameters.AddWithValue("@Login",          reagentDataModel.Login);
+                    command.Parameters.AddWithValue("@FirstName", reagentDataModel.FirstName);
+                    command.Parameters.AddWithValue("@MiddleName", reagentDataModel.MiddleName);
+                    command.Parameters.AddWithValue("@LastName", reagentDataModel.LastName);
+                    command.Parameters.AddWithValue("@Sex", reagentDataModel.Sex);
+                    command.Parameters.AddWithValue("@Email", reagentDataModel.Email);
+                    command.Parameters.AddWithValue("@JobPosition", reagentDataModel.JobPosition);
+                    command.Parameters.AddWithValue("@idWorkSchedule", reagentDataModel.WorkSchedule);
+                    command.Parameters.AddWithValue("@SystemRole", reagentDataModel.SystemRole);
+                    command.Parameters.AddWithValue("@Login", reagentDataModel.Login);
                     //command.Parameters.AddWithValue("@PasswordHash",   reagentDataModel.PasswordHash);
-                    command.Parameters.AddWithValue("@IdPeople",       reagentDataModel.IdPeople);
+                    command.Parameters.AddWithValue("@IdPeople", reagentDataModel.IdPeople);
 
                     try
                     {
@@ -322,98 +323,98 @@ namespace ChemicalLaboratory.Domain
         {
 
             const string queryEquipment = "UPDATE EquipmentSchema.Equipment\r\nSET     \r\nName = @Name,  \r\nDescription = @Description,  \r\nModel = @Model,  \r\nkind = @kind,     \r\nStatus = @Status\r\nWHERE idEquipment = @idEquipment; "; // Убедитесь, что имя таблицы и столбца соответствуют вашей схеме
-            const string queryManufacture = "UPDATE EquipmentSchema.Manufacturer\r\nSET     \r\nemail = @email,    \r\nPhoneNumber = @PhoneNumber,  \r\naddress = @address,     \r\nCity = @City,\r\nCountry = @Country\r\nWHERE idManufacturer = @idManufacturer;"; 
-            const string queryEquipmentManufacture = "UPDATE ese\r\nSET     \r\nName = @Name,   \r\nModel = @Model, \r\nDescription = @Description,\r\nkind = @kind,     \r\nStatus = @Status\r\nfrom EquipmentSchema.Equipment ese\r\njoin EquipmentSchema.EquipmentManufacturer esem on ese.idEquipment = esem.idEquipment\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;\r\n\r\nUPDATE esm\r\nSET     \r\nemail = @email,    \r\nPhoneNumber = @PhoneNumber,  \r\naddress = @address,     \r\nCity = @City,\r\nCountry = @Country\r\nfrom EquipmentSchema.Manufacturer esm \r\njoin EquipmentSchema.EquipmentManufacturer esem on esm.idManufacturer = esem.idManufacturer\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;\r\n\r\nUpdate esem\r\nset \r\n\tPurchaseDate = @PurchaseDate,\r\n\tGuaranteeDate = @GuaranteeDate\r\nfrom EquipmentSchema.EquipmentManufacturer esem\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;"; 
+            const string queryManufacture = "UPDATE EquipmentSchema.Manufacturer\r\nSET     \r\nemail = @email,    \r\nPhoneNumber = @PhoneNumber,  \r\naddress = @address,     \r\nCity = @City,\r\nCountry = @Country\r\nWHERE idManufacturer = @idManufacturer;";
+            const string queryEquipmentManufacture = "UPDATE ese\r\nSET     \r\nName = @Name,   \r\nModel = @Model, \r\nDescription = @Description,\r\nkind = @kind,     \r\nStatus = @Status\r\nfrom EquipmentSchema.Equipment ese\r\njoin EquipmentSchema.EquipmentManufacturer esem on ese.idEquipment = esem.idEquipment\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;\r\n\r\nUPDATE esm\r\nSET     \r\nemail = @email,    \r\nPhoneNumber = @PhoneNumber,  \r\naddress = @address,     \r\nCity = @City,\r\nCountry = @Country\r\nfrom EquipmentSchema.Manufacturer esm \r\njoin EquipmentSchema.EquipmentManufacturer esem on esm.idManufacturer = esem.idManufacturer\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;\r\n\r\nUpdate esem\r\nset \r\n\tPurchaseDate = @PurchaseDate,\r\n\tGuaranteeDate = @GuaranteeDate\r\nfrom EquipmentSchema.EquipmentManufacturer esem\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;";
 
             using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
             {
 
-                switch (mode) 
+                switch (mode)
                 {
                     case 1:
-                    {
-                        using (SqlCommand command = new SqlCommand(queryEquipment, connection))
                         {
-                            command.Parameters.AddWithValue("@Name", reagentDataModel.Name);
-                            command.Parameters.AddWithValue("@Model", reagentDataModel.Model);
-                            command.Parameters.AddWithValue("@Description", reagentDataModel.Description);
-                            command.Parameters.AddWithValue("@kind", reagentDataModel.Kind);
-                            command.Parameters.AddWithValue("@Status", reagentDataModel.Status);
-                            command.Parameters.AddWithValue("@idEquipment", reagentDataModel.Id);
+                            using (SqlCommand command = new SqlCommand(queryEquipment, connection))
+                            {
+                                command.Parameters.AddWithValue("@Name", reagentDataModel.Name);
+                                command.Parameters.AddWithValue("@Model", reagentDataModel.Model);
+                                command.Parameters.AddWithValue("@Description", reagentDataModel.Description);
+                                command.Parameters.AddWithValue("@kind", reagentDataModel.Kind);
+                                command.Parameters.AddWithValue("@Status", reagentDataModel.Status);
+                                command.Parameters.AddWithValue("@idEquipment", reagentDataModel.Id);
 
-                            try
-                            {
-                                await connection.OpenAsync();
-                                int rowsAffected = await command.ExecuteNonQueryAsync();
+                                try
+                                {
+                                    await connection.OpenAsync();
+                                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                                }
+                                catch //(Exception ex)
+                                {
+                                    // Обработка ошибок (можно добавить логирование)
+                                }
                             }
-                            catch //(Exception ex)
-                            {
-                                // Обработка ошибок (можно добавить логирование)
-                            }
+
+                            break;
                         }
-
-                        break;
-                    }
 
                     case 2:
-                    {
-                        using (SqlCommand command = new SqlCommand(queryManufacture, connection))
                         {
-                            command.Parameters.AddWithValue("@email", reagentDataModel.Email);
-                            command.Parameters.AddWithValue("@PhoneNumber", reagentDataModel.PhoneNumber);
-                            command.Parameters.AddWithValue("@address", reagentDataModel.Address);
-                            command.Parameters.AddWithValue("@City", reagentDataModel.City);
-                            command.Parameters.AddWithValue("@Country", reagentDataModel.Country);
-                            command.Parameters.AddWithValue("@idManufacturer", reagentDataModel.Id);
+                            using (SqlCommand command = new SqlCommand(queryManufacture, connection))
+                            {
+                                command.Parameters.AddWithValue("@email", reagentDataModel.Email);
+                                command.Parameters.AddWithValue("@PhoneNumber", reagentDataModel.PhoneNumber);
+                                command.Parameters.AddWithValue("@address", reagentDataModel.Address);
+                                command.Parameters.AddWithValue("@City", reagentDataModel.City);
+                                command.Parameters.AddWithValue("@Country", reagentDataModel.Country);
+                                command.Parameters.AddWithValue("@idManufacturer", reagentDataModel.Id);
 
-                            try
-                            {
-                                await connection.OpenAsync();
-                                int rowsAffected = await command.ExecuteNonQueryAsync();
+                                try
+                                {
+                                    await connection.OpenAsync();
+                                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                                }
+                                catch //(Exception ex)
+                                {
+                                    // Обработка ошибок (можно добавить логирование)
+                                }
                             }
-                            catch //(Exception ex)
-                            {
-                                // Обработка ошибок (можно добавить логирование)
-                            }
+
+                            break;
                         }
 
-                        break; 
-                    }
-
-                    case 3: 
-                    {
-                        
-                        var purchaseDate = DateOnly.Parse(reagentDataModel.PurchaseDate);
-                        var guaranteeDate = DateOnly.Parse(reagentDataModel.GuaranteeDate);
-
-                        using (SqlCommand command = new SqlCommand(queryEquipmentManufacture, connection))
+                    case 3:
                         {
-                            command.Parameters.AddWithValue("@Name", reagentDataModel.Name);
-                            command.Parameters.AddWithValue("@Model", reagentDataModel.Model);
-                            command.Parameters.AddWithValue("@Description", reagentDataModel.Description);
-                            command.Parameters.AddWithValue("@kind", reagentDataModel.Kind);
-                            command.Parameters.AddWithValue("@Status", reagentDataModel.Status);
-                            command.Parameters.AddWithValue("@email", reagentDataModel.Email);
-                            command.Parameters.AddWithValue("@PhoneNumber", reagentDataModel.PhoneNumber);
-                            command.Parameters.AddWithValue("@address", reagentDataModel.Address);
-                            command.Parameters.AddWithValue("@City", reagentDataModel.City);
-                            command.Parameters.AddWithValue("@Country", reagentDataModel.Country);
-                            command.Parameters.AddWithValue("@PurchaseDate", reagentDataModel.PurchaseDate);
-                            command.Parameters.AddWithValue("@GuaranteeDate", reagentDataModel.GuaranteeDate);
-                            command.Parameters.AddWithValue("@idEquipmentManufacturer", reagentDataModel.Id);
 
-                            try
+                            var purchaseDate = DateOnly.Parse(reagentDataModel.PurchaseDate);
+                            var guaranteeDate = DateOnly.Parse(reagentDataModel.GuaranteeDate);
+
+                            using (SqlCommand command = new SqlCommand(queryEquipmentManufacture, connection))
                             {
-                                await connection.OpenAsync();
-                                int rowsAffected = await command.ExecuteNonQueryAsync();
+                                command.Parameters.AddWithValue("@Name", reagentDataModel.Name);
+                                command.Parameters.AddWithValue("@Model", reagentDataModel.Model);
+                                command.Parameters.AddWithValue("@Description", reagentDataModel.Description);
+                                command.Parameters.AddWithValue("@kind", reagentDataModel.Kind);
+                                command.Parameters.AddWithValue("@Status", reagentDataModel.Status);
+                                command.Parameters.AddWithValue("@email", reagentDataModel.Email);
+                                command.Parameters.AddWithValue("@PhoneNumber", reagentDataModel.PhoneNumber);
+                                command.Parameters.AddWithValue("@address", reagentDataModel.Address);
+                                command.Parameters.AddWithValue("@City", reagentDataModel.City);
+                                command.Parameters.AddWithValue("@Country", reagentDataModel.Country);
+                                command.Parameters.AddWithValue("@PurchaseDate", reagentDataModel.PurchaseDate);
+                                command.Parameters.AddWithValue("@GuaranteeDate", reagentDataModel.GuaranteeDate);
+                                command.Parameters.AddWithValue("@idEquipmentManufacturer", reagentDataModel.Id);
+
+                                try
+                                {
+                                    await connection.OpenAsync();
+                                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                                }
+                                catch //(Exception ex)
+                                {
+                                    // Обработка ошибок (можно добавить логирование)
+                                }
                             }
-                            catch //(Exception ex)
-                            {
-                                // Обработка ошибок (можно добавить логирование)
-                            }
+                            break;
                         }
-                        break; 
-                    }
                 }
             }
         }
@@ -463,7 +464,7 @@ namespace ChemicalLaboratory.Domain
         //}
         public async static Task<bool> UpdateReagentExperimentRecord(UpdateReagent reagentDataModel, List<ReagentExperiment> Reagent)
         {
-            bool result = false; 
+            bool result = false;
 
             decimal mass = 0;
             var id = Reagent.FirstOrDefault(r => r.idReagentExperiment == reagentDataModel.idReagentExperiment);
@@ -471,7 +472,7 @@ namespace ChemicalLaboratory.Domain
 
             var idReagent = id?.idReagentDataModel.Reagent.idReagent;
 
-            const string selectQuery =  "select mass from ReagentSchema.Reagent\r\nwhere idReagent = @IdReagent and mass > @UseMass";
+            const string selectQuery = "select mass from ReagentSchema.Reagent\r\nwhere idReagent = @IdReagent and mass > @UseMass";
 
             using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
             {
@@ -538,7 +539,7 @@ namespace ChemicalLaboratory.Domain
 
             return result;
         }
-        public async static Task ReagentResidueCheck() 
+        public async static Task ReagentResidueCheck()
         {
             var lowStockReagents = new List<string>();
 
@@ -552,9 +553,9 @@ namespace ChemicalLaboratory.Domain
                 {
                     while (reader.Read())
                     {
-                        string? name            = ColumnExists(reader, "Name")            ? Convert.ToString(reader["Name"]) : "";
+                        string? name = ColumnExists(reader, "Name") ? Convert.ToString(reader["Name"]) : "";
                         string? ChemicalFormula = ColumnExists(reader, "ChemicalFormula") ? Convert.ToString(reader["ChemicalFormula"]) : "";
-                        decimal mass            = ColumnExists(reader, "mass")            ? Convert.ToDecimal(reader["mass"]) : 0;
+                        decimal mass = ColumnExists(reader, "mass") ? Convert.ToDecimal(reader["mass"]) : 0;
                         lowStockReagents.Add($"{name} {ChemicalFormula} ({mass} гр.)\n");
                     }
                 }
@@ -565,7 +566,7 @@ namespace ChemicalLaboratory.Domain
                 string subject = "⚠️ Низкий уровень реагентов";
                 string body = "Следующие реагенты требуют пополнения:\n\n" + string.Join("\n", lowStockReagents);
 
-                await SendMailToEmail( UserProfile.Instance(0).User.Email, subject, body);
+                await SendMailToEmail(UserProfile.Instance(0).User.Email, subject, body);
             }
         }
         public static void UpdatePeoplePassword(string Password, string Login, string Email)
@@ -594,35 +595,35 @@ namespace ChemicalLaboratory.Domain
         }
 
         public /*async*/ static void/*Task*/ UpdateExperiment(Experiment experiment)
-       {
+        {
             const string query = "update ExperimentSchema.Experiment " +
                 "set Name = @Name, Description = @Description, StartDate = @StartDate, EndDate = @EndDate, Result = @Result, status = @status " +
                 "where idExperiment = @idExperiment";
 
 
-		   using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
-           {
-               using (SqlCommand command = new SqlCommand(query, connection))
-               {
-                   command.Parameters.AddWithValue("@Name", experiment.Name);
-                   command.Parameters.AddWithValue("@Description", experiment.Description);
-                   command.Parameters.AddWithValue("@StartDate", experiment.StartDate);
-                   command.Parameters.AddWithValue("@EndDate", experiment.EndDate);
-                   command.Parameters.AddWithValue("@Result", experiment.Result);
-                   command.Parameters.AddWithValue("@status", experiment.Status);
-                   command.Parameters.AddWithValue("@idExperiment", experiment.Id);
-       
-                   try
-                   {
-                      connection.Open();
-                       int rowsAffected = command.ExecuteNonQuery();
-                   }
-                   catch //(Exception ex)
-                   {
-                       // Обработка ошибок (можно добавить логирование)
-                   }
-               }
-           }
-       }
+            using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Name", experiment.Name);
+                    command.Parameters.AddWithValue("@Description", experiment.Description);
+                    command.Parameters.AddWithValue("@StartDate", experiment.StartDate);
+                    command.Parameters.AddWithValue("@EndDate", experiment.EndDate);
+                    command.Parameters.AddWithValue("@Result", experiment.Result);
+                    command.Parameters.AddWithValue("@status", experiment.Status);
+                    command.Parameters.AddWithValue("@idExperiment", experiment.Id);
+
+                    try
+                    {
+                        connection.Open();
+                        int rowsAffected = command.ExecuteNonQuery();
+                    }
+                    catch //(Exception ex)
+                    {
+                        // Обработка ошибок (можно добавить логирование)
+                    }
+                }
+            }
+        }
     }
 }

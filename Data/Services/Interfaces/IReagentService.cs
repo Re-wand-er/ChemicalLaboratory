@@ -1,15 +1,13 @@
-﻿using EFCore.Entities;
-using EFCore.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EFCore.DTOs;
 
 namespace EFCore.Services
 {
-    internal interface IReagentService : IBaseService<Reagent>
+    internal interface IReagentService
     {
-
+        Task<List<ReagentDTO>> GetAllAsync();
+        Task AddRangeAsync(List<ReagentDTO> reagentDTOs);
+        Task<bool> UpdateAsync();
+        Task DeleteAsync(int id);
+        Task DeleteAsync(ReagentDTO reagent);
     }
 }

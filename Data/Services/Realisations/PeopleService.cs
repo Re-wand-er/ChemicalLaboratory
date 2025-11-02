@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EFCore.Services;
+﻿using EFCore.DTOs;
 using EFCore.Entities;
-using EFCore.DTOs;
-using ChemicalLaboratory.Models.NewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Services
 {
@@ -16,9 +10,41 @@ namespace EFCore.Services
 
         public PeopleService(DataBaseContext context) => _context = context;
 
-        public Task<PeopleDTO> AddAsync(PeopleDTO entity)
+        public Task AddAsync(PeopleDTO entity)
         {
             throw new NotImplementedException();
+        }
+
+        // нужен маппинг dto с entity
+        public async Task AddRangeAsync(List<PeopleDTO>? peopleDTOs)
+        {
+            if (peopleDTOs is null) throw new ArgumentNullException();
+
+            try
+            {
+                var peopleEntities = peopleDTOs.Select(dto => new People
+                {
+                    idPeople       = dto.IdPeople,
+                    FirstName      = dto.FirstName ?? string.Empty,
+                    MiddleName     = dto.MiddleName ?? string.Empty,
+                    LastName       = dto.LastName ?? string.Empty,
+                    Sex            = dto.Sex ?? throw new InvalidDataException(), 
+                    Email          = dto.Email ?? throw new InvalidOperationException("Email is required"),
+                    JobPosition    = dto.JobPosition,
+                    SystemRole     = dto.SystemRole,
+                    Login          = dto.Login ?? throw new InvalidOperationException("Login is required"),
+                    PasswordHash   = null, 
+                    idExperiment   = null,
+                    idWorkSchedule = dto.WorkSchedule?.idWorkSchedule ?? 0 
+                }).ToList();
+
+                await _context.Peoples.AddRangeAsync(peopleEntities);
+                await _context.SaveChangesAsync(); 
+            }
+            catch
+            {
+                throw new OperationCanceledException();
+            }
         }
 
         public async Task<bool> UpdateAsync(PeopleDTO updatedPeople)
@@ -30,15 +56,15 @@ namespace EFCore.Services
             try
             {
                 // Переделать
-                existing.FirstName   = updatedPeople.FirstName ?? "FirstName";
-                existing.MiddleName  = updatedPeople.MiddleName!;
-                existing.LastName    = updatedPeople.LastName!;
-                existing.Sex         = updatedPeople.Sex!;
-                existing.Email       = updatedPeople.Email!;
+                existing.FirstName = updatedPeople.FirstName ?? "FirstName";
+                existing.MiddleName = updatedPeople.MiddleName!;
+                existing.LastName = updatedPeople.LastName!;
+                existing.Sex = updatedPeople.Sex!;
+                existing.Email = updatedPeople.Email!;
                 existing.JobPosition = updatedPeople.JobPosition;
-                existing.SystemRole  = updatedPeople.SystemRole;
-                existing.Login       = updatedPeople.Login!;
-               
+                existing.SystemRole = updatedPeople.SystemRole;
+                existing.Login = updatedPeople.Login!;
+
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -48,19 +74,51 @@ namespace EFCore.Services
             }
         }
 
-        public Task<PeopleDTO> DeleteAsync(PeopleDTO entity)
+        public Task DeleteAsync(PeopleDTO entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PeopleDTO> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            People? people = await _context.Peoples.FirstOrDefaultAsync(p => p.idPeople == id);
+            if (people != null)
+            {
+                _context.Peoples.Remove(people);
+                // в идеале обработчик ошибок
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task<List<PeopleDTO>> GetAllAsync()
+        // маппинг вручную
+        public async Task<List<PeopleDTO>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var peopleList = await _context.Peoples
+                .AsNoTracking()
+                .Include(p => p.WorkSchedule)
+                .Select(p => new PeopleDTO
+                {
+                    IdPeople = p.idPeople,
+                    FirstName = p.FirstName,
+                    MiddleName = p.MiddleName,
+                    LastName = p.LastName,
+                    Sex = p.Sex,
+                    Email = p.Email,
+                    JobPosition = p.JobPosition,
+                    SystemRole = p.SystemRole,
+                    Login = p.Login,
+
+                    WorkSchedule = p.WorkSchedule != null ? new WorkScheduleDTO
+                    {
+                        idWorkSchedule = p.WorkSchedule.idWorkSchedule,
+                        WorkShift = p.WorkSchedule.WorkShift,
+                        StartTime = p.WorkSchedule.StartTime,
+                        EndTime = p.WorkSchedule.EndTime
+                    } : null
+                })
+                .ToListAsync();
+
+            return peopleList;
         }
 
         public Task<PeopleDTO> GetAllByIdAsync(int id)

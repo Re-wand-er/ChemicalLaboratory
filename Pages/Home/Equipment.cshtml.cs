@@ -1,11 +1,8 @@
+using ChemicalLaboratory.Domain;
+using ChemicalLaboratory.Models.Equipment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using ChemicalLaboratory.Domain;
-using Microsoft.Identity.Client;
-using ChemicalLaboratory.Models.Equipment;
-using ChemicalLaboratory.Models.People;
-using Microsoft.AspNetCore.Authorization;
-using ChemicalLaboratory.Models.Reagent;
 using System.ComponentModel.DataAnnotations;
 
 namespace ChemicalLaboratory.Pages.Home
@@ -13,7 +10,7 @@ namespace ChemicalLaboratory.Pages.Home
     [Authorize]
     public class EquipmentModel : PageModel
     {
-       // private readonly string _connectionString;
+        // private readonly string _connectionString;
         public List<EquipmentManufacturer>? EquipmentList { get; set; }
 
         [BindProperty(SupportsGet = true)]
@@ -44,12 +41,12 @@ namespace ChemicalLaboratory.Pages.Home
                 {
                     switch (ParamOfKind)
                     {
-                        case 1: SQLCommand.DeleteRecord("DELETE FROM EquipmentSchema.Equipment WHERE idEquipment = @Id", reagentId);break;
-                        case 2: SQLCommand.DeleteRecord("DELETE FROM EquipmentSchema.Manufacturer\r\nwhere idManufacturer = @Id", reagentId);break;
+                        case 1: SQLCommand.DeleteRecord("DELETE FROM EquipmentSchema.Equipment WHERE idEquipment = @Id", reagentId); break;
+                        case 2: SQLCommand.DeleteRecord("DELETE FROM EquipmentSchema.Manufacturer\r\nwhere idManufacturer = @Id", reagentId); break;
                         case 3: SQLCommand.DeleteRecord("DELETE FROM EquipmentSchema.Equipment ese\r\njoin EquipmentSchema.EquipmentManufacturer esem on ese.idEquipment = esem.idEquipment\r\njoin EquipmentSchema.Manufacturer esm on esem.idManufacturer = esm.idManufacturer\r\nwhere idEquipmentManufacturer = @Id", reagentId); break;
                         default: break;
                     }
-                    
+
                     SQLCommand.DeleteRecord("DELETE FROM ExperimentSchema.Experiment WHERE idExperiment = @Id", reagentId);
                 }
             }
@@ -57,10 +54,10 @@ namespace ChemicalLaboratory.Pages.Home
             EquipmentList = new List<EquipmentManufacturer>();
 
             // Лучше использовать switch 
-            if (isManufactureVisible) 
+            if (isManufactureVisible)
             {
                 ParamOfKind = 2;
-                EquipmentList = LoadItems("select * from EquipmentSchema.Manufacturer"); 
+                EquipmentList = LoadItems("select * from EquipmentSchema.Manufacturer");
             }
 
             if (isEquipmentVisible)
@@ -69,10 +66,10 @@ namespace ChemicalLaboratory.Pages.Home
                 EquipmentList = LoadItems("select * from EquipmentSchema.Equipment");
             }
 
-            if (isEquipmentVisible && isManufactureVisible) 
+            if (isEquipmentVisible && isManufactureVisible)
             {
                 ParamOfKind = 3;
-                EquipmentList = LoadItems("select * from EquipmentSchema.Equipment ese\r\njoin EquipmentSchema.EquipmentManufacturer esem on ese.idEquipment = esem.idEquipment\r\njoin EquipmentSchema.Manufacturer esm on esem.idManufacturer = esm.idManufacturer"); 
+                EquipmentList = LoadItems("select * from EquipmentSchema.Equipment ese\r\njoin EquipmentSchema.EquipmentManufacturer esem on ese.idEquipment = esem.idEquipment\r\njoin EquipmentSchema.Manufacturer esm on esem.idManufacturer = esm.idManufacturer");
             }
 
             ListOrder(OrderBy, Ascending);
@@ -179,14 +176,16 @@ namespace ChemicalLaboratory.Pages.Home
 
         private List<EquipmentManufacturer> LoadItems(string query)
         {
-            return SQLCommand.GetDataFromEquipmentSchema(query); 
+            return SQLCommand.GetDataFromEquipmentSchema(query);
         }
 
         public async Task<IActionResult> OnPost([FromBody] /*EquipmentManufacturer*/ Equipment updatedReagent)
         {
             switch (updatedReagent.ModeOfUpdate)
             {
-                case 1: case 2: case 3:
+                case 1:
+                case 2:
+                case 3:
                     {
                         await SQLCommand.UpdateEquipmentRecord(updatedReagent, updatedReagent.ModeOfUpdate);
                         return new JsonResult(new { success = true });
@@ -208,43 +207,43 @@ namespace ChemicalLaboratory.Pages.Home
 
                 case 2:
                     EquipmentList = SortList(EquipmentList, p => p.Equipment.Model, ascending);
-                    break;          
-                                    
-                case 3:             
+                    break;
+
+                case 3:
                     EquipmentList = SortList(EquipmentList, p => p.Equipment.Description, ascending);
-                    break;          
-                                    
-                case 4:             
+                    break;
+
+                case 4:
                     EquipmentList = SortList(EquipmentList, p => p.Equipment.Kind, ascending);
-                    break;         
-                                   
-                case 5:            
+                    break;
+
+                case 5:
                     EquipmentList = SortList(EquipmentList, p => p.Equipment.Status, ascending);
-                    break;          
-                                    
-                case 6:             
+                    break;
+
+                case 6:
                     EquipmentList = SortList(EquipmentList, p => p.Manufacturer.Address, ascending);
-                    break;         
-                                   
-                case 7:            
+                    break;
+
+                case 7:
                     EquipmentList = SortList(EquipmentList, p => p.Manufacturer.City, ascending);
-                    break;          
-                                    
-                case 8:             
+                    break;
+
+                case 8:
                     EquipmentList = SortList(EquipmentList, p => p.Manufacturer.Country, ascending);
-                    break;          
-                                    
-                case 9:             
+                    break;
+
+                case 9:
                     EquipmentList = SortList(EquipmentList, p => p.PurchaseDate, ascending);
-                    break;          
-                                    
-                case 10:            
+                    break;
+
+                case 10:
                     EquipmentList = SortList(EquipmentList, p => p.GuaranteeDate, ascending);
                     break;
 
                 default: break;
             }
-            
+
             return Page();
         }
 
@@ -255,9 +254,9 @@ namespace ChemicalLaboratory.Pages.Home
 
     }
 
-    public class Equipment 
+    public class Equipment
     {
-        public int     Id { get; set; }
+        public int Id { get; set; }
         public int ModeOfUpdate { get; set; }
         public string? Name { get; set; }
         public string? Model { get; set; }
@@ -270,7 +269,7 @@ namespace ChemicalLaboratory.Pages.Home
         @"^[^\s@]+@[^\s@]+\.[^\s@]+$",
         ErrorMessage = "Введите действительный адрес электронной почты.")]
         public string? Email { get; set; }
-        public string? PhoneNumber{ get; set; }
+        public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
         public string? Country { get; set; }

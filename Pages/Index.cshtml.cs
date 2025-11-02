@@ -1,4 +1,3 @@
-using ChemicalLaboratory.Models.People;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

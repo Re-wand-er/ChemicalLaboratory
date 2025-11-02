@@ -1,8 +1,8 @@
+using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Models.Equipment;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using ChemicalLaboratory.Domain;
 
 namespace ChemicalLaboratory.Pages.Add.Equipment
 {

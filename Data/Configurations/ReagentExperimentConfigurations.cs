@@ -1,17 +1,12 @@
 ﻿using EFCore.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EFCore.Configurations
 {
     internal class ReagentExperimentConfigurations : IEntityTypeConfiguration<ReagentExperiment>
     {
-        public void Configure(EntityTypeBuilder<ReagentExperiment> builder) 
+        public void Configure(EntityTypeBuilder<ReagentExperiment> builder)
         {
             builder.HasKey(re => re.idReagExpetiment);
             builder.ToTable("ReagentExperiment", schema: "dbo");

@@ -1,4 +1,4 @@
-﻿using ChemicalLaboratory.Models.NewModels;
+﻿using ChemicalLaboratory.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Domain
@@ -12,25 +12,25 @@ namespace ChemicalLaboratory.Domain
            : base(options)
         { }
 
-        public DbSet<Reagent> Reagents { get; set; }
-        public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<Manufacturer> Manufacturers { get; set; }
-        public DbSet<ReagentSupplier> ReagentSuppliers { get; set; }
-        public DbSet<Purity> Purities { get; set; }
-        public DbSet<ReagentManufacturer> ReagentManufacturers { get; set; }
+        public DbSet<ReagentViewModel> Reagents { get; set; }
+        public DbSet<SupplierViewModel> Suppliers { get; set; }
+        public DbSet<ManufacturerViewModel> Manufacturers { get; set; }
+        public DbSet<ReagentSupplierViewModel> ReagentSuppliers { get; set; }
+        public DbSet<PurityViewModel> Purities { get; set; }
+        public DbSet<ReagentManufacturerViewModel> ReagentManufacturers { get; set; }
 
-        public DbSet<Experiment> Experiments { get; set; }
-        public DbSet<ExperimentHistory> ExperimentHistories { get; set; }
+        public DbSet<ExperimentViewModel> Experiments { get; set; }
+        public DbSet<ExperimentHistoryViewModel> ExperimentHistories { get; set; }
 
-        public DbSet<Equipment> Equipments { get; set; }
-        public DbSet<EquipmentManufacturer> EquipmentManufacturers { get; set; }
-        public DbSet<EquipmentManufacturerCompany> EquipmentManufacturerCompanies { get; set; }
+        public DbSet<EquipmentViewModel> Equipments { get; set; }
+        public DbSet<EquipmentManufacturerViewModel> EquipmentManufacturers { get; set; }
+        public DbSet<EquipmentManufacturerCompanyViewModel> EquipmentManufacturerCompanies { get; set; }
 
-        public DbSet<WorkSchedule> WorkSchedules { get; set; }
-        public DbSet<People> People { get; set; }
+        //public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        public DbSet<PeopleViewModel> People { get; set; }
 
-        public DbSet<ReagentExperiment> ReagentExperiments { get; set; }
-        public DbSet<ExperimentEquipment> ExperimentEquipments { get; set; }
+        public DbSet<ReagentExperimentViewModel> ReagentExperiments { get; set; }
+        public DbSet<ExperimentEquipmentViewModel> ExperimentEquipments { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -41,7 +41,7 @@ namespace ChemicalLaboratory.Domain
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Reagent>().ToTable("Reagent", schema: "ReagentSchema");
+            modelBuilder.Entity<ReagentViewModel>().ToTable("Reagent", schema: "ReagentSchema");
 
             // Если Equipment или другая сущность не имеет ключа:
             // modelBuilder.Entity<Equipment>().HasNoKey();

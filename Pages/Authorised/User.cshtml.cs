@@ -1,28 +1,24 @@
-using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Models.People;
-using ChemicalLaboratory.Pages.Home;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
-using Microsoft.Identity.Client;
 using System.Security.Claims;
 
 namespace ChemicalLaboratory.Pages.Authorised
 {
-	[Authorize]
+    [Authorize]
     public class UserModel : PageModel
     {
-		[BindProperty]
-		public string Login	   { get; set; } = string.Empty;
-		[BindProperty]
-		public string Password { get; set; } = string.Empty;
+        [BindProperty]
+        public string Login { get; set; } = string.Empty;
+        [BindProperty]
+        public string Password { get; set; } = string.Empty;
 
-		public UserProfile? UserProfile { get; set; }
+        public UserProfile? UserProfile { get; set; }
 
         public IActionResult OnGet()
-        { 
+        {
             int myId = 0;
 
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -31,17 +27,17 @@ namespace ChemicalLaboratory.Pages.Authorised
                 myId = Id;
             }
             //myId = JsonRequest.Instance(0).id;
-			UserProfile = UserProfile.Instance(myId);
+            UserProfile = UserProfile.Instance(myId);
 
-			return Page();
-		}
+            return Page();
+        }
 
-		public async Task<IActionResult> OnPostLogOut()
-		{
-			await HttpContext.SignOutAsync();
-			//HttpContext.Session.Clear();
-			return RedirectToPage("/Home/Authorisation");
-		}
+        public async Task<IActionResult> OnPostLogOut()
+        {
+            await HttpContext.SignOutAsync();
+            //HttpContext.Session.Clear();
+            return RedirectToPage("/Home/Authorisation");
+        }
 
         private string GetCookie(string key)
         {

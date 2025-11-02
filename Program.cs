@@ -1,14 +1,9 @@
-using EFCore;
-using ChemicalLaboratory.Domain;
-using ChemicalLaboratory.Domain.ORM;
 using ChemicalLaboratory.Domain.UserServices;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using EFCore;
 using EFCore.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ChemicalLaboratory
@@ -21,18 +16,17 @@ namespace ChemicalLaboratory
 
             builder.Services.AddScoped<IUserService, UserService>();
 
-//------------------------------------------------------------------------------------------------------------
-            //builder.Services.AddDbContext<ORMSQLCommand>(options =>
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            //------------------------------------------------------------------------------------------------------------
 
-            builder.Services.AddDbContext<DataBaseContext>(options =>
+            builder.Services.AddDbContext<DataBaseContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IPeopleService, PeopleService>();
+            builder.Services.AddScoped<IExperimentService, ExperimentService>();
 
             //builder.Services.AddScoped(typeof(BaseRepository<>));
             //builder.Services.AddScoped<BaseRepository, ReagentRepository>();
-//------------------------------------------------------------------------------------------------------------
+            //------------------------------------------------------------------------------------------------------------
 
             builder.Services.AddRazorPages(options =>
             {
@@ -57,8 +51,8 @@ namespace ChemicalLaboratory
             //            });
 
             builder.Services.AddRazorPages();
-           
-           
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

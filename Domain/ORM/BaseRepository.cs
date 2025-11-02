@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ChemicalLaboratory.Domain;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ChemicalLaboratory.Domain.ORM
 {
@@ -9,7 +6,7 @@ namespace ChemicalLaboratory.Domain.ORM
     {
         protected readonly ORMSQLCommand _context;
         protected readonly DbSet<T> _dbSet;
-        public BaseRepository(ORMSQLCommand sqlCommand) 
+        public BaseRepository(ORMSQLCommand sqlCommand)
         {
             _context = sqlCommand;
             _dbSet = sqlCommand.Set<T>();

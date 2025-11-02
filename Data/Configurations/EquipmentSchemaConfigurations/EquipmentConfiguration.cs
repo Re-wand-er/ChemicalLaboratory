@@ -1,10 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using EFCore.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EFCore.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EFCore.Configurations
@@ -20,7 +15,7 @@ namespace EFCore.Configurations
             builder.Property(e => e.Model).HasDefaultStringConfig(100, isRequired: true);
             builder.Property(e => e.Description).HasDefaultStringConfigForNull(255);
             builder.Property(e => e.Kind).HasColumnName("kind").HasDefaultStringConfig(20, isRequired: true);
-            
+
             //check(Status in ('Используется', 'В ремонте', 'Неисправно', 'Свободно', 'Калибруется')),
             builder.Property(e => e.Status).HasDefaultStringConfigForNull(20);
         }

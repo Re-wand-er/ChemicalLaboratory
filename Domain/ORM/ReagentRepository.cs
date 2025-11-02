@@ -1,13 +1,13 @@
-﻿using ChemicalLaboratory.Models.NewModels;
+﻿using ChemicalLaboratory.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Domain.ORM
 {
-    public class ReagentRepository : BaseRepository<Reagent>
+    public class ReagentRepository : BaseRepository<ReagentViewModel>
     {
-        public ReagentRepository(ORMSQLCommand context)  : base(context) { }
+        public ReagentRepository(ORMSQLCommand context) : base(context) { }
 
-        public async Task<IEnumerable<Reagent>> GetReagent()
+        public async Task<IEnumerable<ReagentViewModel>> GetReagent()
         {
             //var reagents = await _context.Reagents.ToListAsync(); // await обязательно
 

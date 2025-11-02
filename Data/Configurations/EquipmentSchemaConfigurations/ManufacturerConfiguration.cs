@@ -1,17 +1,12 @@
 ﻿using EFCore.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EFCore.Configurations
 {
     internal class ManufacturerEquipConfiguration : IEntityTypeConfiguration<ManufacturerEquip>
     {
-        public void Configure(EntityTypeBuilder<ManufacturerEquip> builder) 
+        public void Configure(EntityTypeBuilder<ManufacturerEquip> builder)
         {
             builder.HasKey(me => me.idManufacturer);
             builder.ToTable("Manufacturer", schema: "EquipmentSchema");

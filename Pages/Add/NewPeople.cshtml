@@ -108,10 +108,10 @@
 <body>
 	<form method="post" asp-page-handler="Insert">
         <div class="toolbar">
-	    		<button onclick ="addRow()">Новая запись</button><!---->
+	    		<button onclick ="addRow()">Добавить новую запись</button><!---->
 		<!--</form><form method="post" >-->
             
-                <button type="submit">Добавить пользователя в базу данных</button>
+                <button type="submit">Добавить пользователей в базу данных</button>
 	    	
         </div>
 
@@ -157,7 +157,7 @@
                         </select>
                     </td>
                     <td>
-                        <select name="NewPeople[0].WorkShift" required>
+                        <select name="NewPeople[0].WorkSchedule.idWorkSchedule" required>
                             <option value=1>Утро</option>
                             <option value=2>Вечер</option>
                             <option value=3>Ночь</option>
@@ -170,7 +170,7 @@
                         </select>
                     </td>
                     <td><input type="text" name="NewPeople[0].Login" required></td>
-                    <td><input type="password" name="NewPeople[0].PasswordHash" required></td>
+                    <td><input type="password" name="NewPeople[0].PasswordHash"></td>
                     <td class="action-buttons">
 					<!--<button type="button" class="update">Обновить</button>-->
                         <button type="button" class="delete" onclick="deleteRow(this)">Удалить</button>

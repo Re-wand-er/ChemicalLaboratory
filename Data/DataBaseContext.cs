@@ -1,20 +1,14 @@
-﻿using EFCore.Entities;
-using EFCore.Configurations;
+﻿using EFCore.Configurations;
+using EFCore.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EFCore
 {
     internal class DataBaseContext : DbContext
     {
         //ReagentSchema
-        public DbSet<Reagent> Reagents { get; set; } 
-        public DbSet<Manufacturer> Manufacturer { get; set; }
+        public DbSet<Reagent> Reagents { get; set; }
+        public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Purity> Purities { get; set; }
         public DbSet<ReagentManufacturer> ReagentManufacturers { get; set; }
@@ -31,14 +25,6 @@ namespace EFCore
         //dbo
         public DbSet<ReagentExperiment> ReagentExperiments { get; set; }
         public DbSet<ExperimentEquipment> ExperimentEquipments { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = @"Server=localhost,1433;Database=ChemicalLaboratory;TrustServerCertificate=True;User Id=sa;Password=#Root42@oAsDf4;";
-            optionsBuilder.UseSqlServer(connectionString);
-            
-            base.OnConfiguring(optionsBuilder);
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,7 +51,7 @@ namespace EFCore
             modelBuilder.ApplyConfiguration(new ExperimentEquipmentConfigurations());
         }
 
-        public DataBaseContext() {Database.EnsureCreated();}
+        public DataBaseContext() { Database.EnsureCreated(); }
         public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options) { }
     }
 }

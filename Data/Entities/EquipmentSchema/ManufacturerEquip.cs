@@ -1,13 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EFCore.Entities
+﻿namespace EFCore.Entities
 {
     internal class ManufacturerEquip
     {

@@ -38,18 +38,18 @@ namespace ChemicalLaboratory.Domain.UserServices
                     if (reader.Read())
                     {
                         // Кроме логина да пароля вроде ничего и не надо
-                        user.IdPeople       = reader.GetInt32(0);
-                        user.idExperiment   = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
-                        user.idWorkShedule  = reader.GetInt32(2);
-                        user.FirstName      = reader.GetString(3);
-                        user.MiddleName     = reader.GetString(4);
-                        user.LastName       = reader.GetString(5);
-                        user.Email          = reader.GetString(6);
-                        user.Sex            = reader.GetString(7);
-                        user.SystemRole     = reader.GetString(8);
-                        user.JobPosition    = reader.GetString(9);
-                        user.Login          = reader.GetString(10);
-                        user.Password   = reader.GetString(11);
+                        user.IdPeople = reader.GetInt32(0);
+                        user.idExperiment = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
+                        user.idWorkShedule = reader.GetInt32(2);
+                        user.FirstName = reader.GetString(3);
+                        user.MiddleName = reader.GetString(4);
+                        user.LastName = reader.GetString(5);
+                        user.Email = reader.GetString(6);
+                        user.Sex = reader.GetString(7);
+                        user.SystemRole = reader.GetString(8);
+                        user.JobPosition = reader.GetString(9);
+                        user.Login = reader.GetString(10);
+                        user.Password = reader.GetString(11);
                     }
                     else
                     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EFCore.Entities
 {
@@ -12,7 +6,7 @@ namespace EFCore.Entities
     {
         [Key]
         public int IdReagManuf { get; set; }
-        public DateTime DateOfManufacture { get;set; }
+        public DateTime DateOfManufacture { get; set; }
         public string Series { get; set; } = null!;
         public decimal PurityDegree { get; set; }
 

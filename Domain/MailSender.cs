@@ -1,5 +1,5 @@
-﻿using System.Net.Mail;
-using System.Net;
+﻿using System.Net;
+using System.Net.Mail;
 
 namespace ChemicalLaboratory.Domain
 {
@@ -18,14 +18,14 @@ namespace ChemicalLaboratory.Domain
                 MailMessage mail = new MailMessage(from, to)
                 {
                     Subject = subject,
-                    Body = body 
+                    Body = body
                 };// Объект письма
 
                 mail.IsBodyHtml = true;
 
                 SmtpClient smtp_Client = new SmtpClient("smtp.gmail.com", 587)
                 {
-                    Credentials = new NetworkCredential("tekirinka42@gmail.com", "cwdwemmybjytsgij"), 
+                    Credentials = new NetworkCredential("tekirinka42@gmail.com", "cwdwemmybjytsgij"),
                     EnableSsl = true
                 };
 

@@ -1,13 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Domain.UserServices;
-using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
-using ChemicalLaboratory.Pages.Home;
-using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 
 namespace ChemicalLaboratory.Pages.Home
@@ -33,21 +30,21 @@ namespace ChemicalLaboratory.Pages.Home
         /*public PeopleDataModel People { get; set; } = new PeopleDataModel();*/
 
         private readonly IUserService _userService; // Создайте сервис для работы с пользователями
-        
+
         public AuthorisationModel(IUserService userService)
         {
             _userService = userService;
         }
-        
-        public void OnGet(){}
 
-		private bool IsValidPassword(string password)
-		{
-			var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$");
-			return regex.IsMatch(password);
-		}
+        public void OnGet() { }
 
-		public async Task<IActionResult> OnPostAuthorisationCheck() //OnPostAsync
+        private bool IsValidPassword(string password)
+        {
+            var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$");
+            return regex.IsMatch(password);
+        }
+
+        public async Task<IActionResult> OnPostAuthorisationCheck() //OnPostAsync
         {
 
             //if (!IsValidPassword(Password)) 
@@ -56,27 +53,27 @@ namespace ChemicalLaboratory.Pages.Home
             //    return Page(); 
             //}
 
-			if (Password == null) 
-            { 
+            if (Password == null)
+            {
                 ModelState.AddModelError(string.Empty, "Пароль не может быть пустым!");
                 ErrorMessage = "Пароль не может быть пустым!";
-                return Page(); 
+                return Page();
             }
-			// Проверка учетных данных
-			var user = _userService.ValidateUser(Login, Password);
+            // Проверка учетных данных
+            var user = _userService.ValidateUser(Login, Password);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Неверное имя пользователя или пароль.");
                 ErrorMessage = "Неверный логин или пароль!";
-				return Page();
+                return Page();
             }
 
             JsonRequest.InstanceFree();
-			JsonRequest.Instance(user.IdPeople);
+            JsonRequest.Instance(user.IdPeople);
 
 
-			// Создание Claims для пользователя
-			var claims = new List<Claim>
+            // Создание Claims для пользователя
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.IdPeople.ToString()),
                 new Claim(ClaimTypes.Name, user.Login),

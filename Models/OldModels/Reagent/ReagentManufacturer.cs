@@ -1,6 +1,4 @@
-﻿using ChemicalLaboratory.Models.Reagent;
-
-namespace ChemicalLaboratory.Models.Reagent
+﻿namespace ChemicalLaboratory.Models.Reagent
 {
     public class ReagentManufacturer
     {
@@ -15,6 +13,6 @@ namespace ChemicalLaboratory.Models.Reagent
         public string? series { get; set; } = string.Empty;
         public decimal PurityDegree { get; set; } = 0;//string.Empty;
 
-        
+
     }
 }
