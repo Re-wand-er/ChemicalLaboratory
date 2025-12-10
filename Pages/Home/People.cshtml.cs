@@ -1,6 +1,6 @@
 using ChemicalLaboratory.Models.ViewModels;
-using EFCore.DTOs;
-using EFCore.Services;
+using Domain.DTOs;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,9 +10,9 @@ namespace ChemicalLaboratory.Pages.Home
     [Authorize(Roles = "Администратор")]
     public class PeopleModel : PageModel
     {
-        private readonly IPeopleService _peopleService;
+        private readonly IPeopleRepository _peopleService;
 
-        public PeopleModel(IPeopleService peopleService)
+        public PeopleModel(IPeopleRepository peopleService)
         {
             _peopleService = peopleService;
         }

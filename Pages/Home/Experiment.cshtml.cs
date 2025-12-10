@@ -1,8 +1,8 @@
 using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Models.Experiment;
 using ChemicalLaboratory.Models.ViewModels;
-using EFCore.DTOs;
-using EFCore.Services;
+using Domain.DTOs;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,8 +12,8 @@ namespace ChemicalLaboratory.Pages.Home
     [Authorize]
     public class ExperimentModel : PageModel
     {
-        private readonly IExperimentService _experimentService;
-        public ExperimentModel(IExperimentService experimentService) { _experimentService = experimentService; }
+        private readonly IExperimentRepository _experimentService;
+        public ExperimentModel(IExperimentRepository experimentService) { _experimentService = experimentService; }
         [BindProperty]
         public List<ExperimentViewModel>? Experiments { get; set; }
 

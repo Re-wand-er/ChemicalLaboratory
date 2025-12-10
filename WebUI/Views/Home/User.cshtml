@@ -1,0 +1,351 @@
+﻿@page
+@model ChemicalLaboratory.Pages.Authorised.UserModel
+@{
+	Layout = "_Layout1";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет пользователя</title>
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        } */
+        .logout {
+            width: 100%; /* Полная ширина для контейнера */
+            height: 30px; /* Задайте нужную высоту */
+            display: flex; /* Используем flexbox для управления содержимым */
+            justify-content: flex-end; /* Центрирование кнопки по горизонтали */
+            align-items: center; /* Центрирование кнопки по вертикали */
+            background-color: #f0f0f0; /* Фон контейнера (по желанию) */
+            border: 1px solid #ccc; /* Граница контейнера (по желанию) */
+            border-radius: 4px; /* Радиус углов */
+            margin-top: auto;
+        }
+
+            .logout button {
+                width: 100%; /* Кнопка занимает всю ширину контейнера */
+                height: 100%; /* Кнопка занимает всю высоту контейнера */
+                background-color: #1877f2; /* Цвет фона кнопки */
+                color: white; /* Цвет текста */
+                border: none; /* Убираем стандартную рамку */
+                border-radius: inherit; /* Наследуем радиус углов от родителя */
+                font-size: 1rem; /* Размер шрифта */
+                cursor: pointer; /* Курсор "рука" при наведении */
+            }
+
+                .logout button:hover {
+                    background-color: #166fe5; /* Цвет фона при наведении */
+                }
+
+        .mycontainer {
+            max-width: 1500px;
+            margin: 20px auto;
+            display: flex;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .user-column {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .user-header {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .experiment-column {
+            flex: 2;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .user-info {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+            .user-info div {
+                font-size: 1rem;
+            }
+
+        .tabs {
+            margin-top: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+        }
+
+            .tab-buttons button {
+                flex: 1;
+                padding: 10px;
+                cursor: pointer;
+                background: #f9f9f9;
+                border: none;
+                outline: none;
+                border-right: 1px solid #ddd;
+                font-size: 1rem;
+            }
+
+                .tab-buttons button:last-child {
+                    border-right: none;
+                }
+
+                .tab-buttons button.active {
+                    background: #1877f2;
+                    color: white;
+                }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        .experiment-details div {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .experiment-details span {
+            font-weight: bold;
+        }
+        /* Начало отсюда*/
+        .experiment-column {
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .experiment-details {
+            margin-bottom: 20px;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-direction: column;
+            height: 300px; /* Вы можете настроить высоту контейнера, если необходимо */
+            justify-content: space-between;
+        }
+
+        .tabs {
+            margin-top: auto; /* Сдвигает вкладки в самый низ */
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .tab-btn {
+            padding: 10px;
+            cursor: pointer;
+            background: #f1f1f1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+            .tab-btn:hover {
+                background: #ddd;
+            }
+
+            .tab-btn.active {
+                background: #ccc;
+            }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f1f1;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="mycontainer">
+        <!-- Левая колонка с данными пользователя -->
+        <div class="user-column">
+            <div class="user-header"><h2>Личный кабинет, </h2>@Model.UserProfile.User.Login</div>
+            <div class="user-info">
+                <div><strong>Имя:           </strong> @Model.UserProfile.User.FirstName</div>
+                <div><strong>Фамилия:       </strong> @Model.UserProfile.User.MiddleName</div>
+				<div><strong>Отчество:      </strong> @Model.UserProfile.User.LastName</div>
+				<div><strong>Пол:           </strong> @Model.UserProfile.User.Sex</div>
+                <div><strong>Email:         </strong> @Model.UserProfile.User.Email</div>
+                <div><strong>Системная роль:</strong> @Model.UserProfile.User.SystemRole</div>
+                <div><strong>Должность:     </strong> @Model.UserProfile.User.JobPosition</div>
+                <div><strong>Рабочая смена: </strong> @Model.UserProfile.User.IdWorkShedule.WorkShift</div>
+                <div><strong>Начало работы: </strong> @Model.UserProfile.User.IdWorkShedule.StartTime</div>
+                <div><strong>Конец работы:  </strong> @Model.UserProfile.User.IdWorkShedule.EndTime</div>
+            </div>
+
+            <form method="post">
+                <div class="logout" >
+                    <button type="submit" asp-page-handler="LogOut">Выйти</button>
+                </div>
+			</form>
+        </div>
+
+        <!-- Правая колонка с экспериментом -->
+        <div class="experiment-column">
+            <h2>Информация об эксперименте</h2>
+            <div class="experiment-details">
+                <div><span>Название: </span> @Model.UserProfile.Experiment.Name</div>
+                <div><span>Описание: </span> @Model.UserProfile.Experiment.Description</div>
+                <div><span>Начало:   </span> @Model.UserProfile.Experiment.StartDate</div>
+                <div><span>Конец:    </span> @Model.UserProfile.Experiment.EndDate</div>
+                <div><span>Результат:</span> @Model.UserProfile.Experiment.Result</div>
+                <div><span>Статус:   </span> @Model.UserProfile.Experiment.Status</div>
+            </div>
+
+            <!-- Контейнер для табов (вкладок) и контента -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="showTab(0)">Оборудование</button>
+                        <button class="tab-btn" onclick="showTab(1)">Реагенты</button>
+                    </div>
+                </div>
+
+                <!-- Контент вкладок -->
+                <div class="tab-content active">
+                    <h3>Используемое оборудование</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Модель</th>
+                                <th>Описание</th>
+                                <th>Вид</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.UserProfile.Equipment)
+                            {
+                                @if (item.idEquipment != 0)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.Model</td>
+                                        <td>@item.Description</td>
+                                        <td>@item.Kind</td>
+                                        <td>@item.Status</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-content">
+                    <h3>Используемые реагенты</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Химическая формула</th>
+                                <th>Плотность</th>
+                                <th>Использованная масса</th>
+                                <th>Количество использованного реагента</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--Model.UserProfile.Reagent.idReagentDataModel.Reagent.Name - по моему что-то не так -->
+                            @foreach (var reagent in Model.UserProfile.Reagent)
+                            {
+                                @if (reagent.idReagentDataModel.Reagent.idReagent != 0)
+                                {
+                                    <tr>
+                                        <td>@reagent.idReagentDataModel.Reagent.Name</td>
+                                        <td>@reagent.idReagentDataModel.Reagent.ChemicalFormula</td>
+                                        <td>@reagent.idReagentDataModel.Reagent.Dansity</td>
+                                        <td>@reagent.Mass</td>
+                                        <td>@reagent.UseCount</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // function showTab(index) {
+        //     const tabs = document.querySelectorAll('.tab-content');
+        //     const buttons = document.querySelectorAll('.tab-btn');
+
+        //     tabs.forEach((tab, i) => {
+        //         tab.classList.toggle('active', i === index);
+        //     });
+        //     buttons.forEach((button, i) => {
+        //         button.classList.toggle('active', i === index);
+        //     });
+        // }
+
+        function showTab(index) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            // Скрыть все вкладки
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // Показать активную вкладку
+            tabs[index].classList.add('active');
+            buttons[index].classList.add('active');
+}
+
+    </script>
+</body>
+</html>

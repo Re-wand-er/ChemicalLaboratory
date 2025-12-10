@@ -42,7 +42,7 @@ namespace ChemicalLaboratory.Pages.Home
         [BindProperty]
         public Dictionary<int, ReagentDataModel> UpdatedItems { get; set; } = new();
 
-        public async /*IActionResult*/  void OnGet(string searchQuery)
+        public /*async IActionResult*/  void OnGet(string searchQuery)
         {
             string? sqlCommand = null;
             ReagentManufacturers = new List<ReagentManufacturer>();

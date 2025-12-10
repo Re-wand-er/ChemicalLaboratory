@@ -1,0 +1,200 @@
+﻿@model ChemicalLaboratory.WebUI.Models.AuthorisationModel
+@{
+    Layout = "_Layout1";
+}
+
+<style>
+     body, html {
+         margin: 0;
+         justify-content: center;
+         align-items: center;
+     }
+
+    .centered {
+        display: inline-flex; /* Используем inline-flex для сохранения первоначального размера элементов */
+        justify-content: center; /* Центрируем по горизонтали */
+        height: 100vh; /* Высота контейнера на всю высоту окна */
+        width: 100%; /* Ширина на 100% для центрирования */
+        height: auto;
+    }
+
+    .mycontainer {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 350px;
+        min-height: 300px; /* Добавляем минимальную высоту */
+        margin-top:50px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .error-message {
+        color: red; /* Красный цвет для текста ошибки */
+        font-size: 0.8rem; /* Увеличение размера шрифта */
+    }
+
+    .form-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .visible {
+        display: flex;
+    }
+
+    #login-form {
+        display: flex;
+        flex-direction: column;
+    }
+    #login-fields {
+        flex-direction: column;
+    }
+
+    #recovery-fields {
+
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 0.5rem;
+        color: #555;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .visible {
+        display: flex;
+    }
+    input {
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #1877f2;
+        color: white;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+
+        button:hover {
+            background-color: #166fe5;
+        }
+
+    .register-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+        .register-link a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+
+            .register-link a:hover {
+                text-decoration: underline;
+            }
+</style>
+@* <div class="centered">
+    <div class="mycontainer">
+        <h1>Авторизация</h1>
+        <form id="login-form" method="post">
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" asp-for="Login" required>
+
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" asp-for="Password" required>
+            <a  id="show-registration" href="#">Забыли пароль?</a>
+
+			<h3 class="error-message">@Model.ErrorMessage</h3>
+            <button type="submit" asp-page-handler="AuthorisationCheck">Войти</button>
+        </form>
+        <div class="register-link">
+            <a href="@Url.Page("/Home/Registration")" id="show-registration">Зарегистрироваться</a>
+        </div>
+    </div>
+</div> *@
+
+<div class="centered">
+    <div class="mycontainer">
+        <h1>Авторизация</h1>
+        <form id="login-form" method="post">
+            
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" asp-for="Login" required>
+
+			<div id="login-fields" class="visible">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" asp-for="Password" >
+
+                <a id="show-password-recovery" href="#">Восстановить пароль</a>
+
+                <button type="submit" asp-page-handler="AuthorisationCheck">Войти</button>
+            </div>
+
+            <div id="recovery-fields" class="hidden">
+                <label for="email">Почта:</label>
+                <input type="email" id="email" asp-for="Email" placeholder="Введите вашу почту" >
+                
+                <label for="NewPassword">Новый пароль:</label>
+                <input type="password" id="NewPassword" asp-for="NewPassword" placeholder="Введите ваш новый пароль" >
+
+                <button type="submit" id="send-code" asp-page-handler="MessageCode">Прислать код</button>
+
+                <label for="authCode">Код подтверждения:</label>
+                <input type="text" id="authCode" asp-for="Code" placeholder="Введите код" >
+
+                <a id="back-to-login" href="#">Вернуться к авторизации</a>
+
+                
+                <button type="submit" asp-page-handler="NewPassword">Сменить пароль</button>
+            </div>
+
+		</form>
+        
+        <h3 class="error-message">@Model.ErrorMessage</h3>
+
+        <div class="register-link">
+            <a href="@Url.Page("/Home/Registration")" id="show-registration">Зарегистрироваться</a>
+        </div>
+    </div>
+</div>
+<script>
+
+    document.getElementById('show-password-recovery').addEventListener('click', function (event) {
+        event.preventDefault();
+        document.getElementById('login-fields').classList.remove('visible');
+        document.getElementById('login-fields').classList.add('hidden');
+        document.getElementById('recovery-fields').classList.remove('hidden');
+        document.getElementById('recovery-fields').classList.add('visible');
+    });
+    
+    document.getElementById('back-to-login').addEventListener('click', function (event) {
+        event.preventDefault();
+        document.getElementById('recovery-fields').classList.remove('visible');
+        document.getElementById('recovery-fields').classList.add('hidden');
+        document.getElementById('login-fields').classList.remove('hidden');
+        document.getElementById('login-fields').classList.add('visible');
+    });
+
+
+</script>

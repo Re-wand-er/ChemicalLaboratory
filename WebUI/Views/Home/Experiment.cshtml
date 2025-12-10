@@ -1,0 +1,126 @@
+﻿@model ChemicalLaboratory.WebUI.Models.Experiments.ExperimentListViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Table</title>
+</head>
+
+<body>
+    <div class="toolbar">
+        <form method="get">
+            <div class="search-filters">
+                <input type="text" name="searchQuery" placeholder="Поиск..." value="@Model.UserControl.SearchQuery" />
+
+                <select asp-for="UserControl.FilterCategory">
+                    <option value=0>Все категории</option>
+                    <option value=1>Название эксперимента</option>
+                    <option value=2>Описание</option>
+                    <option value=3>Начало эксперимента</option>
+                    <option value=4>Конец эксперимента</option>
+                    <option value=5>Результат</option>
+                    <option value=6>Статус</option>
+                </select>
+
+                <select asp-for="UserControl.OrderBy">
+                    <option value=0>Сортировка отсутствует</option>
+                    <option value=1>Название эксперимента</option>
+                    <option value=2>Описание</option>
+                    <option value=3>Начало эксперимента</option>
+                    <option value=4>Конец эксперимента</option>
+                    <option value=5>Результат</option>
+                    <option value=6>Статус</option>
+                </select>
+
+                <select asp-for="UserControl.Ascending">
+                    <option value=true>По возрастанию</option>
+                    <option value=false>По убыванию</option>
+                </select>
+
+                <button type="submit">Применить</button>
+            </div>
+        </form>
+    </div>
+
+    <form method="get">
+        <table>
+            <tr>
+                <th>Название эксперимента</th>
+                <th>Описание</th>
+                <th>Начало эксперимента</th>
+                <th>Конец эксперимента</th>
+                <th>Результат</th>
+                <th>Статус</th>
+                @if (User.IsInRole("Администратор") || User.IsInRole("Пользователь"))
+                {
+                    <th class="sticky-column">Действия</th>
+                }
+            </tr>
+            @foreach (var product in Model.Experiments!)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.StartDate</td>
+                    <td>@product.EndDate</td>
+                    <td>@product.Result</td>
+                    <td>@product.Status</td>
+                    <!--Излишен один if-->
+                    @if (User.IsInRole("Администратор") || User.IsInRole("Пользователь"))
+                    {
+                        <td class="action-buttons">
+
+                            @if (User.IsInRole("Пользователь"))
+                            {
+                                <button type="submit" name="Update" class="update" value=@product.idExperiment>Просмотреть</button> <!--onclick="editRow(this)"-->
+                            }
+
+
+                            @if (User.IsInRole("Администратор"))
+                            {
+                                <!--<input type="number" id="recordId" name="id" required>-->
+                                <button type="submit" name="Update" class="update" value=@product.idExperiment>Изменить</button> <!--onclick="editRow(this)"-->
+                                <button type="submit" name="Delete" class="delete" value=@product.idExperiment>Удалить</button>
+
+                                <!---->
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </form>
+    <script>
+        function editRow(button) {
+
+            const idValue = button.value;
+
+            fetch('/Home/Experiment', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: idValue // передаем только id
+                })
+            })
+            .then(response => response.json()) // ожидаем JSON-ответ от сервера
+                .then(data => {
+                    // Логика после получения ответа от сервера
+                    if (data.success) {
+                        console.log('Эксперимент обновлен');
+                        // Возможно, обновить UI или перенаправить пользователя
+                    } else {
+                        console.error('Ошибка обновления эксперимента');
+                    }
+                })
+                .catch(error => {
+                    // Обработка ошибок сети
+                    console.error('Ошибка при запросе:', error);
+                });
+        }
+    </script>
+</body>
+</html>

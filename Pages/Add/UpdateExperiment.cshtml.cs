@@ -5,7 +5,7 @@ using ChemicalLaboratory.Models.Experiment;
 using ChemicalLaboratory.Models.Reagent;
 using ChemicalLaboratory.Models.ViewModels;
 using ChemicalLaboratory.Pages.Home;
-using EFCore.Services;
+using Infrastructure.Persistence.Repository;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using iText.Layout;
@@ -22,8 +22,8 @@ namespace ChemicalLaboratory.Pages.Add
 
     public class UpdateExperimentModel : PageModel
     {
-        private readonly IExperimentService _experimentService;
-        public UpdateExperimentModel(IExperimentService experimentService) { _experimentService = experimentService; }
+        private readonly IExperimentRepository _experimentService;
+        public UpdateExperimentModel(IExperimentRepository experimentService) { _experimentService = experimentService; }
 
         [BindProperty(SupportsGet = true)]
         public int ExperimentID { get; set; }

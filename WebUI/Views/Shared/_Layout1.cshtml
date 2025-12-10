@@ -1,0 +1,115 @@
+﻿
+<!DOCTYPE HTML>
+<html lang="ru">
+<head>
+    @* Title из базы данных *@
+    @if (ViewBag.Title != null)
+    {
+        <title>Химическая лаборатория</title>
+    }
+
+    @* Частичные представления для мета-тегов и стилей *@
+    @await Html.PartialAsync("MetaTags")
+    @await Html.PartialAsync("CssPartial")
+
+    <style>
+
+        /* Футер */
+        footer {
+            background-color: #007b9d;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 1000px; /* Фиксируем отступ от контента */
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2); /* Легкая тень */
+        }
+
+            footer a {
+                color: #f1f1f1;
+                text-decoration: none;
+            }
+
+                footer a:hover {
+                    color: #ffd700;
+                }
+
+       
+    </style>
+
+</head>
+<body>
+
+    <div id="page-wrapper">
+
+        <!-- Header -->
+        <!-- Можно попробовать разделить для возможность изменять логику -->
+         <div id="header-wrapper">
+             <div class="container">
+                 <div class="row">
+                     <div class="col-12">
+                         <header id="header">
+
+                              <h1>
+                                <a asp-controller="Home" asp-action="Index" id="logo">Химическая Лаборатория</a>@*href="@Url.Page("/Authorised/User")"*@
+                              </h1>
+
+                             <nav id="nav">
+								<!--<a href="Url.Page("/Index")">Главная</a>-->
+                                <a asp-controller="Experiment" asp-action="Index">Эксперименты</a>@*href="@Url.Page("/Home/Experiment")"*@
+                                <a asp-controller="Equipment" asp-action="Index">Оборудование</a>@*href="@Url.Page("/Home/Equipment")"*@
+                                <a asp-controller="People" asp-action="Index">Работники</a>@*href="@Url.Page("/Home/People")"*@
+                                <a asp-controller="Reagent" asp-action="Index">Реагенты</a> @*href="@Url.Page("/Home/Reagent")"*@
+                                <a asp-controller="Login" asp-action="Index">Личный кабинет</a>@*href="@Url.Page("/Authorised/User")"*@
+                             </nav>
+                         </header>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         @* @await Html.PartialAsync("Header"); *@
+
+        <!-- Main Content -->
+        <main>
+            @RenderBody()  
+        </main>
+
+        <!-- Footer -->
+		<!--<div class="content">
+			<!--class="min-h-screen flex flex-col"
+            <main class="flex-grow">
+                <div id="copyright">
+                    &copy; Дмитрий. All rights reserved. | Designed: >Ручками</a>
+                </div>
+            </main>
+            <Footer />
+		</div>-->
+
+        <footer>
+			&copy; Дмитрий. All rights reserved. | Designed: <a>Ручками</a><!--href="Url.Page("/Authorised/User")"-->
+        </footer>
+
+    </div>
+
+    @* Частичное подключение для скриптов *@
+    @*await Html.PartialAsync("ScriptsPartial")*@
+
+    @*<script>
+        // Получаем элемент select
+        const tableSelector = document.getElementById('tableSelector');
+        tableSelector.addEventListener('change', function () {
+            const selectedUrl = tableSelector.value; // Получаем выбранное значение (URL)
+            if (selectedUrl) { // Если URL не пустой
+                window.location.href = selectedUrl; // Переходим на выбранную страницу
+            }
+        });
+
+        const automitizationSelector = document.getElementById('automitizationSelector');
+        automitizationSelector.addEventListener('change', function () {
+            const selectedUrl = automitizationSelector.value; // Получаем выбранное значение (URL)
+            if (selectedUrl) { // Если URL не пустой
+                window.location.href = selectedUrl; // Переходим на выбранную страницу
+            }
+        });
+    </script>*@
+</body>
+</html>

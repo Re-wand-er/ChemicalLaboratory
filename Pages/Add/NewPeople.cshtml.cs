@@ -1,6 +1,6 @@
 using ChemicalLaboratory.Domain;
-using EFCore.DTOs;
-using EFCore.Services;
+using Domain.DTOs;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -9,8 +9,8 @@ namespace ChemicalLaboratory.Pages.Add
 {
     public class NewPeopleModel : PageModel
     {
-        private readonly IPeopleService _peopleService;
-        public NewPeopleModel(IPeopleService peopleService)
+        private readonly IPeopleRepository _peopleService;
+        public NewPeopleModel(IPeopleRepository peopleService)
         {
             _peopleService = peopleService;
         }
