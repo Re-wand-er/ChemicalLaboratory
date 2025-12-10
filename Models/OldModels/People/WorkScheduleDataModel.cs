@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace ChemicalLaboratory.Models.People
+﻿namespace ChemicalLaboratory.Models.People
 {
     public class WorkScheduleDataModel
     {

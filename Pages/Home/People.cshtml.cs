@@ -1,26 +1,24 @@
-using Microsoft.AspNetCore.Mvc;
-using EFCore.DTOs;
-using ChemicalLaboratory.Domain;
-using ChemicalLaboratory.Models.People;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using ChemicalLaboratory.Models.ViewModels;
+using Domain.DTOs;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authorization;
-using ChemicalLaboratory.Models.Reagent;
-using EFCore.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ChemicalLaboratory.Pages.Home
 {
-    [Authorize(Roles ="Администратор")]
+    [Authorize(Roles = "Администратор")]
     public class PeopleModel : PageModel
     {
-        private readonly IPeopleService _peopleService; 
+        private readonly IPeopleRepository _peopleService;
 
-        public PeopleModel(IPeopleService peopleService)
+        public PeopleModel(IPeopleRepository peopleService)
         {
             _peopleService = peopleService;
         }
 
         [BindProperty]
-        public List<PeopleDataModel>? PeopleList { get; set; }
+        public List<PeopleViewModel>? PeopleList { get; set; } = new();
 
         [BindProperty(SupportsGet = true)]
         public string? SearchQuery { get; set; } = string.Empty;
@@ -32,19 +30,18 @@ namespace ChemicalLaboratory.Pages.Home
         [BindProperty(SupportsGet = true)]
         public bool Ascending { get; set; } = true;
 
-        public void OnGet()
+        public async Task OnGet()
         {
 
             if (Request.Query.TryGetValue("Delete", out var deleteValue))
             {
                 if (int.TryParse(deleteValue, out var reagentId))
                 {
-                    SQLCommand.DeleteRecord("DELETE FROM PeopleSchema.People WHERE idPeople = @Id", reagentId);
-                    //SQLCommand.DeleteRecord(reagentId);
+                    await _peopleService.DeleteAsync(reagentId);
                 }
             }
 
-            PeopleList = SQLCommand.GetPeople();
+            PeopleList = PepleDataMapping(await _peopleService.GetAllAsync());
             ListOrder(OrderBy, Ascending);
 
             if (!string.IsNullOrWhiteSpace(SearchQuery))
@@ -73,7 +70,7 @@ namespace ChemicalLaboratory.Pages.Home
                             i.FirstName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
                             i.LastName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
                             i.MiddleName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
-                            i.JobPosition.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) 
+                            i.JobPosition.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)
                         ).ToList();
                         break;
                 }
@@ -85,8 +82,6 @@ namespace ChemicalLaboratory.Pages.Home
         {
             await _peopleService.UpdateAsync(updatedPeople);
 
-            //await SQLCommand.UpdatePeopleRecord(updatedPeople);
-            
             return Page();
         }
 
@@ -119,15 +114,15 @@ namespace ChemicalLaboratory.Pages.Home
                     break;
 
                 case 7:
-                    PeopleList = SortList(PeopleList, p => p.IdWorkShedule.WorkShift, ascending);
+                    PeopleList = SortList(PeopleList, p => p.WorkSchedule?.WorkShift, ascending);
                     break;
 
                 case 8:
-                    PeopleList = SortList(PeopleList, p => p.IdWorkShedule.StartTime, ascending);
+                    PeopleList = SortList(PeopleList, p => p.WorkSchedule?.StartTime, ascending);
                     break;
 
                 case 9:
-                    PeopleList = SortList(PeopleList, p => p.IdWorkShedule.EndTime, ascending);
+                    PeopleList = SortList(PeopleList, p => p.WorkSchedule?.EndTime, ascending);
                     break;
 
                 case 10:
@@ -140,13 +135,18 @@ namespace ChemicalLaboratory.Pages.Home
 
                 default: break;
             }
-            
+
             return Page();
         }
 
         static List<T> SortList<T, TKey>(List<T> list, Func<T, TKey> keySelector, bool ascending = true)
         {
             return ascending ? list.OrderBy(keySelector).ToList() : list.OrderByDescending(keySelector).ToList();
+        }
+
+        private List<PeopleViewModel> PepleDataMapping(List<PeopleDTO> peopleDTO)
+        {
+            return peopleDTO.ConvertAll(dto => new PeopleViewModel(dto));
         }
     }
 }

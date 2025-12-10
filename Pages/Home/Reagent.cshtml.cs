@@ -1,22 +1,15 @@
+using ChemicalLaboratory.Domain;
+using ChemicalLaboratory.Models.Reagent;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using ChemicalLaboratory.Models.Reagent;
-using Reag = ChemicalLaboratory.Models.NewModels.Reagent;
-using ChemicalLaboratory.Domain;
-using ChemicalLaboratory.Models.People;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using ChemicalLaboratory.Domain.ORM;
-using System.Diagnostics.CodeAnalysis;
-using System.Collections.Generic;
 
 namespace ChemicalLaboratory.Pages.Home
 {
     //[ValidateAntiForgeryToken]
     //[IgnoreAntiforgeryToken]
     [Authorize]
-	public class ReagentModel : PageModel
+    public class ReagentModel : PageModel
     {
 
         [BindProperty]
@@ -34,10 +27,10 @@ namespace ChemicalLaboratory.Pages.Home
 
         [BindProperty(SupportsGet = true)]
         public bool isSupplierVisible { get; set; } = false;
-		[BindProperty(SupportsGet = true)]
-		public int FilterCategory { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int FilterCategory { get; set; }
 
-		[BindProperty(SupportsGet = true)]
+        [BindProperty(SupportsGet = true)]
         public int OrderBy { get; set; }
         [BindProperty(SupportsGet = true)]
         public bool Ascending { get; set; } = true;
@@ -49,12 +42,12 @@ namespace ChemicalLaboratory.Pages.Home
         [BindProperty]
         public Dictionary<int, ReagentDataModel> UpdatedItems { get; set; } = new();
 
-        public async /*IActionResult*/  void OnGet(string searchQuery)
+        public /*async IActionResult*/  void OnGet(string searchQuery)
         {
             string? sqlCommand = null;
             ReagentManufacturers = new List<ReagentManufacturer>();
 
-			if (Request.Query.TryGetValue("Delete", out var deleteValue))
+            if (Request.Query.TryGetValue("Delete", out var deleteValue))
             {
                 if (int.TryParse(deleteValue, out var reagentId))
                 {
@@ -70,7 +63,7 @@ namespace ChemicalLaboratory.Pages.Home
                 }
             }
 
-            if (isReagentVisible && isManufactureVisible && isSupplierVisible) 
+            if (isReagentVisible && isManufactureVisible && isSupplierVisible)
             {
                 ParamOfKind = 7;
                 sqlCommand = "select \r\n\t*, \r\n\trsr.Name  as ReagentName, \r\n\trsm.Name  as ManufactureName, \r\n\trsm.email as ManufactureEmail,\r\n\trss.Name  as SupplierName,\r\n\trss.email as SupplierEmail\r\n\tfrom ReagentSchema.Reagent rsr\r\njoin ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent\r\njoin ReagentSchema.Purity rsp on rsrm.idPurity = rsp.idPurity\r\njoin ReagentSchema.Manufacturer as rsm on rsrm.idManufacturer = rsm.IdManufacturer\r\njoin ReagentSchema.Supplier rss on rss.idManufacturer = rsm.IdManufacturer \r\n";
@@ -106,7 +99,7 @@ namespace ChemicalLaboratory.Pages.Home
                 sqlCommand = "select *, rsr.Name  as ReagentName from ReagentSchema.Reagent rsr join ReagentSchema.ReagentManufacturer rsrm on rsr.idReagent = rsrm.idReagent join ReagentSchema.Purity rsp on rsp.idPurity = rsrm.idPurity";
             }
 
-            if (sqlCommand is not null) 
+            if (sqlCommand is not null)
             {
                 ReagentManufacturers = LoadItems(sqlCommand);
                 ListOrder(OrderBy, Ascending);
@@ -129,9 +122,9 @@ namespace ChemicalLaboratory.Pages.Home
 
         public async Task<IActionResult> OnPost([FromBody] ReagentDataModel updatedReagent)
         {
-           await SQLCommand.UpdateReagentRecord(updatedReagent);
+            await SQLCommand.UpdateReagentRecord(updatedReagent);
 
-           return new JsonResult(new { success = true });
+            return new JsonResult(new { success = true });
         }
 
         //private async Task<IEnumerable<Reag>> NewLoadItems()
@@ -139,30 +132,30 @@ namespace ChemicalLaboratory.Pages.Home
         //    return await _reagentRepository.GetReagent(); 
         //}
 
-        private List<ReagentManufacturer/*ReagentDataModel*/> LoadItems( string query)
+        private List<ReagentManufacturer/*ReagentDataModel*/> LoadItems(string query)
         {
-           return SQLCommand.GetDataFromReagentSchema(query); // Метод для получения данных из базы
+            return SQLCommand.GetDataFromReagentSchema(query); // Метод для получения данных из базы
         }
 
         public IActionResult Filter(string? filt)
         {
-			if (!string.IsNullOrWhiteSpace(SearchQuery))
-			{
-				switch (FilterCategory)
-				{
-					/*case 1:
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                switch (FilterCategory)
+                {
+                    /*case 1:
 						ReagentManufacturers = ReagentManufacturers?.Where(i => i.Reagent.Dansity.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
 						break;*/
 
-					case 2:
-						ReagentManufacturers = ReagentManufacturers?.Where(i => i.Reagent.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-						break;
+                    case 2:
+                        ReagentManufacturers = ReagentManufacturers?.Where(i => i.Reagent.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+                        break;
 
-					case 3:
-						ReagentManufacturers = ReagentManufacturers?.Where(i => i.Reagent.ChemicalFormula.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-						break;
+                    case 3:
+                        ReagentManufacturers = ReagentManufacturers?.Where(i => i.Reagent.ChemicalFormula.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+                        break;
 
-					/*case 4:
+                    /*case 4:
 						ReagentManufacturers = ReagentManufacturers?.Where(i => i.Reagent.Mass.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
 						break;*/
 
@@ -201,81 +194,81 @@ namespace ChemicalLaboratory.Pages.Home
                         break;
 
                     default: break;
-				}
+                }
 
-			}
+            }
 
-			return Page();
+            return Page();
         }
 
-		public IActionResult ListOrder(int Order, bool ascending)
-		{
-			switch (Order)
-			{
-				case 1:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.Dansity, ascending);
-					break;
+        public IActionResult ListOrder(int Order, bool ascending)
+        {
+            switch (Order)
+            {
+                case 1:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.Dansity, ascending);
+                    break;
 
-				case 2:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.Name, ascending);
-					break;
+                case 2:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.Name, ascending);
+                    break;
 
-				case 3:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.ChemicalFormula, ascending);
-					break;
+                case 3:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.ChemicalFormula, ascending);
+                    break;
 
-				case 4:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.Mass, ascending);
-					break;
+                case 4:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Reagent.Mass, ascending);
+                    break;
 
-				case 5:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.PurityClassification, ascending);
-					break;
+                case 5:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.PurityClassification, ascending);
+                    break;
 
-				case 6:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.PurityDegree, ascending);
-					break;
+                case 6:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.PurityDegree, ascending);
+                    break;
 
-				case 7:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Name, ascending);
-					break;
+                case 7:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Name, ascending);
+                    break;
 
-				case 8:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Email, ascending);
-					break;
+                case 8:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Email, ascending);
+                    break;
 
-				case 9:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Address, ascending);
-					break;
+                case 9:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Address, ascending);
+                    break;
 
-				case 10:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.City, ascending);
-					break;
+                case 10:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.City, ascending);
+                    break;
 
-				case 11:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Country, ascending);
-					break;
+                case 11:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Manufacturer.Country, ascending);
+                    break;
 
-				case 12:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Supplier.Name, ascending);
-					break;
+                case 12:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Supplier.Name, ascending);
+                    break;
 
-				case 13:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Supplier.email, ascending);
-					break;
+                case 13:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Supplier.email, ascending);
+                    break;
 
-				case 14:
-					ReagentManufacturers = SortList(ReagentManufacturers, p => p.Supplier.PhoneNumber, ascending);
-					break;
+                case 14:
+                    ReagentManufacturers = SortList(ReagentManufacturers, p => p.Supplier.PhoneNumber, ascending);
+                    break;
 
 
-				default: break;
-			}
+                default: break;
+            }
 
-			return Page();
-		}
+            return Page();
+        }
 
-		static List<T> SortList<T, TKey>(List<T>? list, Func<T, TKey> keySelector, bool ascending = true)
+        static List<T> SortList<T, TKey>(List<T>? list, Func<T, TKey> keySelector, bool ascending = true)
         {
             return ascending ? list!.OrderBy(keySelector).ToList() : list!.OrderByDescending(keySelector).ToList();
         }

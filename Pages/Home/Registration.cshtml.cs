@@ -1,10 +1,8 @@
+using ChemicalLaboratory.Domain;
+using ChemicalLaboratory.Models.People;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using ChemicalLaboratory.Domain;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Caching.Memory;
-using ChemicalLaboratory.Models.People;
 using System.Text.RegularExpressions;
 
 namespace ChemicalLaboratory.Pages.Home
@@ -25,16 +23,16 @@ namespace ChemicalLaboratory.Pages.Home
         [BindProperty]
         public string ErrorMessage { get; set; } = string.Empty;
 
-		private bool IsValidPassword(string password)
-		{
-			var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$");
-			return regex.IsMatch(password);
-		}
+        private bool IsValidPassword(string password)
+        {
+            var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$");
+            return regex.IsMatch(password);
+        }
 
-		public async Task<IActionResult> OnPostRegistration()
+        public async Task<IActionResult> OnPostRegistration()
         {
 
-            if(identificationCode != JsonRequest.Instance(IdMarker).id.ToString()) { ErrorMessage = "Неправильно введен код идентификации!"; return Page(); }
+            if (identificationCode != JsonRequest.Instance(IdMarker).id.ToString()) { ErrorMessage = "Неправильно введен код идентификации!"; return Page(); }
 
             if (!IsValidPassword(People.Password))
             {
@@ -58,27 +56,27 @@ namespace ChemicalLaboratory.Pages.Home
                         /*if (ValueCheck == IdMarker)
                         {*/
 
-                            command.Parameters.AddWithValue("@idWorkSchedule", workSchedule);
-                            command.Parameters.AddWithValue("@FirstName", People.FirstName);
-                            command.Parameters.AddWithValue("@MiddleName", People.MiddleName);
-                            command.Parameters.AddWithValue("@LastName", People.LastName);
-                            command.Parameters.AddWithValue("@email", People.Email);
-                            command.Parameters.AddWithValue("@Sex", People.Sex);
-                            command.Parameters.AddWithValue("@JobPosition", People.JobPosition);
-                            command.Parameters.AddWithValue("@Login", People.Login);
-                            command.Parameters.AddWithValue("@PasswordHash", People.Password./*GetHashCode().*/ToString());
+                        command.Parameters.AddWithValue("@idWorkSchedule", workSchedule);
+                        command.Parameters.AddWithValue("@FirstName", People.FirstName);
+                        command.Parameters.AddWithValue("@MiddleName", People.MiddleName);
+                        command.Parameters.AddWithValue("@LastName", People.LastName);
+                        command.Parameters.AddWithValue("@email", People.Email);
+                        command.Parameters.AddWithValue("@Sex", People.Sex);
+                        command.Parameters.AddWithValue("@JobPosition", People.JobPosition);
+                        command.Parameters.AddWithValue("@Login", People.Login);
+                        command.Parameters.AddWithValue("@PasswordHash", People.Password./*GetHashCode().*/ToString());
 
-                            int rowsAffected = await command.ExecuteNonQueryAsync();
-                            if (rowsAffected > 0) return RedirectToPage("/Home/Authorisation");
-                            else
-                            {
-                                ErrorMessage = "Ошибка при регистрации. Попробуйте снова.";
-                            }
-                       /* }
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        if (rowsAffected > 0) return RedirectToPage("/Home/Authorisation");
                         else
                         {
-                            ErrorMessage = "Введите код, который был прислан вам на почту.";
-                        }*/
+                            ErrorMessage = "Ошибка при регистрации. Попробуйте снова.";
+                        }
+                        /* }
+                         else
+                         {
+                             ErrorMessage = "Введите код, который был прислан вам на почту.";
+                         }*/
                     }
                 }
                 catch (SqlException ex)
@@ -103,7 +101,7 @@ namespace ChemicalLaboratory.Pages.Home
 
 
             return Page();
-		}
+        }
 
         public void OnGet()
         {

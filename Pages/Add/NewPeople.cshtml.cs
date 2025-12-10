@@ -1,14 +1,20 @@
-using ChemicalLaboratory.Pages.Home;
-using EFCore.DTOs;
+using ChemicalLaboratory.Domain;
+using Domain.DTOs;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using ChemicalLaboratory.Domain;
 
 namespace ChemicalLaboratory.Pages.Add
 {
     public class NewPeopleModel : PageModel
     {
+        private readonly IPeopleRepository _peopleService;
+        public NewPeopleModel(IPeopleRepository peopleService)
+        {
+            _peopleService = peopleService;
+        }
+
         [BindProperty(SupportsGet = true)]
         public List<PeopleDTO> NewPeople { get; set; } = new();
         public string ErrorMessage { get; set; } = string.Empty;
@@ -23,7 +29,7 @@ namespace ChemicalLaboratory.Pages.Add
                 // Собираем сообщения об ошибках для конкретных полей
                 var errorMessages = new List<string>();
 
-                foreach (var state in ModelState) 
+                foreach (var state in ModelState)
                 {
                     var fieldName = state.Key; // Имя поля
                     var errors = state.Value.Errors; // Список ошибок для этого поля
@@ -60,16 +66,16 @@ namespace ChemicalLaboratory.Pages.Add
                                   $"@Login{i}, @PasswordHash{i})");
 
                     // Добавляем параметры
-                    parameters.Add(new SqlParameter($"@FirstName{i}",      reagent.FirstName));
-                    parameters.Add(new SqlParameter($"@MiddleName{i}",     reagent.MiddleName));
-                    parameters.Add(new SqlParameter($"@LastName{i}",       reagent.LastName));
-                    parameters.Add(new SqlParameter($"@Sex{i}",            reagent.Sex));
-                    parameters.Add(new SqlParameter($"@email{i}",          reagent.Email));
-                    parameters.Add(new SqlParameter($"@JobPosition{i}",    reagent.JobPosition));
-                    parameters.Add(new SqlParameter($"@idWorkSchedule{i}", reagent.WorkShift));
-                    parameters.Add(new SqlParameter($"@SystemRole{i}",     reagent.SystemRole));
-                    parameters.Add(new SqlParameter($"@Login{i}",          reagent.Login));
-                    parameters.Add(new SqlParameter($"@PasswordHash{i}",   reagent.PasswordHash));
+                    parameters.Add(new SqlParameter($"@FirstName{i}", reagent.FirstName));
+                    parameters.Add(new SqlParameter($"@MiddleName{i}", reagent.MiddleName));
+                    parameters.Add(new SqlParameter($"@LastName{i}", reagent.LastName));
+                    parameters.Add(new SqlParameter($"@Sex{i}", reagent.Sex));
+                    parameters.Add(new SqlParameter($"@email{i}", reagent.Email));
+                    parameters.Add(new SqlParameter($"@JobPosition{i}", reagent.JobPosition));
+                    parameters.Add(new SqlParameter($"@idWorkSchedule{i}", reagent.WorkSchedule));
+                    parameters.Add(new SqlParameter($"@SystemRole{i}", reagent.SystemRole));
+                    parameters.Add(new SqlParameter($"@Login{i}", reagent.Login));
+                    parameters.Add(new SqlParameter($"@PasswordHash{i}", null));
                 }
 
                 // Объединяем запрос
@@ -96,6 +102,15 @@ namespace ChemicalLaboratory.Pages.Add
                     ErrorMessage = "Ошибка: " + ex.Message;
                 }
             }
+
+            //try
+            //{
+            //    _peopleService.AddRangeAsync(NewPeople);
+            //}
+            //catch (OperationCanceledException ex) 
+            //{
+            //    ErrorMessage = "Ошибка: " + ex.Message;
+            //}
 
             return RedirectToPage("/Home/People");
         }

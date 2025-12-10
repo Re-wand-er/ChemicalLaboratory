@@ -5,7 +5,7 @@ namespace ChemicalLaboratory.Pages.Home
 {
     public class AutomatizationModel : PageModel
     {
-        [BindProperty(SupportsGet=true)]
+        [BindProperty(SupportsGet = true)]
         public string ChemicalFormula { get; set; } = string.Empty;
         [BindProperty]
         public double Concentration { get; set; } = double.NaN;
@@ -20,11 +20,11 @@ namespace ChemicalLaboratory.Pages.Home
 
         public void OnPostCalculate()
         {
-            
+
             Massa = 54;
         }
 
 
-        
+
     }
 }

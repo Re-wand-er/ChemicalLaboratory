@@ -1,17 +1,21 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ChemicalLaboratory.Domain;
 using ChemicalLaboratory.Models.Experiment;
-using ChemicalLaboratory.Models.People;
+using ChemicalLaboratory.Models.ViewModels;
+using Domain.DTOs;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authorization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ChemicalLaboratory.Pages.Home
 {
     [Authorize]
     public class ExperimentModel : PageModel
     {
-        public List<ExperimentDataModel>? Experiments { get; set; }
+        private readonly IExperimentRepository _experimentService;
+        public ExperimentModel(IExperimentRepository experimentService) { _experimentService = experimentService; }
+        [BindProperty]
+        public List<ExperimentViewModel>? Experiments { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string? SearchQuery { get; set; }
@@ -23,29 +27,31 @@ namespace ChemicalLaboratory.Pages.Home
         [BindProperty(SupportsGet = true)]
         public bool Ascending { get; set; } = true;
 
-        public /*void*/ IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-			if (Request.Query.TryGetValue("Update", out var updateValue))
-			{
-				if (int.TryParse(updateValue, out var id))
-				{
+            if (Request.Query.TryGetValue("Update", out var updateValue))
+            {
+                if (int.TryParse(updateValue, out var id))
+                {
                     JsonRequest.InstanceFree();
                     JsonRequest.Instance(id);
-					return RedirectToPage("/Add/UpdateExperiment"/*, new { id }*/);
-				}
-			}
-
-			if (Request.Query.TryGetValue("Delete", out var deleteValue))
-			{
-				if (int.TryParse(deleteValue, out var id))
-				{
-                    SQLCommand.DeleteRecord("DELETE FROM ExperimentSchema.Experiment WHERE idExperiment = @Id", id);
+                    return RedirectToPage("/Add/UpdateExperiment"/*, new { id }*/);
                 }
-			}
-			Experiments = SQLCommand.GetExperiments();
+            }
+
+            if (Request.Query.TryGetValue("Delete", out var deleteValue))
+            {
+                if (int.TryParse(deleteValue, out var id))
+                {
+                    await _experimentService.DeleteAsync(id);
+                }
+            }
+
+            var experimentList = ExperimentDataMapping(await _experimentService.GetAllAsync());
+            Experiments = experimentList;
 
             ListOrder(OrderBy, Ascending);
-            
+
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 switch (FilterCategory)
@@ -76,14 +82,14 @@ namespace ChemicalLaboratory.Pages.Home
 
                     default:
                         // Если категория не выбрана, фильтруем по всем полям
-                        Experiments = Experiments?.Where(i =>
-                            (i.Name != null && i.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
-                            (i.Description != null && i.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
-                            (i.StartDate?.ToString()?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                            (i.EndDate?.ToString()?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                            (i.Result?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                            (i.Status?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false)
-                        ).ToList();
+                        //Experiments = Experiments?.Where(i =>
+                        //    (i.Name != null && i.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                        //    (i.Description != null && i.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                        //    (i.StartDate?.ToString()?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        //    (i.EndDate?.ToString()?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        //    (i.Result?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        //    (i.Status?.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ?? false)
+                        //).ToList();
 
                         break;
                 }
@@ -130,6 +136,11 @@ namespace ChemicalLaboratory.Pages.Home
         static List<T> SortList<T, TKey>(List<T> list, Func<T, TKey> keySelector, bool ascending = true)
         {
             return ascending ? list.OrderBy(keySelector).ToList() : list.OrderByDescending(keySelector).ToList();
+        }
+
+        private List<ExperimentViewModel> ExperimentDataMapping(List<ExperimentDTO> experimentDTO)
+        {
+            return experimentDTO.ConvertAll(dto => new ExperimentViewModel(dto));
         }
     }
 

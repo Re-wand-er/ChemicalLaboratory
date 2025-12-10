@@ -1,0 +1,106 @@
+﻿@model ChemicalLaboratory.WebUI.Models.Peoples.PeopleListViewModel
+@{
+    Layout = "_Layout1";
+}
+
+<!-- твой CSS (оставил как есть) -->
+
+<div class="toolbar">
+    <form method="get">
+        <div class="filter-container">
+
+            <input type="text" name="searchQuery"
+                   placeholder="Поиск..."
+                   value="@ViewBag.SearchQuery" />
+
+            <select name="FilterCategory">
+                <option value="0">Все категории</option>
+                <option value="1" selected="@(ViewBag.FilterCategory==1)">По имени</option>
+                <option value="2" selected="@(ViewBag.FilterCategory==2)">По фамилии</option>
+                <option value="3" selected="@(ViewBag.FilterCategory==3)">По отчеству</option>
+                <option value="4" selected="@(ViewBag.FilterCategory==4)">По должности</option>
+            </select>
+
+            <select name="OrderBy">
+                <option value="0">Без сортировки</option>
+                <option value="1" selected="@(ViewBag.OrderBy==1)">По имени</option>
+                <option value="2" selected="@(ViewBag.OrderBy==2)">По фамилии</option>
+                <option value="3" selected="@(ViewBag.OrderBy==3)">По отчеству</option>
+                <option value="4">Пол</option>
+                <option value="5">Почта</option>
+                <option value="6">Должность</option>
+                <option value="7">Смена</option>
+                <option value="8">Начало</option>
+                <option value="9">Конец</option>
+                <option value="10">Системная роль</option>
+                <option value="11">Логин</option>
+            </select>
+
+            <select name="Ascending">
+                <option value="true" selected="@(ViewBag.Ascending==true)">По возрастанию</option>
+                <option value="false" selected="@(ViewBag.Ascending==false)">По убыванию</option>
+            </select>
+
+            <button type="submit">Применить</button>
+
+            @if (User.IsInRole("Администратор"))
+            {
+                <button type="submit" formaction="/Add/NewPeople" target="_blank">Добавить</button>
+            }
+        </div>
+    </form>
+</div>
+
+<form method="get">
+    <table>
+        <tr>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Отчество</th>
+            <th>Пол</th>
+            <th>Почта</th>
+            <th>Должность</th>
+            <th>Смена</th>
+            <th>Начало</th>
+            <th>Конец</th>
+
+            @if (User.IsInRole("Администратор"))
+            {
+                <th>Системная роль</th>
+                <th>Логин</th>
+                <th>Действия</th>
+            }
+        </tr>
+
+        @foreach (var p in Model.People)
+        {
+            <tr>
+                <td>@p.FirstName</td>
+                <td>@p.MiddleName</td>
+                <td>@p.LastName</td>
+                <td>@p.Sex</td>
+                <td>@p.Email</td>
+                <td>@p.JobPosition</td>
+                <td>@p.WorkSchedule?.WorkShift</td>
+                <td>@p.WorkSchedule?.StartTime</td>
+                <td>@p.WorkSchedule?.EndTime</td>
+
+                @if (User.IsInRole("Администратор"))
+                {
+                    <td>@p.SystemRole</td>
+                    <td>@p.Login</td>
+
+                    <td class="action-buttons">
+                        <button type="button" class="update" value="@p.IdPeople" onclick="editRow(this)">Изменить</button>
+                        <button type="submit" name="delete" class="delete" value="@p.IdPeople">Удалить</button>
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</form>
+
+<!-- твой JS полностью переносится -->
+<script>
+    /* твой editRow(), saveRow() – оставил как есть */
+</script>

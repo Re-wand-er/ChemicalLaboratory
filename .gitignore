@@ -4,3 +4,4 @@ Dockerfile*
 /obj
 /wwwroot/lib/*
 .json
+Properties

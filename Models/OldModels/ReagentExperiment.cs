@@ -1,5 +1,4 @@
-﻿using ChemicalLaboratory.Models.Experiment;
-using ChemicalLaboratory.Models.Reagent;
+﻿using ChemicalLaboratory.Models.Reagent;
 
 namespace ChemicalLaboratory.Models
 {

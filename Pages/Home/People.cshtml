@@ -262,7 +262,7 @@
                 }
             </tr>
 
-            @foreach (var product in Model.PeopleList)
+            @foreach (var product in Model.PeopleList!)
             {
                 <tr>
                     <td>@product.FirstName</td>
@@ -271,14 +271,14 @@
 		    		<td>@product.Sex</td>
 		    		<td>@product.Email</td>
                     <td>@product.JobPosition</td>
-                    <td>@product.IdWorkShedule.WorkShift</td>
-                    <td>@product.IdWorkShedule.StartTime</td>
-                    <td>@product.IdWorkShedule.EndTime</td>
+                    <td>@product.WorkSchedule?.WorkShift</td>
+                    <td>@product.WorkSchedule?.StartTime</td>
+                    <td>@product.WorkSchedule?.EndTime</td>
                     @if (User.IsInRole("Администратор"))
                     {
                         <td>@product.SystemRole</td>
                         <td>@product.Login</td>
-                       <!--<td>@product.Password</td>-->
+                       <!--<td>product.Password</td>-->
                     }
                 
 

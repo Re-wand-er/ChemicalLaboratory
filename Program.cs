@@ -1,14 +1,10 @@
-using EFCore;
-using ChemicalLaboratory.Domain;
-using ChemicalLaboratory.Domain.ORM;
-using ChemicalLaboratory.Domain.UserServices;
+using ChemicalLaboratory.Domain.UserRepository;
+using Domain;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using EFCore.Services;
 
 
 namespace ChemicalLaboratory
@@ -19,53 +15,55 @@ namespace ChemicalLaboratory
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //------------------------------------------------------------------------------------------------------------
+
+            builder.Services.AddControllersWithViews()
+                .AddRazorOptions(options =>
+                {
+                    options.ViewLocationFormats.Clear();
+                    options.ViewLocationFormats.Add("/WebUI/Views/{1}/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/WebUI/Views/Home/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/WebUI/Views/Shared/{0}.cshtml");
+                });
+
+            //------------------------------------------------------------------------------------------------------------
             builder.Services.AddScoped<IUserService, UserService>();
 
-//------------------------------------------------------------------------------------------------------------
-            //builder.Services.AddDbContext<ORMSQLCommand>(options =>
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.AddDbContext<DataBaseContext>(options =>
+            builder.Services.AddDbContext<DataBaseContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped<IPeopleService, PeopleService>();
+            builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
+            builder.Services.AddScoped<IExperimentRepository, ExperimentRepository>();
 
             //builder.Services.AddScoped(typeof(BaseRepository<>));
             //builder.Services.AddScoped<BaseRepository, ReagentRepository>();
-//------------------------------------------------------------------------------------------------------------
+            //------------------------------------------------------------------------------------------------------------
 
-            builder.Services.AddRazorPages(options =>
-            {
-                // отключаем глобально Antiforgery-токен
-                options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
-            });
+            //builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //     .AddCookie(options =>
+            //     {
+            //         options.LoginPath = "/Authorisation/Index"; // Страница входа
+            //         options.AccessDeniedPath = "/Home/Index"; // Страница доступа запрещена
+            //         options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Срок действия cookie
+            //     });
 
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                 .AddCookie(options =>
+            /*
+            builder.Services.AddRazorPages()
+                 .AddRazorPagesOptions(options =>
                  {
-                     options.LoginPath = "/Home/Authorisation"; // Страница входа
-                     options.AccessDeniedPath = "/Index"; // Страница доступа запрещена
-                     options.Cookie.Name = "User"; //Название cookie
-                     options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Срок действия cookie
-                     options.SlidingExpiration = true; // Обновление срока действия при активности
+                     // Укажите корневой маршрут
+                     options.Conventions.AddPageRoute("/UI", "");
                  });
-            //builder.Services.AddRazorPages()
-            //            .AddRazorPagesOptions(options =>
-            //            {
-            //                // Укажите корневой маршрут
-            //                options.Conventions.AddPageRoute("/Home/Authorisation", "");
-            //            });
 
             builder.Services.AddRazorPages();
-           
-           
+            */
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -74,10 +72,13 @@ namespace ChemicalLaboratory
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.MapRazorPages();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
+            
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}"
+                );
 
             app.Run();
         }

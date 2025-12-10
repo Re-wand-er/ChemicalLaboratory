@@ -1,5 +1,5 @@
-﻿@page
-@model ChemicalLaboratory.Pages.Home.EquipmentModel
+﻿@* @page
+@model EquipmentPageModel
 @using Microsoft.AspNetCore.Authorization
 @{
     Layout = "_Layout1";
@@ -314,7 +314,7 @@
     <form method="get">
         <table>
             <tr>
-                @if (Model.isEquipmentVisible)
+                @if (isEquipmentVisible)
                 {
                     <th data-column="Name">Название</th>
                     <th data-column="Model">Модель</th>
@@ -356,7 +356,6 @@
 
                         idForDelete = product.Equipment.idEquipment;
                     }
-
 
                     @if (Model.isManufactureVisible)
                     {
@@ -492,37 +491,37 @@
 
 
             const idReagent = button.value; 
-            const Mode = @ModeOfUpdate
+            // const Mode = ModeOfUpdate
 
-            fetch(`/Home/Equipment`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    Id: idReagent,
-                    ModeOfUpdate : Mode,
-                    Name : updatedValues["Name"],
-                    Model: updatedValues["Model"],
-                    Description: updatedValues["Description"],
-                    Kind: updatedValues["Kind"],
-                    Status: updatedValues["Status"],
-                    Email: updatedValues["Email"],
-                    PhoneNumber: updatedValues["PhoneNumber"],
-                    Address: updatedValues["Address"],
-                    City: updatedValues["City"],
-                    Country: updatedValues["Country"],
-                    PurchaseDate: updatedValues["PurchaseDate"],
-                    GuaranteeDate: updatedValues["GuaranteeDate"]
-                })
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error('Ошибка обновления данных.');
-                })
-                .catch(error => alert(error.message));
+            // fetch(`/Home/Equipment`, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         Id: idReagent,
+            //         ModeOfUpdate : Mode,
+            //         Name : updatedValues["Name"],
+            //         Model: updatedValues["Model"],
+            //         Description: updatedValues["Description"],
+            //         Kind: updatedValues["Kind"],
+            //         Status: updatedValues["Status"],
+            //         Email: updatedValues["Email"],
+            //         PhoneNumber: updatedValues["PhoneNumber"],
+            //         Address: updatedValues["Address"],
+            //         City: updatedValues["City"],
+            //         Country: updatedValues["Country"],
+            //         PurchaseDate: updatedValues["PurchaseDate"],
+            //         GuaranteeDate: updatedValues["GuaranteeDate"]
+            //     })
+            // })
+            //     .then(response => {
+            //         if (!response.ok) throw new Error('Ошибка обновления данных.');
+            //     })
+            //     .catch(error => alert(error.message));
 
-            button.textContent = 'Изменить';
-            button.onclick = () => editRow(button);
+            // button.textContent = 'Изменить';
+            // button.onclick = () => editRow(button);
         }
 
     </script>
 </body>
-</html>
+</html> *@

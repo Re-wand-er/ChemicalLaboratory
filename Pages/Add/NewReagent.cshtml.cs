@@ -1,9 +1,7 @@
-using ChemicalLaboratory.Models.Reagent;
-using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal;
+using ChemicalLaboratory.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using ChemicalLaboratory.Domain;
 
 namespace ChemicalLaboratory.Pages.Add
 {
@@ -19,19 +17,19 @@ namespace ChemicalLaboratory.Pages.Add
             {
                 // Собираем сообщения об ошибках для конкретных полей
                 var errorMessages = new List<string>();
-            
+
                 foreach (var state in ModelState)
                 {
                     var fieldName = state.Key; // Имя поля
                     var errors = state.Value.Errors; // Список ошибок для этого поля
-            
+
                     foreach (var error in errors)
                     {
                         // Добавляем ошибку в список (можно форматировать по желанию)
                         errorMessages.Add($"Поле '{fieldName}': {error.ErrorMessage}");
                     }
                 }
-            
+
                 // Формируем сообщение об ошибке
                 ErrorMessage = "Обнаружены ошибки:\n" + string.Join("\n", errorMessages);
                 return Page();
@@ -49,7 +47,7 @@ namespace ChemicalLaboratory.Pages.Add
 
                 // Собираем строки значений
                 var valueSets = new List<string>();
-                var parameters = new List<SqlParameter>();          
+                var parameters = new List<SqlParameter>();
                 for (int i = 0; i < NewReagents.Count; i++)
                 {
                     var reagent = NewReagents[i];
@@ -100,7 +98,7 @@ namespace ChemicalLaboratory.Pages.Add
             return RedirectToPage("/Home/Reagent");
         }
 
-        public IActionResult OnPostAddNewItem() 
+        public IActionResult OnPostAddNewItem()
         {
             if (NewReagents == null)
             {
@@ -116,7 +114,7 @@ namespace ChemicalLaboratory.Pages.Add
         {
             if (NewReagents == null || NewReagents.Count == 0)
             {
-                NewReagents = new List<ReagentForDB>(); 
+                NewReagents = new List<ReagentForDB>();
                 //NewReagents.Add(new ReagentForDB( ));
             }
         }
@@ -125,17 +123,17 @@ namespace ChemicalLaboratory.Pages.Add
     public class ReagentForDB
     {
         public string Name { get; set; } = string.Empty;
-        public decimal? Dansity { get; set; } 
+        public decimal? Dansity { get; set; }
         public string ChemicalFormula { get; set; } = string.Empty;
-        public decimal? Mass { get; set; } 
-        public DateTime? DateOfManufacture { get; set; } 
+        public decimal? Mass { get; set; }
+        public DateTime? DateOfManufacture { get; set; }
         public string series { get; set; } = string.Empty;
         public string PurityDegree { get; set; } = string.Empty;
         public int PurityClassification { get; set; } = 0;
         public int idManufacture { get; set; } = 0;
 
-        public string SupplierName {  get; set; } = string.Empty;
-        public string SupplierMail { get; set;} = string.Empty;
+        public string SupplierName { get; set; } = string.Empty;
+        public string SupplierMail { get; set; } = string.Empty;
         public string SupplierPhone { get; set; } = string.Empty;
     }
 }

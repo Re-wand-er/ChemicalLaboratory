@@ -1,10 +1,8 @@
 ﻿using ChemicalLaboratory.Domain;
-using Microsoft.Data.SqlClient;
-using ChemicalLaboratory.Models.Experiment;
 using ChemicalLaboratory.Models.Equipment;
+using ChemicalLaboratory.Models.Experiment;
 using ChemicalLaboratory.Models.Reagent;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
+using Microsoft.Data.SqlClient;
 namespace ChemicalLaboratory.Models.People
 {
     public class UserProfile
@@ -19,7 +17,7 @@ namespace ChemicalLaboratory.Models.People
         //public ExperimentEquipment experimentEquipment { get; set; }
 
         public static UserProfile? _instance;
-        public UserProfile? GetInstance() 
+        public UserProfile? GetInstance()
         {
             return _instance;
         }
@@ -43,10 +41,10 @@ namespace ChemicalLaboratory.Models.People
 
         private UserProfile(int idPeople)
         {
-            User        = new PeopleDataModel();
-            Experiment  = new ExperimentDataModel();
-            Equipment   = new List<EquipmentDataModel>();
-            Reagent     = new List<ReagentExperiment>();
+            User = new PeopleDataModel();
+            Experiment = new ExperimentDataModel();
+            Equipment = new List<EquipmentDataModel>();
+            Reagent = new List<ReagentExperiment>();
             LoadUserData(idPeople);
         }
 
@@ -72,20 +70,20 @@ namespace ChemicalLaboratory.Models.People
 
                         // Работники 
                         //reader["IdManufacturer"] != DBNull.Value ? Convert.ToInt32(reader["IdManufacturer"]) : 0,
-                        User.IdPeople       = reader["idPeople"]     != DBNull.Value ? Convert.ToInt32 (reader["idPeople"])     : 0;
-                        User.FirstName      = reader["FirstName"]    != DBNull.Value ? Convert.ToString(reader["FirstName"])    : "";
-                        User.MiddleName     = reader["MiddleName"]   != DBNull.Value ? Convert.ToString(reader["MiddleName"])   : "";
-                        User.LastName       = reader["LastName"]     != DBNull.Value ? Convert.ToString(reader["LastName"])     : "";
-                        User.Email          = reader["email"]        != DBNull.Value ? Convert.ToString(reader["email"])        : "";
-                        User.Sex            = reader["Sex"]          != DBNull.Value ? Convert.ToString(reader["Sex"])          : "";
-                        User.SystemRole     = reader["SystemRole"]   != DBNull.Value ? Convert.ToString(reader["SystemRole"])   : "";
-                        User.JobPosition    = reader["JobPosition"]  != DBNull.Value ? Convert.ToString(reader["JobPosition"])  : "";
-                        User.Login          = reader["Login"]        != DBNull.Value ? Convert.ToString(reader["Login"])        : "";
-                        User.Password   = reader["PasswordHash"] != DBNull.Value ? Convert.ToString(reader["PasswordHash"]) : "";
+                        User.IdPeople = reader["idPeople"] != DBNull.Value ? Convert.ToInt32(reader["idPeople"]) : 0;
+                        User.FirstName = reader["FirstName"] != DBNull.Value ? Convert.ToString(reader["FirstName"]) : "";
+                        User.MiddleName = reader["MiddleName"] != DBNull.Value ? Convert.ToString(reader["MiddleName"]) : "";
+                        User.LastName = reader["LastName"] != DBNull.Value ? Convert.ToString(reader["LastName"]) : "";
+                        User.Email = reader["email"] != DBNull.Value ? Convert.ToString(reader["email"]) : "";
+                        User.Sex = reader["Sex"] != DBNull.Value ? Convert.ToString(reader["Sex"]) : "";
+                        User.SystemRole = reader["SystemRole"] != DBNull.Value ? Convert.ToString(reader["SystemRole"]) : "";
+                        User.JobPosition = reader["JobPosition"] != DBNull.Value ? Convert.ToString(reader["JobPosition"]) : "";
+                        User.Login = reader["Login"] != DBNull.Value ? Convert.ToString(reader["Login"]) : "";
+                        User.Password = reader["PasswordHash"] != DBNull.Value ? Convert.ToString(reader["PasswordHash"]) : "";
                         // Рабочая смена
-                        User.IdWorkShedule.idWorkSchedule = reader["idWorkSchedule"] != DBNull.Value ? Convert.ToInt32 (reader["idWorkSchedule"]) : 0;
-                        User.IdWorkShedule.WorkShift      = reader["WorkShift"]      != DBNull.Value ? Convert.ToString(reader["WorkShift"])      : "";
-                        User.IdWorkShedule.StartTime      = reader["StartTime"] != DBNull.Value ? reader.IsDBNull(reader.GetOrdinal("StartTime")) 
+                        User.IdWorkShedule.idWorkSchedule = reader["idWorkSchedule"] != DBNull.Value ? Convert.ToInt32(reader["idWorkSchedule"]) : 0;
+                        User.IdWorkShedule.WorkShift = reader["WorkShift"] != DBNull.Value ? Convert.ToString(reader["WorkShift"]) : "";
+                        User.IdWorkShedule.StartTime = reader["StartTime"] != DBNull.Value ? reader.IsDBNull(reader.GetOrdinal("StartTime"))
                                                             ? TimeSpan.MinValue : reader.GetTimeSpan(reader.GetOrdinal("StartTime")) : TimeSpan.MinValue;
 
                         User.IdWorkShedule.EndTime = reader["EndTime"] != DBNull.Value
@@ -95,13 +93,13 @@ namespace ChemicalLaboratory.Models.People
                             : TimeSpan.MinValue; // Если значение вообще NULL, назначаем минимальное значение TimeSpan
 
                         // Эксперимент
-                        Experiment.idExperiment = reader["idExperiment"] != DBNull.Value ? Convert.ToInt32   (reader["idExperiment"]) : 0;
-                        Experiment.Name         = reader["Name"]         != DBNull.Value ? Convert.ToString  (reader["Name"])         : "";
-                        Experiment.Description  = reader["Description"]  != DBNull.Value ? Convert.ToString  (reader["Description"])  : "";
-                        Experiment.StartDate    = reader["StartDate"]    != DBNull.Value ? Convert.ToDateTime(reader["StartDate"])    : DateTime.MinValue;
-                        Experiment.EndDate      = reader["EndDate"]      != DBNull.Value ? Convert.ToDateTime(reader["EndDate"])      : DateTime.MinValue;
-                        Experiment.Result       = reader["Result"]       != DBNull.Value ? Convert.ToString  (reader["Result"])       : "";
-                        Experiment.Status       = reader["status"]       != DBNull.Value ? Convert.ToString  (reader["status"])       : "";
+                        Experiment.idExperiment = reader["idExperiment"] != DBNull.Value ? Convert.ToInt32(reader["idExperiment"]) : 0;
+                        Experiment.Name = reader["Name"] != DBNull.Value ? Convert.ToString(reader["Name"]) : "";
+                        Experiment.Description = reader["Description"] != DBNull.Value ? Convert.ToString(reader["Description"]) : "";
+                        Experiment.StartDate = reader["StartDate"] != DBNull.Value ? Convert.ToDateTime(reader["StartDate"]) : DateTime.MinValue;
+                        Experiment.EndDate = reader["EndDate"] != DBNull.Value ? Convert.ToDateTime(reader["EndDate"]) : DateTime.MinValue;
+                        Experiment.Result = reader["Result"] != DBNull.Value ? Convert.ToString(reader["Result"]) : "";
+                        Experiment.Status = reader["status"] != DBNull.Value ? Convert.ToString(reader["status"]) : "";
                     }
                 }
 
@@ -118,8 +116,8 @@ namespace ChemicalLaboratory.Models.People
                     {
                         var reagent = new ReagentExperiment
                         {
-                            UseCount = experimentReader["UseCount"] != DBNull.Value ? Convert.ToInt32(experimentReader["UseCount"])  : 0,
-                            Mass     = experimentReader["UseMass"]  != DBNull.Value ? Convert.ToDouble(experimentReader["UseMass"]) : 0,
+                            UseCount = experimentReader["UseCount"] != DBNull.Value ? Convert.ToInt32(experimentReader["UseCount"]) : 0,
+                            Mass = experimentReader["UseMass"] != DBNull.Value ? Convert.ToDouble(experimentReader["UseMass"]) : 0,
 
                             idReagentDataModel = new ReagentManufacturer
                             {
@@ -127,10 +125,10 @@ namespace ChemicalLaboratory.Models.People
 
                                 Reagent = new ReagentDataModel
                                 {
-                                    idReagent       = experimentReader["idReagent"]       != DBNull.Value ? Convert.ToInt32  (experimentReader["idReagent"])       : 0,
-                                    Name            = experimentReader["ReagentName"]     != DBNull.Value ? Convert.ToString (experimentReader["ReagentName"])     : "",
-                                    ChemicalFormula = experimentReader["ChemicalFormula"] != DBNull.Value ? Convert.ToString (experimentReader["ChemicalFormula"]) : "",
-                                    Dansity         = experimentReader["Dansity"]         != DBNull.Value ? Convert.ToDecimal(experimentReader["Dansity"])         : 0,
+                                    idReagent = experimentReader["idReagent"] != DBNull.Value ? Convert.ToInt32(experimentReader["idReagent"]) : 0,
+                                    Name = experimentReader["ReagentName"] != DBNull.Value ? Convert.ToString(experimentReader["ReagentName"]) : "",
+                                    ChemicalFormula = experimentReader["ChemicalFormula"] != DBNull.Value ? Convert.ToString(experimentReader["ChemicalFormula"]) : "",
+                                    Dansity = experimentReader["Dansity"] != DBNull.Value ? Convert.ToDecimal(experimentReader["Dansity"]) : 0,
                                 }
                             }
                         };
@@ -152,12 +150,12 @@ namespace ChemicalLaboratory.Models.People
                     {
                         var reagent = new EquipmentDataModel
                         {
-                            idEquipment = experimentReader["idEquipment"] != DBNull.Value ? Convert.ToInt32 (experimentReader["idEquipment"]) : 0,
-                            Name        = experimentReader["Name"]        != DBNull.Value ? Convert.ToString(experimentReader["Name"])        : "",
-                            Model       = experimentReader["Model"]       != DBNull.Value ? Convert.ToString(experimentReader["Model"])       : "",
+                            idEquipment = experimentReader["idEquipment"] != DBNull.Value ? Convert.ToInt32(experimentReader["idEquipment"]) : 0,
+                            Name = experimentReader["Name"] != DBNull.Value ? Convert.ToString(experimentReader["Name"]) : "",
+                            Model = experimentReader["Model"] != DBNull.Value ? Convert.ToString(experimentReader["Model"]) : "",
                             Description = experimentReader["Description"] != DBNull.Value ? Convert.ToString(experimentReader["Description"]) : "",
-                            Kind        = experimentReader["kind"]        != DBNull.Value ? Convert.ToString(experimentReader["kind"])        : "",
-                            Status      = experimentReader["Status"]      != DBNull.Value ? Convert.ToString(experimentReader["Status"])      : "",
+                            Kind = experimentReader["kind"] != DBNull.Value ? Convert.ToString(experimentReader["kind"]) : "",
+                            Status = experimentReader["Status"] != DBNull.Value ? Convert.ToString(experimentReader["Status"]) : "",
                         };
 
                         // Добавить в список экспериментов, если нужно
