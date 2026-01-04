@@ -1,115 +1,60 @@
-﻿
-<!DOCTYPE HTML>
-<html lang="ru">
+﻿@{
+    var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+    var userName = isAuthenticated ? User.Identity.Name : "";
+}
+<!DOCTYPE html>
+<html>
 <head>
-    @* Title из базы данных *@
-    @if (ViewBag.Title != null)
-    {
-        <title>Химическая лаборатория</title>
-    }
-
-    @* Частичные представления для мета-тегов и стилей *@
-    @await Html.PartialAsync("MetaTags")
-    @await Html.PartialAsync("CssPartial")
-
-    <style>
-
-        /* Футер */
-        footer {
-            background-color: #007b9d;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 1000px; /* Фиксируем отступ от контента */
-            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2); /* Легкая тень */
-        }
-
-            footer a {
-                color: #f1f1f1;
-                text-decoration: none;
-            }
-
-                footer a:hover {
-                    color: #ffd700;
-                }
-
-       
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Хим. Лаборатория</title>
+    <link rel="stylesheet" href="~/css/mainLayout.css" />
 
 </head>
 <body>
+    <div class="header">
+        <div class="header-left">
+            <span class="menu-btn" onclick="toggleSidebar()">&#9776;</span>
+            <h1>
+                <a href="@Url.Page("/Authorised/User")" id="logo">Химическая Лаборатория</a>
+            </h1>
 
-    <div id="page-wrapper">
-
-        <!-- Header -->
-        <!-- Можно попробовать разделить для возможность изменять логику -->
-         <div id="header-wrapper">
-             <div class="container">
-                 <div class="row">
-                     <div class="col-12">
-                         <header id="header">
-
-                              <h1>
-                                <a asp-controller="Home" asp-action="Index" id="logo">Химическая Лаборатория</a>@*href="@Url.Page("/Authorised/User")"*@
-                              </h1>
-
-                             <nav id="nav">
-								<!--<a href="Url.Page("/Index")">Главная</a>-->
-                                <a asp-controller="Experiment" asp-action="Index">Эксперименты</a>@*href="@Url.Page("/Home/Experiment")"*@
-                                <a asp-controller="Equipment" asp-action="Index">Оборудование</a>@*href="@Url.Page("/Home/Equipment")"*@
-                                <a asp-controller="People" asp-action="Index">Работники</a>@*href="@Url.Page("/Home/People")"*@
-                                <a asp-controller="Reagent" asp-action="Index">Реагенты</a> @*href="@Url.Page("/Home/Reagent")"*@
-                                <a asp-controller="Login" asp-action="Index">Личный кабинет</a>@*href="@Url.Page("/Authorised/User")"*@
-                             </nav>
-                         </header>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         @* @await Html.PartialAsync("Header"); *@
-
-        <!-- Main Content -->
-        <main>
-            @RenderBody()  
-        </main>
-
-        <!-- Footer -->
-		<!--<div class="content">
-			<!--class="min-h-screen flex flex-col"
-            <main class="flex-grow">
-                <div id="copyright">
-                    &copy; Дмитрий. All rights reserved. | Designed: >Ручками</a>
-                </div>
-            </main>
-            <Footer />
-		</div>-->
-
-        <footer>
-			&copy; Дмитрий. All rights reserved. | Designed: <a>Ручками</a><!--href="Url.Page("/Authorised/User")"-->
-        </footer>
-
+        </div>
+        <div class="header-right">
+            @if (isAuthenticated)
+            {
+                <span>Уведомл.</span>
+                <span>@userName</span>
+                <a href="/Account/Logout">Выйти</a>
+            }
+            else
+            {
+                <span>Уведомл.</span>
+                <a href="/Account/Login">Войти</a>
+            }
+        </div>
     </div>
 
-    @* Частичное подключение для скриптов *@
-    @*await Html.PartialAsync("ScriptsPartial")*@
+    <div id="sidebar" class="sidebar">
+        <a href="/">Дашборд</a>
+        <a href="/Tables">Таблицы</a>
+        <a href="@Url.Page("/Home/Reagent")">Реагенты</a>
+        <a href="/Analytics">Аналитика</a>
+        <a href="/Reports">Отчеты</a>
+        <a href="/Settings">Настройки</a>
+    </div>
 
-    @*<script>
-        // Получаем элемент select
-        const tableSelector = document.getElementById('tableSelector');
-        tableSelector.addEventListener('change', function () {
-            const selectedUrl = tableSelector.value; // Получаем выбранное значение (URL)
-            if (selectedUrl) { // Если URL не пустой
-                window.location.href = selectedUrl; // Переходим на выбранную страницу
-            }
-        });
+    <div id="content" class="content">
+        @RenderBody()
+    </div>
 
-        const automitizationSelector = document.getElementById('automitizationSelector');
-        automitizationSelector.addEventListener('change', function () {
-            const selectedUrl = automitizationSelector.value; // Получаем выбранное значение (URL)
-            if (selectedUrl) { // Если URL не пустой
-                window.location.href = selectedUrl; // Переходим на выбранную страницу
-            }
-        });
-    </script>*@
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var content = document.getElementById('content');
+            sidebar.classList.toggle('hidden');
+            content.classList.toggle('expanded');
+        }
+    </script>
 </body>
 </html>

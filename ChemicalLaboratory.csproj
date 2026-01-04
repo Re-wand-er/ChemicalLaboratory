@@ -32,6 +32,8 @@
 
   <ItemGroup>
     <Compile Remove="Pages\Home\People.cshtml.cs" />
+    <Compile Remove="Pages\Home\Reagent.cshtml.cs" />
+    <Compile Remove="Pages\Home\User.cshtml.cs" />
     <Compile Remove="WebUI\Views\Home\Automatization.cshtml.cs" />
     <Compile Remove="WebUI\Views\Home\Experiment.cshtml.cs" />
     <Compile Remove="WebUI\Views\Home\Reagent.cshtml.cs" />
@@ -41,6 +43,8 @@
 
   <ItemGroup>
     <Content Remove="Pages\Home\People.cshtml" />
+    <Content Remove="Pages\Home\Reagent.cshtml" />
+    <Content Remove="Pages\Home\User.cshtml" />
     <Content Remove="WebUI\Views\Home\Automatization.cshtml" />
     <Content Remove="WebUI\Views\Home\Registration.cshtml" />
     <Content Remove="WebUI\Views\Shared\Error.cshtml" />
