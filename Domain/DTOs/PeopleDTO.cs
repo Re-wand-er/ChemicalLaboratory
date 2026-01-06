@@ -1,4 +1,4 @@
-﻿namespace Domain.DTOs
+﻿namespace ChemicalLaboratory.Domain.DTOs
 {
     public record PeopleDTO
     {

@@ -1,6 +1,7 @@
 ﻿using ChemicalLaboratory.WebUI.Models.Peoples;
-using Domain.DTOs;
-using Infrastructure.Persistence.Repository;
+using ChemicalLaboratory.Domain.DTOs;
+using ChemicalLaboratory.Domain.Interfaces;
+using ChemicalLaboratory.Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChemicalLaboratory.WebUI.Controllers
@@ -8,9 +9,9 @@ namespace ChemicalLaboratory.WebUI.Controllers
 	//[Authorize(Roles = "Администратор")]
 	public class PeopleController : Controller
 	{
-		private readonly IPeopleRepository _peopleService;
+		private readonly IUserRepository _peopleService;
 
-		public PeopleController(IPeopleRepository peopleService)
+		public PeopleController(IUserRepository peopleService)
 		{
 			_peopleService = peopleService;
 		}

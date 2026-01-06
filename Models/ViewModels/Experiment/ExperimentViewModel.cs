@@ -1,4 +1,4 @@
-using Domain.DTOs;
+using ChemicalLaboratory.Domain.DTOs;
 
 namespace ChemicalLaboratory.Models.ViewModels
 {
@@ -12,15 +12,15 @@ namespace ChemicalLaboratory.Models.ViewModels
         public string? Result { get; set; }
         public string? Status { get; set; }
 
-        public ExperimentViewModel(ExperimentDTO experimentDTO) 
-        {
-            idExperiment = experimentDTO.idExperiment;
-            Name = experimentDTO.Name;
-            Description = experimentDTO.Description;
-            StartDate = experimentDTO.StartDate;
-            EndDate = experimentDTO.EndDate;
-            Result = experimentDTO.Result;
-            Status = experimentDTO.Status;
-        }
+        //public ExperimentViewModel(ExperimentDTO experimentDTO) 
+        //{
+        //    idExperiment = experimentDTO.idExperiment;
+        //    Name = experimentDTO.Name;
+        //    Description = experimentDTO.Description;
+        //    StartDate = experimentDTO.StartDate;
+        //    EndDate = experimentDTO.EndDate;
+        //    Result = experimentDTO.Result;
+        //    Status = experimentDTO.Status;
+        //}
     }
 }

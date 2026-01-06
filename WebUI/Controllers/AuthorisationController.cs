@@ -1,5 +1,4 @@
 ﻿using ChemicalLaboratory.Domain.UserRepository;
-using ChemicalLaboratory.Pages.Home;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +46,8 @@ namespace ChemicalLaboratory.WebUI.Controllers
                 return View(model);
             }
 
-            JsonRequest.InstanceFree();
-            JsonRequest.Instance(user.IdPeople);
+            //JsonRequest.InstanceFree();
+            //JsonRequest.Instance(user.IdPeople);
 
             var claims = new List<Claim>
             {

@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Persistence.Repository
+﻿namespace ChemicalLaboratory.Domain.Interfaces
 {
     public interface IBaseRepository<TEntity> where TEntity : class
     {

@@ -1,0 +1,27 @@
+﻿using ChemicalLaboratory.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
+{
+    public class ReagentCategoryConfiguration : IEntityTypeConfiguration<ReagentCategory>
+    {
+        public void Configure(EntityTypeBuilder<ReagentCategory> builder)
+        {
+            builder.ToTable("ReagentCategories");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.Description)
+                .HasMaxLength(2048);
+
+            builder.HasMany(x => x.Reagents)
+                .WithOne(x => x.Category)
+                .HasForeignKey(x => x.CategoryId);
+        }
+    }
+}

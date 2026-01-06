@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations
+namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 {
     public static class SrtringPropertyBuilder
     {

@@ -1,4 +1,4 @@
-using Domain.DTOs;
+using ChemicalLaboratory.Domain.DTOs;
 
 namespace ChemicalLaboratory.WebUI.Models.Peoples
 {

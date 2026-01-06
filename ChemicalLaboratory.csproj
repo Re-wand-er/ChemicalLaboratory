@@ -9,31 +9,28 @@
   <ItemGroup>
     <Compile Remove="Application\ORM\**" />
     <Compile Remove="Models\Новая папка\**" />
-    <Compile Remove="Pages\Models\**" />
+    <Compile Remove="Pages\**" />
     <Compile Remove="Properties\**" />
     <Compile Remove="WebUI\Views\Add\**" />
     <Content Remove="Application\ORM\**" />
     <Content Remove="Models\Новая папка\**" />
-    <Content Remove="Pages\Models\**" />
+    <Content Remove="Pages\**" />
     <Content Remove="Properties\**" />
     <Content Remove="WebUI\Views\Add\**" />
     <EmbeddedResource Remove="Application\ORM\**" />
     <EmbeddedResource Remove="Models\Новая папка\**" />
-    <EmbeddedResource Remove="Pages\Models\**" />
+    <EmbeddedResource Remove="Pages\**" />
     <EmbeddedResource Remove="Properties\**" />
     <EmbeddedResource Remove="WebUI\**" />
     <None Remove="Application\ORM\**" />
     <None Remove="Models\Новая папка\**" />
-    <None Remove="Pages\Models\**" />
+    <None Remove="Pages\**" />
     <None Remove="Properties\**" />
     <None Remove="WebUI\**" />
     <_WebToolingArtifacts Remove="Properties\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\Home\People.cshtml.cs" />
-    <Compile Remove="Pages\Home\Reagent.cshtml.cs" />
-    <Compile Remove="Pages\Home\User.cshtml.cs" />
     <Compile Remove="WebUI\Views\Home\Automatization.cshtml.cs" />
     <Compile Remove="WebUI\Views\Home\Experiment.cshtml.cs" />
     <Compile Remove="WebUI\Views\Home\Reagent.cshtml.cs" />
@@ -42,9 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Pages\Home\People.cshtml" />
-    <Content Remove="Pages\Home\Reagent.cshtml" />
-    <Content Remove="Pages\Home\User.cshtml" />
     <Content Remove="WebUI\Views\Home\Automatization.cshtml" />
     <Content Remove="WebUI\Views\Home\Registration.cshtml" />
     <Content Remove="WebUI\Views\Shared\Error.cshtml" />

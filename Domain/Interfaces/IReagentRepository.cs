@@ -1,6 +1,6 @@
-﻿using Domain.DTOs;
+﻿using ChemicalLaboratory.Domain.DTOs;
 
-namespace Infrastructure.Persistence.Repository
+namespace ChemicalLaboratory.Domain.Interfaces
 {
     public interface IReagentRepository
     {

@@ -1,6 +1,6 @@
 ﻿@{
     var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
-    var userName = isAuthenticated ? User.Identity.Name : "";
+    var userName = isAuthenticated ? User?.Identity?.Name : "";
 }
 <!DOCTYPE html>
 <html>

@@ -1,11 +1,7 @@
-using ChemicalLaboratory.Domain.UserRepository;
-using Domain;
-using Infrastructure.Persistence;
-using Infrastructure.Persistence.Repository;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
+using ChemicalLaboratory.Domain.Interfaces;
+using ChemicalLaboratory.Infrastructure.Persistence;
+using ChemicalLaboratory.Infrastructure.Persistence.Repository;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace ChemicalLaboratory
 {
@@ -27,16 +23,16 @@ namespace ChemicalLaboratory
                 });
 
             //------------------------------------------------------------------------------------------------------------
-            builder.Services.AddScoped<IUserService, UserService>();
-
             builder.Services.AddDbContext<DataBaseContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
-            builder.Services.AddScoped<IExperimentRepository, ExperimentRepository>();
+            builder.Services.AddScoped<IReagentRepository, ReagentRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-            //builder.Services.AddScoped(typeof(BaseRepository<>));
-            //builder.Services.AddScoped<BaseRepository, ReagentRepository>();
+            //builder.Services.AddScoped<IUserService, UserService>();
+
             //------------------------------------------------------------------------------------------------------------
 
             //builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -47,18 +43,7 @@ namespace ChemicalLaboratory
             //         options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Срок действия cookie
             //     });
 
-            /*
-            builder.Services.AddRazorPages()
-                 .AddRazorPagesOptions(options =>
-                 {
-                     // Укажите корневой маршрут
-                     options.Conventions.AddPageRoute("/UI", "");
-                 });
-
-            builder.Services.AddRazorPages();
-            */
             var app = builder.Build();
-
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

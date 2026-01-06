@@ -3,9 +3,7 @@ using ChemicalLaboratory.Models.Equipment;
 using ChemicalLaboratory.Models.Experiment;
 using ChemicalLaboratory.Models.People;
 using ChemicalLaboratory.Models.Reagent;
-using ChemicalLaboratory.Pages.Add;
-using ChemicalLaboratory.Pages.Home;
-using Domain.DTOs;
+using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -318,106 +316,6 @@ namespace ChemicalLaboratory.Domain
             }
         }
 
-        // mode тип update: 1 - только для оборудования, 2 - только для производителя, 3 и для того и для того
-        public async static Task UpdateEquipmentRecord(Equipment reagentDataModel, int mode)
-        {
-
-            const string queryEquipment = "UPDATE EquipmentSchema.Equipment\r\nSET     \r\nName = @Name,  \r\nDescription = @Description,  \r\nModel = @Model,  \r\nkind = @kind,     \r\nStatus = @Status\r\nWHERE idEquipment = @idEquipment; "; // Убедитесь, что имя таблицы и столбца соответствуют вашей схеме
-            const string queryManufacture = "UPDATE EquipmentSchema.Manufacturer\r\nSET     \r\nemail = @email,    \r\nPhoneNumber = @PhoneNumber,  \r\naddress = @address,     \r\nCity = @City,\r\nCountry = @Country\r\nWHERE idManufacturer = @idManufacturer;";
-            const string queryEquipmentManufacture = "UPDATE ese\r\nSET     \r\nName = @Name,   \r\nModel = @Model, \r\nDescription = @Description,\r\nkind = @kind,     \r\nStatus = @Status\r\nfrom EquipmentSchema.Equipment ese\r\njoin EquipmentSchema.EquipmentManufacturer esem on ese.idEquipment = esem.idEquipment\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;\r\n\r\nUPDATE esm\r\nSET     \r\nemail = @email,    \r\nPhoneNumber = @PhoneNumber,  \r\naddress = @address,     \r\nCity = @City,\r\nCountry = @Country\r\nfrom EquipmentSchema.Manufacturer esm \r\njoin EquipmentSchema.EquipmentManufacturer esem on esm.idManufacturer = esem.idManufacturer\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;\r\n\r\nUpdate esem\r\nset \r\n\tPurchaseDate = @PurchaseDate,\r\n\tGuaranteeDate = @GuaranteeDate\r\nfrom EquipmentSchema.EquipmentManufacturer esem\r\nwhere idEquipmentManufacturer = @idEquipmentManufacturer;";
-
-            using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
-            {
-
-                switch (mode)
-                {
-                    case 1:
-                        {
-                            using (SqlCommand command = new SqlCommand(queryEquipment, connection))
-                            {
-                                command.Parameters.AddWithValue("@Name", reagentDataModel.Name);
-                                command.Parameters.AddWithValue("@Model", reagentDataModel.Model);
-                                command.Parameters.AddWithValue("@Description", reagentDataModel.Description);
-                                command.Parameters.AddWithValue("@kind", reagentDataModel.Kind);
-                                command.Parameters.AddWithValue("@Status", reagentDataModel.Status);
-                                command.Parameters.AddWithValue("@idEquipment", reagentDataModel.Id);
-
-                                try
-                                {
-                                    await connection.OpenAsync();
-                                    int rowsAffected = await command.ExecuteNonQueryAsync();
-                                }
-                                catch //(Exception ex)
-                                {
-                                    // Обработка ошибок (можно добавить логирование)
-                                }
-                            }
-
-                            break;
-                        }
-
-                    case 2:
-                        {
-                            using (SqlCommand command = new SqlCommand(queryManufacture, connection))
-                            {
-                                command.Parameters.AddWithValue("@email", reagentDataModel.Email);
-                                command.Parameters.AddWithValue("@PhoneNumber", reagentDataModel.PhoneNumber);
-                                command.Parameters.AddWithValue("@address", reagentDataModel.Address);
-                                command.Parameters.AddWithValue("@City", reagentDataModel.City);
-                                command.Parameters.AddWithValue("@Country", reagentDataModel.Country);
-                                command.Parameters.AddWithValue("@idManufacturer", reagentDataModel.Id);
-
-                                try
-                                {
-                                    await connection.OpenAsync();
-                                    int rowsAffected = await command.ExecuteNonQueryAsync();
-                                }
-                                catch //(Exception ex)
-                                {
-                                    // Обработка ошибок (можно добавить логирование)
-                                }
-                            }
-
-                            break;
-                        }
-
-                    case 3:
-                        {
-
-                            var purchaseDate = DateOnly.Parse(reagentDataModel.PurchaseDate);
-                            var guaranteeDate = DateOnly.Parse(reagentDataModel.GuaranteeDate);
-
-                            using (SqlCommand command = new SqlCommand(queryEquipmentManufacture, connection))
-                            {
-                                command.Parameters.AddWithValue("@Name", reagentDataModel.Name);
-                                command.Parameters.AddWithValue("@Model", reagentDataModel.Model);
-                                command.Parameters.AddWithValue("@Description", reagentDataModel.Description);
-                                command.Parameters.AddWithValue("@kind", reagentDataModel.Kind);
-                                command.Parameters.AddWithValue("@Status", reagentDataModel.Status);
-                                command.Parameters.AddWithValue("@email", reagentDataModel.Email);
-                                command.Parameters.AddWithValue("@PhoneNumber", reagentDataModel.PhoneNumber);
-                                command.Parameters.AddWithValue("@address", reagentDataModel.Address);
-                                command.Parameters.AddWithValue("@City", reagentDataModel.City);
-                                command.Parameters.AddWithValue("@Country", reagentDataModel.Country);
-                                command.Parameters.AddWithValue("@PurchaseDate", reagentDataModel.PurchaseDate);
-                                command.Parameters.AddWithValue("@GuaranteeDate", reagentDataModel.GuaranteeDate);
-                                command.Parameters.AddWithValue("@idEquipmentManufacturer", reagentDataModel.Id);
-
-                                try
-                                {
-                                    await connection.OpenAsync();
-                                    int rowsAffected = await command.ExecuteNonQueryAsync();
-                                }
-                                catch //(Exception ex)
-                                {
-                                    // Обработка ошибок (можно добавить логирование)
-                                }
-                            }
-                            break;
-                        }
-                }
-            }
-        }
         private static bool ColumnExists(SqlDataReader reader, string columnName)
         {
             try
@@ -433,112 +331,6 @@ namespace ChemicalLaboratory.Domain
             }
         }
 
-        //public async static Task UpdateReagentExperimentRecord(UpdateReagent reagentDataModel)
-        //{
-        //    double mass = 0;
-
-        //    //const string query = "select mass from ReagentExperiment\r\nwhere idReagExpetiment = @idReagExpetiment";
-        //    using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
-        //    {
-        //        const string query2 = "UPDATE ReagentExperiment\r\nSET\r\nmass = @mass,\r\nUseCount = @UseCount\r\nWHERE\r\nidReagExpetiment = @idReagExpetiment;"; // ,\r\n\tPasswordHash = @PasswordHash
-
-
-        //        using (SqlCommand command = new SqlCommand(query2, connection))
-        //        {
-        //            command.Parameters.AddWithValue("@mass", reagentDataModel.UseMass);
-        //            command.Parameters.AddWithValue("@UseCount", reagentDataModel.UseCount);
-        //            command.Parameters.AddWithValue("@idReagExpetiment", reagentDataModel.idReagentExperiment);
-
-        //            try
-        //            {
-        //                await connection.OpenAsync();
-        //                int rowsAffected = await command.ExecuteNonQueryAsync();
-        //            }
-        //            catch //(Exception ex)
-        //            {
-        //                // Обработка ошибок (можно добавить логирование)
-        //            }
-        //        }
-
-        //    }
-        //}
-        public async static Task<bool> UpdateReagentExperimentRecord(UpdateReagent reagentDataModel, List<ReagentExperiment> Reagent)
-        {
-            bool result = false;
-
-            decimal mass = 0;
-            var id = Reagent.FirstOrDefault(r => r.idReagentExperiment == reagentDataModel.idReagentExperiment);
-            var massDiff = reagentDataModel.UseMass - id?.Mass;
-
-            var idReagent = id?.idReagentDataModel.Reagent.idReagent;
-
-            const string selectQuery = "select mass from ReagentSchema.Reagent\r\nwhere idReagent = @IdReagent and mass > @UseMass";
-
-            using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
-            {
-                await connection.OpenAsync();
-
-                SqlTransaction transaction = connection.BeginTransaction();
-
-                try
-                {
-
-                    // SELECT
-                    using (SqlCommand selectCommand = new SqlCommand(selectQuery, connection, transaction))
-                    {
-                        selectCommand.Parameters.AddWithValue("@IdReagent", idReagent);
-                        selectCommand.Parameters.AddWithValue("@UseMass", massDiff);
-
-                        using (SqlDataReader reader = await selectCommand.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                mass = reader.GetDecimal(0); // предполагаем, что mass всегда есть
-                            }
-                            else
-                            {
-                                throw new Exception("Недостаточно массы реагента");
-                            }
-                        }
-                    }
-
-                    // UPDATE
-                    using (SqlCommand updateCommand = new SqlCommand())
-                    {
-                        updateCommand.Connection = connection;
-                        updateCommand.Transaction = transaction;
-                        updateCommand.CommandText = @"
-                                                        UPDATE ReagentSchema.Reagent
-                                                        SET mass = @NewReagentMass
-                                                        WHERE idReagent = @idReagent;
-
-                                                        UPDATE ReagentExperiment
-                                                        SET mass = @mass, UseCount = @UseCount
-                                                        WHERE idReagExpetiment = @idReagExpetiment;
-                                                    ";
-
-                        updateCommand.Parameters.AddWithValue("@NewReagentMass", (double)mass - massDiff);
-                        updateCommand.Parameters.AddWithValue("@idReagent", idReagent);
-                        updateCommand.Parameters.AddWithValue("@mass", reagentDataModel.UseMass);
-                        updateCommand.Parameters.AddWithValue("@UseCount", reagentDataModel.UseCount);
-                        updateCommand.Parameters.AddWithValue("@idReagExpetiment", reagentDataModel.idReagentExperiment);
-
-                        await updateCommand.ExecuteNonQueryAsync();
-                    }
-
-                    transaction.Commit();
-                    result = true;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    // логирование ошибки желательно
-                    throw;
-                }
-            }
-
-            return result;
-        }
         public async static Task ReagentResidueCheck()
         {
             var lowStockReagents = new List<string>();
@@ -580,38 +372,6 @@ namespace ChemicalLaboratory.Domain
                     command.Parameters.AddWithValue("@PasswordHash", Password);
                     command.Parameters.AddWithValue("@Login", Login);
                     command.Parameters.AddWithValue("@Email", Email);
-
-                    try
-                    {
-                        connection.Open();
-                        int rowsAffected = command.ExecuteNonQuery();
-                    }
-                    catch //(Exception ex)
-                    {
-                        // Обработка ошибок (можно добавить логирование)
-                    }
-                }
-            }
-        }
-
-        public /*async*/ static void/*Task*/ UpdateExperiment(Experiment experiment)
-        {
-            const string query = "update ExperimentSchema.Experiment " +
-                "set Name = @Name, Description = @Description, StartDate = @StartDate, EndDate = @EndDate, Result = @Result, status = @status " +
-                "where idExperiment = @idExperiment";
-
-
-            using (SqlConnection connection = new SqlConnection(SQLCommand.connectionString))
-            {
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Name", experiment.Name);
-                    command.Parameters.AddWithValue("@Description", experiment.Description);
-                    command.Parameters.AddWithValue("@StartDate", experiment.StartDate);
-                    command.Parameters.AddWithValue("@EndDate", experiment.EndDate);
-                    command.Parameters.AddWithValue("@Result", experiment.Result);
-                    command.Parameters.AddWithValue("@status", experiment.Status);
-                    command.Parameters.AddWithValue("@idExperiment", experiment.Id);
 
                     try
                     {

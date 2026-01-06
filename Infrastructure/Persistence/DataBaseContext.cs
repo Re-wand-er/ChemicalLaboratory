@@ -1,54 +1,43 @@
-﻿using Infrastructure.Persistence.Configurations;
-using Domain.Entities;
+﻿using ChemicalLaboratory.Infrastructure.Persistence.Configurations;
+using ChemicalLaboratory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Persistence
+namespace ChemicalLaboratory.Infrastructure.Persistence
 {
     public class DataBaseContext : DbContext
     {
-        //ReagentSchema
+        // Reagents
+        public DbSet<ReagentCategory> ReagentCategories { get; set; }
         public DbSet<Reagent> Reagents { get; set; }
-        public DbSet<Manufacturer> Manufacturers { get; set; }
-        public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<Purity> Purities { get; set; }
-        public DbSet<ReagentManufacturer> ReagentManufacturers { get; set; }
-        //PeopleSchema
-        public DbSet<People> Peoples { get; set; }
+        public DbSet<OperationType> OperationTypes { get; set; }
+        public DbSet<ReagentOperation> ReagentOperations { get; set; }
+        // Users
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
-        //EquipmentSchema
-        public DbSet<Equipment> Equipments { get; set; }
-        public DbSet<ManufacturerEquip> ManufacturerEquips { get; set; }
-        public DbSet<EquipmentManufacturer> EquipmentManufacturers { get; set; }
-        //ExperimentSchema
-        public DbSet<Experiment> Experiments { get; set; }
-        public DbSet<History> Histories { get; set; }
-        //dbo
-        public DbSet<ReagentExperiment> ReagentExperiments { get; set; }
-        public DbSet<ExperimentEquipment> ExperimentEquipments { get; set; }
+        public DbSet<User> Users { get; set; }
+        // Suppliers
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<ReagentReceipt> ReagentReceipts { get; set; }
+        // Notifications
+        public DbSet<NotificationSetting> NotificationSettings { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Purity здесь не подключается там одна аннотация [Key]
-            modelBuilder.Entity<Purity>().ToTable("Purity", schema: "ReagentSchema");
-
-            //ReagentSchema
+            // Reagent
             modelBuilder.ApplyConfiguration(new ReagentConfiguration());
-            modelBuilder.ApplyConfiguration(new ManufacturerConfiguration());
-            modelBuilder.ApplyConfiguration(new SupplierConfiguration());
-            modelBuilder.ApplyConfiguration(new ReagentManufacturerConfiguration());
-            //PeopleSchema
-            modelBuilder.ApplyConfiguration(new PeopleConfiguration());
+            modelBuilder.ApplyConfiguration(new ReagentCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new OperationTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ReagentOperationConfiguration());
+            // User
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleConfiguration());
-            //EquipmentSchema
-            modelBuilder.ApplyConfiguration(new EquipmentConfiguration());
-            modelBuilder.ApplyConfiguration(new ManufacturerEquipConfiguration());
-            modelBuilder.ApplyConfiguration(new EquipmentManufacturerConfiguration());
-            //ExperimentSchema
-            modelBuilder.ApplyConfiguration(new ExperimentConfiguration());
-            modelBuilder.ApplyConfiguration(new HistoryConfiguration());
-            //dbo
-            modelBuilder.ApplyConfiguration(new ReagentExperimentConfigurations());
-            modelBuilder.ApplyConfiguration(new ExperimentEquipmentConfigurations());
+            // Supplier
+            modelBuilder.ApplyConfiguration(new ReagentReceiptConfiguration());
+            modelBuilder.ApplyConfiguration(new SupplierConfiguration());
+            // Notification
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationSettingConfiguration());
         }
 
         public DataBaseContext() { Database.EnsureCreated(); }
