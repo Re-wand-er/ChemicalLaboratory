@@ -1,30 +1,13 @@
-﻿using ChemicalLaboratory.Domain.Interfaces;
+﻿using ChemicalLaboratory.Domain.Entities;
+using ChemicalLaboratory.Domain.Interfaces;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repository
 {
-    public class NotificationRepository : INotificationRepository
+    public class NotificationRepository : BaseRepository<Notification>, INotificationRepository
     {
-        public Task AddAsync()
-        {
-            throw new NotImplementedException();
-        }
+        public NotificationRepository(DataBaseContext dataBaseContext) : base(dataBaseContext) { }
 
-        public Task AddRangeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<T>> GetAllAsync<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UpdateAsync()
+        public Task AddRangeAsync(IEnumerable<Notification> notifications)
         {
             throw new NotImplementedException();
         }

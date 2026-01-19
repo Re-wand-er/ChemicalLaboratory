@@ -1,10 +1,12 @@
 ﻿namespace ChemicalLaboratory.Domain.Interfaces
 {
-    public interface IBaseRepository<TEntity> where TEntity : class
+    public interface IBaseRepository<T>
     {
-        Task<TEntity> AddAsync(TEntity entity);
-        Task<bool> UpdateAsync(TEntity entity);
-        Task<TEntity> DeleteAsync(TEntity entity);
-        Task<TEntity> DeleteAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(int id);
+        Task AddAsync(T entity);
+        void Update(T entity);
+        Task DeleteAsync(int id);
+        Task SaveChangesAsync();
     }
 }

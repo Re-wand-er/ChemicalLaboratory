@@ -8,40 +8,40 @@
 
   <ItemGroup>
     <Compile Remove="Application\ORM\**" />
-    <Compile Remove="Models\Новая папка\**" />
+    <Compile Remove="log\**" />
     <Compile Remove="Pages\**" />
     <Compile Remove="Properties\**" />
-    <Compile Remove="WebUI\Views\Add\**" />
+    <Compile Remove="wwwroot\pages\Add\**" />
     <Content Remove="Application\ORM\**" />
-    <Content Remove="Models\Новая папка\**" />
+    <Content Remove="log\**" />
     <Content Remove="Pages\**" />
     <Content Remove="Properties\**" />
-    <Content Remove="WebUI\Views\Add\**" />
+    <Content Remove="wwwroot\pages\Add\**" />
     <EmbeddedResource Remove="Application\ORM\**" />
-    <EmbeddedResource Remove="Models\Новая папка\**" />
+    <EmbeddedResource Remove="log\**" />
     <EmbeddedResource Remove="Pages\**" />
     <EmbeddedResource Remove="Properties\**" />
-    <EmbeddedResource Remove="WebUI\**" />
+    <EmbeddedResource Remove="WebApi\**" />
     <None Remove="Application\ORM\**" />
-    <None Remove="Models\Новая папка\**" />
+    <None Remove="log\**" />
     <None Remove="Pages\**" />
     <None Remove="Properties\**" />
-    <None Remove="WebUI\**" />
+    <None Remove="WebApi\**" />
     <_WebToolingArtifacts Remove="Properties\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="WebUI\Views\Home\Automatization.cshtml.cs" />
-    <Compile Remove="WebUI\Views\Home\Experiment.cshtml.cs" />
-    <Compile Remove="WebUI\Views\Home\Reagent.cshtml.cs" />
-    <Compile Remove="WebUI\Views\Home\Registration.cshtml.cs" />
-    <Compile Remove="WebUI\Views\Shared\Error.cshtml.cs" />
+    <Compile Remove="wwwroot\pages\Home\Automatization.cshtml.cs" />
+    <Compile Remove="wwwroot\pages\Home\Experiment.cshtml.cs" />
+    <Compile Remove="wwwroot\pages\Home\Reagent.cshtml.cs" />
+    <Compile Remove="wwwroot\pages\Home\Registration.cshtml.cs" />
+    <Compile Remove="wwwroot\pages\Shared\Error.cshtml.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="WebUI\Views\Home\Automatization.cshtml" />
-    <Content Remove="WebUI\Views\Home\Registration.cshtml" />
-    <Content Remove="WebUI\Views\Shared\Error.cshtml" />
+    <Content Remove="wwwroot\pages\Home\Automatization.cshtml" />
+    <Content Remove="wwwroot\pages\Home\Registration.cshtml" />
+    <Content Remove="wwwroot\pages\Shared\Error.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,9 +49,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="wwwroot\pages\Home\User.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.5.1" />
-    <PackageReference Include="itext7" Version="9.1.0" />
-    <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
@@ -61,10 +64,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\assets\" />
+    <Folder Include="wwwroot\css\base\" />
+    <Folder Include="wwwroot\css\layout\" />
+    <Folder Include="wwwroot\css\components\" />
+    <Folder Include="wwwroot\js\core\" />
+    <Folder Include="wwwroot\js\pages\" />
   </ItemGroup>
 
 </Project>

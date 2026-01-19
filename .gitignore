@@ -2,6 +2,7 @@ Dockerfile*
 .vs
 /bin
 /obj
+/log
 /wwwroot/lib/*
 .json
 Properties

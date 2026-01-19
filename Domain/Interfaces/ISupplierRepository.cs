@@ -2,7 +2,7 @@
 
 namespace ChemicalLaboratory.Domain.Interfaces
 {
-    interface ISupplierRepository
+    public interface ISupplierRepository
     {
         Task<List<SuppplierDTO>> GetAllEquipmentAsync();
         Task AddRangeAsync(IEnumerable<SuppplierDTO> equipmentDTOs);
