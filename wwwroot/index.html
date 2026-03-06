@@ -3,8 +3,87 @@
 <head>
     <meta charset="utf-8" />
     <title>Redirect</title>
-    <meta http-equiv="refresh" content="0; url=/pages/authorisation.html">
+    <!--<meta http-equiv="refresh" content="0; url=/pages/authorisation.html">-->
+    <style>
+    #blueRect{
+        width:100px;
+        height:100px;
+        background-color:blue;
+    }
+    #redRect{
+        width:50px;
+        height:50px;
+        background-color:red;
+    }
+
+    #dragged{
+        height: 200px;
+        width: 300px;
+        border: #000 1px dashed;
+    }
+
+    #progress-bar {width:100px; height:20px; border:1px solid #888;}
+    #progress {width:0; height:100%; background-color:#ccc;}
+    </style>
 </head>
 <body>
+    <div class="node">
+
+        <h1 id="firstId">Значение номер 1</h1></br>
+
+        <div id="secondId">
+            <p>Что-то</p>
+            <a>Новое</a>
+        </div>
+
+        <div id="blueRect" draggable="true">
+            <div id="redRect"></div>
+        </div>
+        
+        <button id="btn">Пустое значение</button>
+    </div>
+
+    <form name="registrationForm">
+        <input type="text" id="login" name="login"/>
+        <p></p>
+        <input type="password" id="password" name="password"/>
+        <p></p>
+        <input type="button" name="button" value="Отправить"/>  <!--type="submit"-->
+        <input type="button" name="buttonRemove" value="Удалить"/>   
+    </form>
+
+    <my-html-teg id="myHtmlTeg"></my-html-tegs>
+    <a id="link" href="https://google.com" onclick="a_click(this, event)">Google.com</a> <!--Переадресации не будет при return false-->
+    
+    <form name="myForm">
+        <label><input type="radio" name="languages" value="Java" href="/java" checked/>Java</label>
+        <label><input type="radio" name="languages" value="C#"   href="/cSharp" />C#</label>
+        <label><input type="radio" name="languages" value="C++"  href="/cPlusPluc"/>C++</label>
+    </form>
+    <div id="printBlock"></div>
+
+    <form id="SelLag" name="SelLang">
+        <select name="selectLanguages" size="4" multiple>
+            <option value="JS">JS</option>
+            <option value="Java" selected>Java</option>
+            <option value="C#">C#</option>
+            <option value="C++">C++</option>
+        </select>
+    </form>
+
+    <a id="content"></a>
+
+    <input type="file" id="fileInput" name="files[]" multiple></input>
+    <div id="progress-bar">
+        <div id="progress"></div>
+    </div>
+    <div id="dragged"></div>
+    <div id="fileList"></div>
+    
+    <canvas id="canvas" height="500" width="500"></canvas>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script> <!--Для JSX-->
+    <!-- Обязательно type="type/babel" data-type="module" для работы JSX-->
+    <script type="text/babel" data-type="module" src="js/site.js"></script> 
 </body>
 </html>

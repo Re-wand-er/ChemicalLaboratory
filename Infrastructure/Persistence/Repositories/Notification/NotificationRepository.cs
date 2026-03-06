@@ -1,7 +1,7 @@
 ﻿using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Interfaces;
 
-namespace ChemicalLaboratory.Infrastructure.Persistence.Repository
+namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
     public class NotificationRepository : BaseRepository<Notification>, INotificationRepository
     {

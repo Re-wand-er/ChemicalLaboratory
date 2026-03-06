@@ -1,7 +1,7 @@
 ﻿using ChemicalLaboratory.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChemicalLaboratory.Infrastructure.Persistence.Repository
+namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {

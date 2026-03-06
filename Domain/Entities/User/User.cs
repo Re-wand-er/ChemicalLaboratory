@@ -12,7 +12,7 @@
         public string? SystemRole { get; set; }
         public string? JobPosition { get; set; }
         public string Login { get; set; } = null!;
-        public string? PasswordHash { get; set; }
+        public string? PasswordHash { get; set; } = null!;
         public bool IsActive { get; set; }
 
         public WorkSchedule WorkSchedule { get; set; } = null!;

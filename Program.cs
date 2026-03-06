@@ -3,10 +3,12 @@ using Serilog.Events;
 using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Application.UseCases.Services;
 using ChemicalLaboratory.Infrastructure.Persistence;
-using ChemicalLaboratory.Infrastructure.Persistence.Repository;
+using ChemicalLaboratory.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ChemicalLaboratory.Application.Interfaces;
+using Mapster;
 
 namespace ChemicalLaboratory
 {
@@ -34,6 +36,7 @@ namespace ChemicalLaboratory
             builder.Host.UseSerilog();
 
             //------------------------------------------------------------------------------------------------------------
+
             builder.Services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
@@ -49,21 +52,16 @@ namespace ChemicalLaboratory
 
             builder.Services.AddAuthorization();
 
+            //------------------------------------------------------------------------------------------------------------
+
+            builder.Services.AddControllers();
 
             //------------------------------------------------------------------------------------------------------------
-            //builder.Services.AddControllersWithViews()
-            //    .AddRazorOptions(options =>
-            //    {
-            //        options.ViewLocationFormats.Clear();
-            //        options.ViewLocationFormats.Add("/WebUI/Views/{1}/{0}.cshtml");
-            //        options.ViewLocationFormats.Add("/WebUI/Views/Home/{0}.cshtml");
-            //        options.ViewLocationFormats.Add("/WebUI/Views/Shared/{0}.cshtml");
-            //    });
-            builder.Services.AddControllers();
-            //------------------------------------------------------------------------------------------------------------
+
             builder.Services.AddDbContext<DataBaseContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IReagentRepository, ReagentRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
@@ -75,10 +73,10 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<NotificationService>();
 
             //------------------------------------------------------------------------------------------------------------
-            //builder.Services.AddHttpClient("ApiClient", client =>
-            //{
-            //    client.BaseAddress = new Uri("https://localhost:7248/");
-            //});
+
+            builder.Services.AddMapster();
+
+            //------------------------------------------------------------------------------------------------------------
 
             var app = builder.Build();
 

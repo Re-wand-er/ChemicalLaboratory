@@ -1,83 +1,67 @@
-﻿using ChemicalLaboratory.Application.UseCases.DTOs;
+﻿using ChemicalLaboratory.Application.Interfaces;
+using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Interfaces;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
     public class NotificationService
     {
-        private readonly INotificationRepository _notificationRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<NotificationService> _logger;
 
-        public NotificationService(INotificationRepository notificationRepository, ILogger<NotificationService> logger)
+        public NotificationService(IUnitOfWork unitOfWork, ILogger<NotificationService> logger)
         {
-            _notificationRepository = notificationRepository;
+            _unitOfWork = unitOfWork;
             _logger = logger;
-            //_notificationRepository.Update();
         }
 
         public async Task<IEnumerable<NotificationDTO>> GetAllAsync() 
         {
             _logger.LogInformation("Get all notifications");
-            var notifications = await _notificationRepository.GetAllAsync();
-            return notifications
-                    .Select(n => new NotificationDTO(n.Id, n.ReagentId, n.NotificationType, n.Message, n.CreatedAt, n.IsRead))
-                    .ToList();
+            var notifications = await _unitOfWork.Notifications.GetAllAsync();
+            return notifications.Adapt<IEnumerable<NotificationDTO>>();
         }
 
         public async Task<NotificationDTO?> GetByIdAsync(int id) 
         {
             _logger.LogInformation($"Get notification with id: {id}");
-            var notification = await _notificationRepository.GetByIdAsync(id);
+            var notification = await _unitOfWork.Notifications.GetByIdAsync(id);
             if (notification == null)
             {
                 _logger.LogWarning($"Notification with id = {id} not found");
                 return null;
             }
 
-            return new NotificationDTO(notification.Id, notification.ReagentId, notification.NotificationType, notification.Message, notification.CreatedAt, notification.IsRead);
+            return notification.Adapt<NotificationDTO>();
         }
 
-        public async Task AddAsync(NotificationDTO notificationDTO) 
+        public async Task AddAsync(NotificationDTO dto) 
         {
-            _logger.LogInformation($"Creating notification with ReagentId={notificationDTO.ReagentId} with NotificationType={notificationDTO.NotificationType}");
-            var notification = new Notification()
-            { 
-                Id = notificationDTO.Id,
-                ReagentId = notificationDTO.ReagentId,
-                NotificationType = notificationDTO.NotificationType,
-                Message = notificationDTO.Message,
-                CreatedAt = notificationDTO.CreatedAt,
-                IsRead = notificationDTO.IsRead
-            };
-
-            await _notificationRepository.AddAsync(notification);
-            await _notificationRepository.SaveChangesAsync();
+            _logger.LogInformation($"Creating notification with ReagentId={dto.ReagentId} with NotificationType={dto.NotificationType}");
+            var notification = dto.Adapt<Notification>();
+               
+            await _unitOfWork.Notifications.AddAsync(notification);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteAsync(int id) 
         {
             _logger.LogInformation($"Deleted notification with id: {id}");
-            await _notificationRepository.DeleteAsync(id);
-            await _notificationRepository.SaveChangesAsync();
+
+            await _unitOfWork.Notifications.DeleteAsync(id);
+            await _unitOfWork.SaveAsync();
         }
 
-        public async Task Update(NotificationDTO notificationDTO)
+        public async Task UpdateAsync(NotificationDTO dto)
         {
-            _logger.LogInformation($"Updated notification with id: {notificationDTO.Id}");
-            var notification = new Notification()
-            {
-                Id = notificationDTO.Id,
-                ReagentId = notificationDTO.ReagentId,
-                NotificationType = notificationDTO.NotificationType,
-                Message = notificationDTO.Message,
-                CreatedAt = notificationDTO.CreatedAt,
-                IsRead = notificationDTO.IsRead
-            };
+            _logger.LogInformation($"Updated notification with id: {dto.Id}");
+            var notification = dto.Adapt<Notification>();
 
-            _notificationRepository.Update(notification);
-            await _notificationRepository.SaveChangesAsync();
+            _unitOfWork.Notifications.Update(notification);
+            await _unitOfWork.SaveAsync();
         }
     }
 }
