@@ -1,0 +1,11 @@
+.sidebar {
+    width: 250px;
+    background: #f4f4f4;
+    transition: transform 0.35s ease, margin-left 0.35s ease;
+    overflow: hidden;
+}
+
+.closed {
+    transform: translateX(-100%); 
+    margin-left: -250px; /* Схлопываем место, которое занимал блок */
+}

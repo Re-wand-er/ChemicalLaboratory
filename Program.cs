@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ChemicalLaboratory.Application.Interfaces;
 using Mapster;
+//using Vite.AspNetCore;
 
 namespace ChemicalLaboratory
 {
@@ -54,6 +55,22 @@ namespace ChemicalLaboratory
 
             //------------------------------------------------------------------------------------------------------------
 
+            // 1. Добавляем политику CORS
+            // Для получения запросов от другого адреса
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:5173") // Адрес вашего фронтенда
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                    // Для разработки можно разрешить всё:
+                    // policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
+            //------------------------------------------------------------------------------------------------------------
+
             builder.Services.AddControllers();
 
             //------------------------------------------------------------------------------------------------------------
@@ -80,17 +97,20 @@ namespace ChemicalLaboratory
 
             var app = builder.Build();
 
+            app.UseCors("AllowFrontend"); // для app.UseAuthorization())
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.MapControllers();
+            
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
 
             app.Use(async (context, next) =>
             {
@@ -101,15 +121,6 @@ namespace ChemicalLaboratory
                 }
                 await next();
             });
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.MapControllers();
-            //app.MapControllerRoute(
-            //    name: "default",
-            //    pattern: "{controller=Home}/{action=Index}/{id?}"
-            //    );
 
             app.Run();
         }

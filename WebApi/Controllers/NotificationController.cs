@@ -18,7 +18,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
             _notificationService = notificationService;
         }
 
-        [HttpGet] public async Task<IActionResult> GetAllNotifications() => Ok(await _notificationService.GetAllAsync());
+        [HttpGet] public async Task<IActionResult> GetAllNotifications() => Ok(await _notificationService.GetAllAsync()); 
         [HttpGet("{id:int}")] public async Task<IActionResult> GetNotificationById(int id) => Ok(await _notificationService.GetByIdAsync(id));
 
         [HttpPost]

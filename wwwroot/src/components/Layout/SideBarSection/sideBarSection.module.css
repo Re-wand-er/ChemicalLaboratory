@@ -1,0 +1,38 @@
+.menuItem {
+    list-style: none;
+    width: 100%;
+}
+
+.toggleBtn, .singleLink {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.singleLink:hover, .toggleBtn:hover {
+    background: #e9ecef;
+}
+
+.subMenu {
+    /* list-style: none; Отображение точек рядом с элементами листа*/
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding-left: 20px; /* Сдвиг вложенных ссылок вправо */
+}
+
+.show {
+    max-height: 200px;
+} 
+
+.rotate{
+    transform: rotate(180deg);
+}

@@ -4,5 +4,7 @@ Dockerfile*
 /obj
 /log
 /wwwroot/lib/*
+wwwroot/node_modules/*
+wwwroot/Temp/*
 .json
 Properties

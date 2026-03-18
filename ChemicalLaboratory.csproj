@@ -49,10 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="wwwroot\pages\Home\User.cshtml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.5.1" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
@@ -69,6 +65,7 @@
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="Vite.AspNetCore" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>
