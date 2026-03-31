@@ -3,39 +3,54 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { Layout } from './components/Layout/Layout.jsx';
-
-/*Дашборд*/
-const Dashboard = lazy(()=>import('./components/Dashboard/Dashboard.jsx'));
-
-/*Учет*/
-const Inventory = lazy(()=>import('./components/Inventory/Inventory.jsx'));
-const Reagents = lazy(()=>import('./components/Inventory/Reagents.jsx'));
-const Manufacturers = lazy(()=>import('./components/Inventory/Manufacturers.jsx'));
-const Suppliers = lazy(()=>import('./components/Inventory/Suppliers.jsx'));
-
-/*Аналитика*/
-const Analytics = lazy(()=>import('./components/Analytics/Analytics.jsx'));
-const Statistics = lazy(()=>import('./components/Analytics/Statistics.jsx'));
-const Graphics = lazy(()=>import('./components/Analytics/Graphics.jsx'));
-const Predicts = lazy(()=>import('./components/Analytics/Predicts.jsx'));
-
-/*Отчеты*/
-const Reports = lazy(()=>import('./components/Reports/Reports.jsx'));
-
-/*Настройки*/
-const Settings = lazy(()=>import('./components/Settings/Settings.jsx'));
-const Users = lazy(()=>import('./components/Settings/Users.jsx'));
-const Categories = lazy(()=>import('./components/Settings/Categories.jsx'));
-const Notifications = lazy(()=>import('./components/Settings/Notifications.jsx'));
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+import { AuthProvider } from './context/AuthContext'; // ← Добавьте эту строку
+import { Login } from './pages/Login/Login.jsx';
+import { ResetPassword } from './pages/Login/ResetPassword.jsx';
 
 import './assets/main.css';
 
+/*Дашборд*/
+const Dashboard = lazy(()=>import('./pages/Dashboard/Dashboard.jsx'));
+
+/*Учет*/
+const Inventory = lazy(()=>import('./pages/Inventory/Inventory.jsx'));
+const Reagents = lazy(()=>import('./pages/Inventory/Reagents/Reagents.jsx'));
+const Manufacturers = lazy(()=>import('./pages/Inventory/Manufacturers.jsx'));
+const Suppliers = lazy(()=>import('./pages/Inventory/Suppliers.jsx'));
+
+/*Аналитика*/
+const Analytics = lazy(()=>import('./pages/Analytics/Analytics.jsx'));
+const Statistics = lazy(()=>import('./pages/Analytics/Statistics.jsx'));
+const Graphics = lazy(()=>import('./pages/Analytics/Graphics.jsx'));
+const Predicts = lazy(()=>import('./pages/Analytics/Predicts.jsx'));
+
+/*Отчеты*/
+const Reports = lazy(()=>import('./pages/Reports/Reports.jsx'));
+
+/*Настройки*/
+const Settings = lazy(()=>import('./pages/Settings/Settings.jsx'));
+const Users = lazy(()=>import('./pages/Settings/Users.jsx'));
+const Categories = lazy(()=>import('./pages/Settings/Categories.jsx'));
+const Notifications = lazy(()=>import('./pages/Settings/Notifications.jsx'));
+
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
+    <AuthProvider>
       <Suspense fallback={<div>Подождите, идет загрузка...</div>}>
       <Routes>
         
-        <Route path="/" element={<Layout />}>
+        <Route path="/login" element={<Login />}></Route>
+        <Route path="/reset-password" element={<ResetPassword />}></Route>
+
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }>
+
           <Route index element={<h1>Home</h1>}/>
           <Route path="leave" element={<h2>Выйти</h2>}/>
           <Route path="secret" element={<h2>Поздравляю вы вышли на секретную страницу</h2>}/>
@@ -68,5 +83,6 @@ createRoot(document.getElementById('root')).render(
         </Route>
       </Routes>
       </Suspense>
+    </AuthProvider>
   </BrowserRouter>
 );

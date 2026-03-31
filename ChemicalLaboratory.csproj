@@ -11,22 +11,30 @@
     <Compile Remove="log\**" />
     <Compile Remove="Pages\**" />
     <Compile Remove="Properties\**" />
+    <Compile Remove="wwwroot\css\**" />
+    <Compile Remove="wwwroot\js\**" />
     <Compile Remove="wwwroot\pages\Add\**" />
     <Content Remove="Application\ORM\**" />
     <Content Remove="log\**" />
     <Content Remove="Pages\**" />
     <Content Remove="Properties\**" />
+    <Content Remove="wwwroot\css\**" />
+    <Content Remove="wwwroot\js\**" />
     <Content Remove="wwwroot\pages\Add\**" />
     <EmbeddedResource Remove="Application\ORM\**" />
     <EmbeddedResource Remove="log\**" />
     <EmbeddedResource Remove="Pages\**" />
     <EmbeddedResource Remove="Properties\**" />
     <EmbeddedResource Remove="WebApi\**" />
+    <EmbeddedResource Remove="wwwroot\css\**" />
+    <EmbeddedResource Remove="wwwroot\js\**" />
     <None Remove="Application\ORM\**" />
     <None Remove="log\**" />
     <None Remove="Pages\**" />
     <None Remove="Properties\**" />
     <None Remove="WebApi\**" />
+    <None Remove="wwwroot\css\**" />
+    <None Remove="wwwroot\js\**" />
     <_WebToolingArtifacts Remove="Properties\**" />
   </ItemGroup>
 
@@ -50,12 +58,11 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.5.1" />
+    <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.1" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
-    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
@@ -66,14 +73,6 @@
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Vite.AspNetCore" Version="2.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\css\base\" />
-    <Folder Include="wwwroot\css\layout\" />
-    <Folder Include="wwwroot\css\components\" />
-    <Folder Include="wwwroot\js\core\" />
-    <Folder Include="wwwroot\js\pages\" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,11 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/supplier")]
     public class SupplierController : ControllerBase

@@ -1,11 +1,20 @@
 .sidebar {
-    width: 250px;
-    background: #f4f4f4;
-    transition: transform 0.35s ease, margin-left 0.35s ease;
-    overflow: hidden;
+  width: 250px;
+  background: #f4f4f4;
+  transition: width 0.35s ease, padding 0.35s ease;
+  overflow: hidden;
+  flex-shrink: 0; /* Не даёт сайдбару сжиматься самопроизвольно */
 }
 
-.closed {
-    transform: translateX(-100%); 
-    margin-left: -250px; /* Схлопываем место, которое занимал блок */
+.sidebar.closed {
+  width: 0;
+  padding: 0;
+  border: none;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
 }

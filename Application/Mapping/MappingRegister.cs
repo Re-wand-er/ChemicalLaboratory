@@ -1,9 +1,8 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
 using ChemicalLaboratory.Domain.Entities;
-using Mapster;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
+using Mapster;
 
 namespace ChemicalLaboratory.Application.Mapping
 {
@@ -27,6 +26,7 @@ namespace ChemicalLaboratory.Application.Mapping
 
             // Users ------------------------------------------------
             config.NewConfig<User, UserReadDTO>();
+            config.NewConfig<UserReadDTO, User>();
 
             config.NewConfig<UserUpdateDTO, User>()
                 .Ignore(d => d.PasswordHash ?? "" );

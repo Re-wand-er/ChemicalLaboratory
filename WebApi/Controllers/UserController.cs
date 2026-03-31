@@ -1,11 +1,12 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {
-	[ApiController]
+    [Authorize]
+    [ApiController]
     [Route("api/user")]
     public class UserController : ControllerBase
 	{

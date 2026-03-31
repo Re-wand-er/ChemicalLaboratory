@@ -1,9 +1,11 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("api/reagent")]
 	public class ReagentController : ControllerBase
@@ -17,7 +19,13 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			_logger = logger;
 		}
 
-		[HttpGet] public async Task<IActionResult> GetAllReagents() => Ok(await _reagentService.GetAllAsync());
+		[HttpGet] public async Task<IActionResult> GetAllReagents() 
+		{
+			var result = await _reagentService.GetAllAsync();
+
+            return Ok(result);
+		}
+
 		[HttpGet("{id:int}")] public async Task<IActionResult> GetReagentById(int id) => Ok(await _reagentService.GetByIdAsync(id));
 
 		[HttpPost]

@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import { ruRU } from '@mui/x-data-grid/locales';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import { Stack, IconButton } from '@mui/material';
+
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import CustomToolBar from './CustomToolBar.jsx';
+
+import styles from './dataTable.module.css';
+
+const columnsWithActions = (props) => [
+    ...props.columns, // существующие колонки
+    {
+        field: 'actions',
+        headerName: 'Действия',
+        width: 120,
+        sortable: false,
+        renderCell: (params) => {
+            const handleEdit = () => {
+                if (props.onEdit) props.onEdit(params.row);
+                else console.error('Не найден обработчик для обновления записи');
+            };
+
+            const handleDelete = () => {
+                console.log('Удалить:', params.row);
+                if (props.onDelete) props.onDelete(params.row);
+                else console.error('Не найден обработчик для удаления записи');
+            };
+
+            return (
+                <Stack direction="row" spacing={1}>
+                    <IconButton
+                        color="primary"
+                        onClick={handleEdit}
+                        size="medium"
+                        
+                    >
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton
+                        color="error"
+                        onClick={handleDelete}
+                        size="medium"
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Stack>
+            );
+        }    
+    }
+];
+
+const DataTable = (props) => {
+    const apiRef = useGridApiRef();
+
+    const [rowSelectionMode, setRowSelectionModel] = useState([]);
+    const [localLoading, setLocalLoading] = useState(false);
+
+    const isLoading = props.loading || localLoading;
+    const useAutoHeight = props.rows.length < 10;
+
+
+    ///// Служат адапторами /////////////////////////////
+    const handleCreate = () => props.onAdd?.();
+    
+    const handleRefresh = async (value) => {
+        setLocalLoading(true);
+
+        try { await props.onRefresh?.(value); } 
+        finally { setLocalLoading(false); }
+    };
+
+    const handleDeleteClick = () => {
+        const rows = apiRef.current.getSelectedRows(); 
+        if (rows.size > 0) { props.onDelete?.(rows);}
+    };
+    /////////////////////////////////////////////////////
+
+    
+    return (
+        <div className={styles.centerAlignment}>
+            <div style={{ 
+                width: 'fit-content', 
+                maxWidth: '100%',
+                height: useAutoHeight ? 'auto' : 696,
+                overflow: useAutoHeight ? 'visible' : 'auto'
+            }}>
+                <DataGrid
+                    apiRef={apiRef}
+                    rows={props.rows}
+                    columns={columnsWithActions(props)}
+                    autoHeight={useAutoHeight}
+                    localeText={ruRU}
+                    density="standard"
+
+                    initialState={{ 
+                        pagination: { paginationModel: { pageSize: 10 } } 
+                    }}
+                    pageSizeOptions={[5, 10, 20]}
+
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                    onRowSelectionModelChange={setRowSelectionModel}
+                   
+                    slots={{ toolbar: CustomToolBar }}
+                    slotProps={{
+                        toolbar: {
+                            isLoading,
+                            selectedCount: apiRef.current ? apiRef.current.getSelectedRows().size : 0,
+                            onCreate: handleCreate,
+                            onRefresh: handleRefresh,
+                            onDelete: handleDeleteClick,
+                        }
+                    }}
+                    
+                    keepNonExistentRowsSelected
+                    loading={isLoading}
+                    showToolbar
+                />
+            </div>
+        </div>
+    );
+};
+
+export default DataTable;

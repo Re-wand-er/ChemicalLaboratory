@@ -1,15 +1,16 @@
-using Serilog;
-using Serilog.Events;
 using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Application.UseCases.Services;
 using ChemicalLaboratory.Infrastructure.Persistence;
 using ChemicalLaboratory.Infrastructure.Persistence.Repositories;
+using ChemicalLaboratory.Application.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ChemicalLaboratory.Application.Interfaces;
+using Serilog.Events;
+using Serilog;
 using Mapster;
-//using Vite.AspNetCore;
+using ChemicalLaboratory.Infrastructure.Email;
 
 namespace ChemicalLaboratory
 {
@@ -38,32 +39,54 @@ namespace ChemicalLaboratory
 
             //------------------------------------------------------------------------------------------------------------
 
-            builder.Services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
+                    var key = builder.Configuration["SecretKey"];
+                    // Валидация токена при котором в загаловке было бы Authorisation ...; Barear ...
+                    // Удобно например для мобильного или пк фронтенда
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SUPER_SECRET_UNBEATABLE_KEY"))
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+
+                            if (context.Request.Cookies.ContainsKey("jwtToken"))
+                            {
+                                context.Token = context.Request.Cookies["jwtToken"];
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
-
+            
             builder.Services.AddAuthorization();
+
+            // Для сохранения поля с кодом на время
+            builder.Services.AddDistributedMemoryCache();
 
             //------------------------------------------------------------------------------------------------------------
 
+            var frontendIP = builder.Configuration["FrontendIP"];
             // 1. Добавляем политику CORS
             // Для получения запросов от другого адреса
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173") // Адрес вашего фронтенда
+                    policy.WithOrigins(frontendIP!) // Адрес вашего фронтенда
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                     // Для разработки можно разрешить всё:
                     // policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
@@ -84,6 +107,10 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+
             builder.Services.AddScoped<ReagentService>();
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<SupplierService>();
@@ -97,12 +124,17 @@ namespace ChemicalLaboratory
 
             var app = builder.Build();
 
-            app.UseCors("AllowFrontend"); // для app.UseAuthorization())
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseCors("AllowFrontend"); // для CORS
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHttpsRedirection();
+
+            //app.UseStaticFiles();
+
             app.MapControllers();
             
             // Configure the HTTP request pipeline.
@@ -112,15 +144,15 @@ namespace ChemicalLaboratory
                 app.UseHsts();
             }
 
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Path == "/")
-                {
-                    context.Response.Redirect("/index.html");
-                    return;
-                }
-                await next();
-            });
+            //app.Use(async (context, next) =>
+            //{
+            //    if (context.Request.Path == "/")
+            //    {
+            //        context.Response.Redirect("/index.html");
+            //        return;
+            //    }
+            //    await next();
+            //});
 
             app.Run();
         }

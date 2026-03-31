@@ -1,12 +1,13 @@
-﻿using System.Net;
+﻿using ChemicalLaboratory.Application.Interfaces;
+using System.Net;
 using System.Net.Mail;
 
 namespace ChemicalLaboratory.Infrastructure.Email
 {
-    public class EMailSender
+    public class EmailSender : IEmailSender
     {
-        public EMailSender() { }
-        public static async Task SendMailToEmail(string email, string subject, string body)//int id_marker
+        public EmailSender() { }
+        public async Task SendMailToEmail(string email, string subject, string body)
         {
             await Task.Run(() =>
             {
@@ -29,26 +30,9 @@ namespace ChemicalLaboratory.Infrastructure.Email
                     EnableSsl = true
                 };
 
-                /*await */
                 smtp_Client.SendMailAsync(mail);
             });
 
         }
-    }
-
-    public class RandomIdMarker
-    {
-        private static int _idmarker = CreateRandIdMarker();
-        public static int IdMarker
-        {
-            get => _idmarker;
-            set { _idmarker = value; }
-        }
-        private static int CreateRandIdMarker()
-        {
-            Random rand = new Random();
-            return rand.Next(100000, 999999);
-        }
-
     }
 }

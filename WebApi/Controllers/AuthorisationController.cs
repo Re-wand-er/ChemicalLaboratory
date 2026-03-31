@@ -1,131 +1,76 @@
 ﻿using ChemicalLaboratory.Application.UseCases.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using ChemicalLaboratory.WebApi.Models;
-
 namespace ChemicalLaboratory.WebApi.Controllers
 {
-    public class AuthorisationController : Controller
+    [ApiController]
+    [Route("api/auth")]
+    public class AuthorisationController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly ILogger<AuthorisationController> _logger;
 
-        public AuthorisationController(UserService userService)
+        public AuthorisationController(UserService userService, ILogger<AuthorisationController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] AuthorisationDTO model)
         {
-            return View("Authorisation", new AuthorisationModel());
+            _logger.LogInformation($"Find user with login = {model.Login}");
+
+            var userData = await _userService.LoginAsync(model.Login, model.Password);
+            if (userData == null) return Unauthorized();
+
+            Response.Cookies.Append("jwtToken", userData.Token, GetCookieOptions(DateTime.UtcNow.AddDays(1)));
+            return Ok(new { user = userData.User });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(AuthorisationModel model)
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Password))
-            {
-                ModelState.AddModelError(string.Empty, "Пароль не может быть пустым!");
-                model.ErrorMessage = "Пароль не может быть пустым!";
-                return View(model);
-            }
-
-            //var user = _userService.ValidateUser(model.Login, model.Password);
-            //if (user == null)
-            //{
-            //    ModelState.AddModelError(string.Empty, "Неверное имя пользователя или пароль.");
-            //    model.ErrorMessage = "Неверный логин или пароль!";
-            //    return View(model);
-            //}
-
-            //JsonRequest.InstanceFree();
-            //JsonRequest.Instance(user.IdPeople);
-
-            //var claims = new List<Claim>
-            //{
-            //    new Claim(ClaimTypes.NameIdentifier, user.IdPeople.ToString()),
-            //    new Claim(ClaimTypes.Name, user.Login),
-            //    new Claim(ClaimTypes.Role, user.SystemRole)
-            //};
-
-            //var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            //var principal = new ClaimsPrincipal(identity);
-
-            //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            return RedirectToAction("Index", "Home"); // или куда нужно перенаправить
+            Response.Cookies.Delete("jwtToken", GetCookieOptions());
+            return Ok(new { message = "Logged out" });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendCode(AuthorisationModel model)
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()
         {
-            if (!ModelState.IsValid)
-            {
-                return View("Login", model);
-            }
+            // Достаем ID из Claims токена
+            var userIdClaim = User.FindFirst("id");
+            if (userIdClaim == null) return Unauthorized();
 
-            //JsonRequest.InstanceFree();
-            //model.IdMarker = RandomIdMarker.IdMarker;
-            //JsonRequest.Instance(model.IdMarker);
-
-            string subject = "Код идентификации:";
-            //string body = "<h2>Пожалуйста введите ваш код в окне приложения.</h2><h3>Ваш идентификационный номер: </h3>" + model.IdMarker;
-
-            try
-            {
-                //await MailSender.SendMailToEmail(model.Email, subject, body);
-            }
-            catch (Exception)
-            {
-                model.ErrorMessage = "Пожалуйста, корректно введите поле для почты";
-            }
-
-            return View("Login", model);
+            var user = await _userService.GetByIdAsync(int.Parse(userIdClaim.Value));
+            return Ok(new { user });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ChangePassword(AuthorisationModel model)
+
+        [HttpPost("email-access")]
+        public async Task<IActionResult> SendCode([FromBody] EmailRequestDTO model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("Login", model);
-            }
-
-            try
-            {
-                //if (int.Parse(model.Code) == JsonRequest.Instance(model.IdMarker).id)
-                //{
-                //    SQLCommand.UpdatePeoplePassword(model.NewPassword, model.Login, model.Email);
-                //    return RedirectToAction("Login"); // Возврат к странице логина после смены пароля
-                //}
-                //else
-                //{
-                //    ViewData["Message"] = "Неправильный идентификатор";
-                //}
-            }
-            catch (Exception)
-            {
-                ViewData["Message"] = "Ошибка при смене пароля";
-            }
-
-            return View("Login", model);
+            await _userService.SendResetCodeAsync(model.Email);
+            return Ok();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Logout()
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ChangePasswordDTO model)
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login");
+            var success = await _userService.ResetPasswordAsync(model.Email, model.Code, model.Password);
+            return success ? Ok() : BadRequest(new { message = "Код неверен или просрочен" });
         }
+
+        private CookieOptions GetCookieOptions(DateTime? expires = null) => new()
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = expires,
+            Path = "/"
+        };
     }
 }

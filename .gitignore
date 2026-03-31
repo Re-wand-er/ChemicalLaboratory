@@ -1,10 +1,10 @@
 Dockerfile*
-.vs
+*.vs
 /bin
 /obj
 /log
 /wwwroot/lib/*
 wwwroot/node_modules/*
 wwwroot/Temp/*
-.json
+*.json
 Properties
