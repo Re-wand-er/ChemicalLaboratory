@@ -1,7 +1,10 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
+using ChemicalLaboratory.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mapster;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {
@@ -11,48 +14,81 @@ namespace ChemicalLaboratory.WebApi.Controllers
 	public class ReagentController : ControllerBase
 	{
 		private readonly ReagentService _reagentService;
+		private readonly ReagentForecastService _reagentForecastService;
 		private readonly ILogger<ReagentController> _logger;
 
-		public ReagentController(ReagentService reagentService, ILogger<ReagentController> logger)
+		public ReagentController(ReagentService reagentService, ReagentForecastService reagentForecastService, ILogger<ReagentController> logger)
 		{
 			_reagentService = reagentService;
+			_reagentForecastService = reagentForecastService;
 			_logger = logger;
 		}
 
 		[HttpGet] public async Task<IActionResult> GetAllReagents() 
 		{
 			var result = await _reagentService.GetAllAsync();
-
             return Ok(result);
 		}
 
 		[HttpGet("{id:int}")] public async Task<IActionResult> GetReagentById(int id) => Ok(await _reagentService.GetByIdAsync(id));
 
-		[HttpPost]
-		public async Task<IActionResult> AddReagent([FromBody] ReagentDTO dto) 
+        [HttpGet("name")]
+        public async Task<IActionResult> GetCategoriesName() => Ok(await _reagentService.GetAllIdNameAsync());
+
+
+        [HttpPost]
+		public async Task<IActionResult> AddReagent([FromBody] ReagentCreateDTO dto) 
 		{
 			_logger.LogInformation("Creating Reagent in controller");
 
-			await _reagentService.AddAsync(dto);
+			await _reagentService.AddAsync(dto.Adapt<ReagentDTO>());
 			return Ok(new { succes = true });
 		}
 
-		[HttpDelete("{id:int}")]
-		public async Task<IActionResult> DeleteReagent(int id) 
+
+		[HttpPost("bulk-delete")]
+		public async Task<IActionResult> DeleteReagent([FromBody] DeleteManyRequestDTO request) 
 		{
-            _logger.LogInformation($"Deleted reagent with id = {id} in controller");
+            _logger.LogInformation($"Deleted reagent with ids in ReagentController");
 
-            await _reagentService.DeleteAsync(id);
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _reagentService.DeleteAsync(request.Ids);
 			return Ok(new { succes = true });
 		}
+
 
 		[HttpPut("{id:int}")]
 		public async Task<IActionResult> UpdateReagent([FromBody] ReagentDTO reagentDTO) 
 		{
             _logger.LogInformation($"Updated notification with id = {reagentDTO.Id} in controller");
-
-            await _reagentService.UpdateAsync(reagentDTO);
-            return Ok(new { succes = true });
+            
+			var updatedValue = await _reagentService.UpdateAsync(reagentDTO);
+            return Ok(updatedValue);
         }
-	}
+
+
+        [HttpGet("stock-distribution")]
+        public async Task<IActionResult> GetStockDistribution()
+        {
+            var report = await _reagentService.GetStockReportAsync();
+            return Ok(report);
+        }
+
+
+        [HttpGet("expiring")]
+        public async Task<ActionResult<List<ReagentExpirationDTO>>> GetExpiring()
+			=> Ok(await _reagentService.GetExpiringReagentsReportAsync());
+
+
+        [HttpGet("low-stock")]
+        public async Task<ActionResult<List<ReagentLowStockDTO>>> GetLowStock()
+			=> Ok(await _reagentService.GetLowStockReportAsync());
+
+
+        [HttpGet("forecast")]
+        public async Task<IActionResult> GetReport()
+			=> Ok(await _reagentForecastService.GetForecastAsync());
+    }
 }

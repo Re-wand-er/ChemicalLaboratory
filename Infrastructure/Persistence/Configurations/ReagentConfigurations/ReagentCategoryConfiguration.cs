@@ -16,6 +16,9 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.HasIndex(x => x.Name)
+                .IsUnique();
+
             builder.Property(x => x.Description)
                 .HasMaxLength(2048);
 

@@ -21,8 +21,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.LastName)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(50);
 
             builder.Property(x => x.Email)
                 .HasMaxLength(150)
@@ -43,6 +42,9 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Login)
                 .HasMaxLength(255)
                 .IsRequired();
+
+            builder.HasIndex(x => x.Login)
+                .IsUnique();
 
             builder.Property(x => x.PasswordHash)
                 .HasMaxLength(255);

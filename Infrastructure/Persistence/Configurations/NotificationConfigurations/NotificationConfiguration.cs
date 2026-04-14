@@ -16,6 +16,10 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
+            builder.Property(x => x.Title)
+                .HasMaxLength(50)
+                .IsRequired();
+
             builder.Property(x => x.Message)
                 .HasMaxLength(2048)
                 .IsRequired();
@@ -29,6 +33,10 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.HasOne(x => x.Reagent)
                 .WithMany(x => x.Notifications)
                 .HasForeignKey(x => x.ReagentId);
+
+            builder.HasOne(x => x.User)
+                .WithMany(x => x.Notifications)
+                .HasForeignKey(x => x.UserId);
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using ChemicalLaboratory.WebApi.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mapster;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {
@@ -24,30 +27,33 @@ namespace ChemicalLaboratory.WebApi.Controllers
         [HttpGet("{id:int}")] public async Task<IActionResult> GetSupplierById(int id) => Ok(await _supplierService.GetByIdAsync(id));
 
         [HttpPost]
-        public async Task<IActionResult> AddSupplier([FromBody] SupplierDTO supplierDTO)
+        public async Task<IActionResult> AddSupplier([FromBody] SupplierWithoutIdDTO dto)
         {
             _logger.LogInformation("Creating supplier in controller");
 
-            await _supplierService.AddAsync(supplierDTO);
+            await _supplierService.AddAsync(dto.Adapt<SupplierDTO>());
             return Ok(new { succes = true });
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteSupplier(int id) 
+        [HttpPost("bulk-delete")]
+        public async Task<IActionResult> DeleteSupplier([FromBody] DeleteManyRequestDTO request) 
         {
-            _logger.LogInformation($"Deleted supplier with id = {id} in controller");
+            _logger.LogInformation($"Deleted supplier with ids in SupplierController");
 
-            await _supplierService.DeleteAsync(id);
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _supplierService.DeleteAsync(request.Ids);
             return Ok(new { succes = true });
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateSupplier([FromBody] SupplierDTO supplierDTO)
+        public async Task<IActionResult> UpdateSupplier([FromBody] SupplierDTO dto)
         {
-            _logger.LogInformation($"Updated supplier with id = {supplierDTO.Id} in controller");
+            _logger.LogInformation($"Updated supplier with id = {dto.Id} in controller");
 
-            await _supplierService.UpdateAsync(supplierDTO);
-            return Ok(new { success = true });
+            var updatedValue = await _supplierService.UpdateAsync(dto);
+            return Ok(updatedValue);
         }
     }
 }

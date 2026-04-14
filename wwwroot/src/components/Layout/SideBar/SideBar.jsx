@@ -23,7 +23,7 @@ const sections = [
         title: "Аналитика",
         links: [
             {to: "/statistics", label: "Статистика"},
-            {to: "/graphics", label: "Графика"},
+            {to: "/graphics", label: "Графики"},
             {to: "/predicts", label: "Прогноз"}
         ],
         to: ""

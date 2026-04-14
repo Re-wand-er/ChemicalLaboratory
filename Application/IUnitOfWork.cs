@@ -6,6 +6,7 @@ namespace ChemicalLaboratory.Application.Interfaces
     {
         INotificationRepository Notifications { get; }
         IReagentRepository Reagents { get; }
+        IReagentOperationRepository ReagentOperations { get; }
         ISupplierRepository Suppliers { get; }
         IUserRepository Users { get; }
 

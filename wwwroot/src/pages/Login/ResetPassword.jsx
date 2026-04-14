@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { NavLink, Navigate, useNavigate } from 'react-router-dom';
+import { NavLink, Navigate, replace, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { fetchPostData } from '../../api/fetch';
 
 import './login.css';
 
-export const ResetPassword = () => {
+export const ResetPassword = ({ login }) => {
   const [step, setStep] = useState(1); // 1: Email, 2: Code & New Password
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +13,7 @@ export const ResetPassword = () => {
 
   const navigate = useNavigate();
 
-  const { loading, isAuthenticated } = useAuth();
+  const { loading, logout } = useAuth();
 
   const handleSendCode = async (e) => {
     e.preventDefault();
@@ -36,21 +36,30 @@ export const ResetPassword = () => {
     
       setError(errorMessage); 
       return; 
-  }
+    }
 
-  // Если всё Ok
-  navigate('/login');
+    // Если всё Ok
+    //navigate('/login');
+    logout(); 
+    // Перенаправляем на вход
+    navigate('/login', { replace: true });
+    alert("Пароль изменен. Пожалуйста, войдите снова.");
+    navigate(-1, { replace: true });
   };
 
+  const handleBack = (e) => {
+    e.preventDefault(); // Останавливаем переход по "#"
+    navigate(-1, { replace: true });
+  }
   ///
   // Служит, чтобы экран не мигал на страницу логина
   if (loading) 
     return <div>Проверка авторизации...</div>; 
 
   // Редиректит если пользователь уже существует
-  if (isAuthenticated){
-    return <Navigate to="/" replace />;
-  }
+  // if (isAuthenticated){
+  //   return <Navigate to="/" replace />;
+  // }
   //
   ///
 
@@ -81,9 +90,10 @@ export const ResetPassword = () => {
         </form>
       )}
       
-      <p >
-        <NavLink to="/login">Вернуться на страницу входа</NavLink>
+      <p>
+        <NavLink to="#" onClick={handleBack}>Вернуться обратно</NavLink>
       </p>
+
       </div>
     </div>
   );

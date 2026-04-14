@@ -1,11 +1,12 @@
-﻿using ChemicalLaboratory.Application.Interfaces;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using ChemicalLaboratory.Application.Interfaces;
 using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
+using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Infrastructure.Email;
 using ChemicalLaboratory.WebApi.Models;
 using Mapster;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -13,7 +14,7 @@ namespace ChemicalLaboratory.Application.UseCases.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UserService> _logger;
-        private readonly IDistributedCache _cache; // кэш для хранения кода
+        private readonly IDistributedCache _cache; 
         private readonly IJwtService _jwtService;
         private readonly IEmailSender _emailSender;
         private readonly IPasswordHasher _passwordHasher;
@@ -28,6 +29,11 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             _passwordHasher = passwordHasher;
         }
 
+
+        public async Task<IEnumerable<ListItemDTO?>> GetAllIdNameAsync()
+            => await _unitOfWork.Users.GetAllIdNameAsync();
+
+
         public async Task<IEnumerable<UserReadDTO>> GetAllAsync()
         {
             _logger.LogInformation("Get all Users");
@@ -35,7 +41,8 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             return Users.Adapt<IEnumerable<UserReadDTO>>();
         }
 
-        public async Task<UserReadDTO?> GetByIdAsync(int id)
+
+        public async Task<User?> GetByIdAsync(int id) // UserReadDTO
         {
             _logger.LogInformation($"Get user with id: {id}");
             var user = await _unitOfWork.Users.GetByIdAsync(id);
@@ -44,9 +51,9 @@ namespace ChemicalLaboratory.Application.UseCases.Services
                 _logger.LogWarning($"User with id = {id} not found");
                 return null;
             }
-
-            return user.Adapt<UserReadDTO>();
+            return user.Adapt<User>();
         }
+
 
         public async Task<AuthResponse?> LoginAsync(string login, string password) 
         {
@@ -62,33 +69,44 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             return new AuthResponse(userDto, token);
         }
 
+
         public async Task AddAsync(UserCreateDTO dto)
         {
             _logger.LogInformation($"Creating user with FirstName={dto.FirstName} with MiddleName={dto.MiddleName}");
             
             var user = dto.Adapt<User>();
-            user.PasswordHash = _passwordHasher.HashPassword(dto.PasswordHash);
+            user.PasswordHash = _passwordHasher.HashPassword(dto.Password);
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task DeleteAsync(int id)
-        {
-            _logger.LogInformation($"Deleted user with id: {id}");
 
-            await _unitOfWork.Users.DeleteAsync(id);
+        public async Task DeleteAsync(IEnumerable<int> ids)
+        {
+            _logger.LogInformation($"Deleted user with ids in UserService");
+
+            await _unitOfWork.Users.DeleteManyAsync(ids);
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateAsync(UserUpdateDTO dto)
+
+        public async Task<UserUpdateDTO> UpdateAsync(UserUpdateDTO dto)
         {
             _logger.LogInformation($"Updated user with id: {dto.Id}");
-            var user = dto.Adapt<User>();
 
-            _unitOfWork.Users.Update(user);
+            var existingReagent = await _unitOfWork.Users.GetByIdAsync(dto.Id);
+            if (existingReagent == null) throw new Exception("User not found");
+
+            dto.Adapt(existingReagent);
+
+            _unitOfWork.Users.Update(existingReagent);
+
             await _unitOfWork.SaveAsync();
+
+            return existingReagent.Adapt<UserUpdateDTO>();
         }
+
 
         public async Task<bool> ResetPasswordAsync(string email, string code, string password)
         {
@@ -102,6 +120,7 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             await _cache.RemoveAsync(email);
             return true;
         }
+
 
         public async Task SendResetCodeAsync(string email)
         {

@@ -1,10 +1,10 @@
 /**
  * Преобразует ISO строку в читаемый формат
- * @param {string} isoString - Дата в формате "2026-01-17T18:11:44.51"
+ * @param {string} isoString - Дата в формате "YYYY-MM-DDTHH:MM:SS" (T - разделитель)
  * @param {string} format - Формат вывода: 'date' | 'time' | 'datetime' | 'datetime-full'
  * @returns {string} - Отформатированная дата
  */
-export const formatDate = (isoString, format = 'datetime') => {
+const formatDate = (isoString, format = 'datetime') => {
   if (!isoString) return '—';
   
   const date = new Date(isoString);
@@ -55,3 +55,23 @@ export const formatDate = (isoString, format = 'datetime') => {
       });
   }
 };
+
+/**
+ * Преобразует дату в формат YYYY.MM.DD
+ * @param {Date} date - Дата в формате "YYYY-MM-DDTHH:MM:SS" (T - разделитель)
+ * @returns {Date} - Отформатированная дата
+ */
+const dateConverter = (date) => {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+
+  // Получаем компоненты даты именно местного времени
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+export { formatDate, dateConverter };

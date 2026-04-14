@@ -103,7 +103,10 @@ namespace ChemicalLaboratory
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IReagentRepository, ReagentRepository>();
+            builder.Services.AddScoped<IReagentCategoryRepository, ReagentCategoryRepository>();
+            builder.Services.AddScoped<IReagentOperationRepository, ReagentOperationRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IWorkSchedule, WorkScheduleRepository>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
@@ -112,6 +115,7 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             builder.Services.AddScoped<ReagentService>();
+            builder.Services.AddScoped<ReagentForecastService>();
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<SupplierService>();
             builder.Services.AddScoped<NotificationService>();

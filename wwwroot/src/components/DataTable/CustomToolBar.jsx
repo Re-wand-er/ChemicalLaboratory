@@ -39,7 +39,7 @@ const CustomToolbar = ({ isLoading, selectedCount, onCreate, onRefresh, onDelete
                 <Typography variant="caption" >
                     {selectedCount > 0 ? `✓ Выбрано: ${selectedCount}` : 'Выберите строки'}
                 </Typography>
-                <Button 
+                {/* <Button 
                     variant="outlined" 
                     startIcon={isLoading ? <CircularProgress size={16} /> : <RefreshIcon />} 
                     onClick={onRefresh} 
@@ -47,7 +47,7 @@ const CustomToolbar = ({ isLoading, selectedCount, onCreate, onRefresh, onDelete
                     size="small"
                 >
                     Обновить
-                </Button>
+                </Button> */}
             </Stack>
         </Toolbar>
     );

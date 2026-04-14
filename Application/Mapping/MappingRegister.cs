@@ -1,8 +1,11 @@
-﻿using ChemicalLaboratory.Application.UseCases.DTOs;
-using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
+﻿using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
+using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
+using ChemicalLaboratory.Domain.DTOs;
 using Mapster;
+
+// По хорошему должен быть отдельный mapster
+using ChemicalLaboratory.WebApi.Models;
 
 namespace ChemicalLaboratory.Application.Mapping
 {
@@ -11,39 +14,48 @@ namespace ChemicalLaboratory.Application.Mapping
         public void Register(TypeAdapterConfig config) 
         {
             // Notifications ----------------------------------------
+            config.NewConfig<Notification, NotificationDTO>();
             config.NewConfig<NotificationDTO, Notification>()
                 .Ignore(n => n.Id)
                 .Ignore(n => n.CreatedAt);
 
-            config.NewConfig<Notification, NotificationDTO>();
-
             // Reagents ---------------------------------------------
+            config.NewConfig<Reagent, ReagentDTO>();
             config.NewConfig<ReagentDTO, Reagent>()
                 .Ignore(n => n.Id)
                 .Ignore(n => n.CreatedAt);
 
-            config.NewConfig<Reagent, ReagentDTO>();
+
+            config.NewConfig<ReagentDTO, ReagentCreateDTO>();
+            config.NewConfig<ReagentCreateDTO, ReagentDTO>()
+                .Ignore(r => r.Id)
+                .Ignore(r => r.CreatedAt);
+
+
+            config.NewConfig<ReagentCategory, CategoryDTO>();
+            config.NewConfig<CategoryDTO, ReagentCategory>()
+                .Ignore(r => r.Id);
 
             // Users ------------------------------------------------
             config.NewConfig<User, UserReadDTO>();
             config.NewConfig<UserReadDTO, User>();
 
+            config.NewConfig<User, UserUpdateDTO>();
             config.NewConfig<UserUpdateDTO, User>()
-                .Ignore(d => d.PasswordHash ?? "" );
+                .Ignore(d => d.PasswordHash);
 
-            // ?????
-            var hasher = new PasswordHasher<User>();
             config.NewConfig<UserCreateDTO, User>()
                 .Ignore(d => d.Id)
-                //.Ignore(d => d.PasswordHash)
-                //.Map(d => d.PasswordHash, s => hasher.HashPassword(null!, s.PasswordHash))
                 .Map(d => d.IsActive, _ => true);
 
             // Suppliers --------------------------------------------
+            config.NewConfig<Supplier, SupplierDTO>();
             config.NewConfig<SupplierDTO, Supplier>()
                 .Ignore(s => s.Id);
 
-            config.NewConfig<Supplier, SupplierDTO>();
+            config.NewConfig<SupplierDTO, SupplierWithoutIdDTO>();
+            config.NewConfig<SupplierWithoutIdDTO, SupplierDTO>()
+                .Ignore(r => r.Id);
         }
     }
 }

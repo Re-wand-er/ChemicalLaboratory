@@ -9,7 +9,7 @@
         string Email,
         string? Sex,
         string? JobPosition,
-        string Login,
-        string PasswordHash
+        string? Login,
+        string Password
     );
 }

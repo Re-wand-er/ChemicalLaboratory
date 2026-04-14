@@ -45,21 +45,26 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(IEnumerable<int> ids)
         {
-            _logger.LogInformation($"Deleted supplier with id: {id}");
+            _logger.LogInformation($"Deleted supplier with ids SupplierService");
 
-            await _unitOfWork.Suppliers.DeleteAsync(id);
+            await _unitOfWork.Suppliers.DeleteManyAsync(ids);
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateAsync(SupplierDTO dto)
+        public async Task<SupplierDTO> UpdateAsync(SupplierDTO dto)
         {
             _logger.LogInformation($"Updated supplier with id: {dto.Id}");
-            var supplier = dto.Adapt<Supplier>();
 
-            _unitOfWork.Suppliers.Update(supplier);
+            var existingSupply = await _unitOfWork.Suppliers.GetByIdAsync(dto.Id);
+            if (existingSupply == null) throw new Exception("Supplier not found");
+
+            dto.Adapt(existingSupply);
+
             await _unitOfWork.SaveAsync();
+
+            return existingSupply.Adapt<SupplierDTO>();
         }
     }
 }

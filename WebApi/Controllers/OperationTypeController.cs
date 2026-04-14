@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ChemicalLaboratory.WebApi.Contracts;
-using System.Diagnostics.Contracts;
 using Microsoft.AspNetCore.Authorization;
 
 namespace ChemicalLaboratory.WebApi.Controllers

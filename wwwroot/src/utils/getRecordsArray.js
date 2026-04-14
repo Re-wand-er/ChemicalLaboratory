@@ -1,6 +1,6 @@
 /**
  * Преобразует запись в массив
- * @param {object} isoString - Данные в каком-либо формате
+ * @param {object} currentRecord - Данные в формате объекта, массива или Map
  * @returns {Array} - Отформатированная данные в виде массива
  */
 export const getRecordsArray = (currentRecord) => {

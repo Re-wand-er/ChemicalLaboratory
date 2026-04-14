@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { fetchGetData } from '../../../api/fetch.js';
-import { Button } from '@mui/material';
 
 import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogReagents from "./DialogReagents.jsx";
 
+import { fetchGetData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
+import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 import { formatDate } from "../../../utils/formatDate.js";
 
 const columns = [
@@ -63,13 +63,6 @@ const columns = [
     type: 'number',
   },
   {
-    field: 'createdAt',
-    headerName: 'Дата создания',
-    width: 140,
-    type: 'date',
-    valueFormatter: (value) => formatDate(value, 'date'),
-  },
-  {
     field: 'isActive',
     headerName: 'Активен',
     width: 100,
@@ -90,12 +83,18 @@ const columns = [
 
 const Reagents = () => {
   const [data, setData] = useState([]);
+  const [categories, setCategories] = useState([]); 
 
     useEffect(() =>{
-        fetchGetData('/api/reagent', setData);
+      Promise.all([
+        fetchGetData('/api/reagent'), 
+        fetchGetData('/api/category/name')
+      ])
+        .then(([reagents, categories]) => {
+          setData(reagents);
+          setCategories(categories);
+        }); 
     }, []);    
-
-
 
   //// Методы для открытия соотв. окон //////////////////////////  
   // Состояние модального окна
@@ -118,35 +117,61 @@ const Reagents = () => {
   };
   ////////////////////////////////////////////////////////////////
 
-    // Обработка данных //
-    const handleSave = () => {
+  const handleAdd = async (record) => {
+    const response = await fetchPostData('api/reagent', record, true);
 
-      console.log('Режим:', modalMode, 'Данные:', currentRecord);
-
+    if(response.ok)
+    {      
+      fetchGetData('/api/reagent', setData)
       handleClose();
-    };
+    }
+  }
 
-    const handleDelete = () => {
+  const handleDelete = () => {
+    const ids = getRecordsArray(currentRecord).map(item => item.id);
+    const success = fetchDeleteByIds('api/reagent/bulk-delete', ids);
 
-      console.log('Режим:', modalMode, 'Данные:', currentRecord);
-
+    if (success){
+      setData(prev => prev.filter(r => !ids.includes(r.id)));
       handleClose();
-    };
+    }
+  };
 
-    // Закрытие окна
-    const handleClose = () => {
-      setModalMode(null);
-      setCurrentRecord(null);
-    };
-    // Обработка данных //
+  const handleSave = async (record) => {
+    const result = await fetchPutData(`api/reagent/${record.id}`, record, true);
+      
+    if(result){      
+      setData(prevItems => prevItems.map(data => data.id === result.id ? result : data));
+      handleClose();
+    }
+  };
 
-    return (
-        <div>
-            <h2>Реагенты</h2>
-            <DataTable rows={data} columns={columns} onAdd={handleOpenAdd} onEdit={handleOpenEdit} onDelete={handleOpenDelete}/>
+  // Закрытие окна
+  const handleClose = () => {
+    setModalMode(null);
+    setCurrentRecord(null);
+  };
 
-            <DialogReagents modalMode={modalMode} currentRecord={currentRecord} handleClose={handleClose} handleSave={handleSave} handleDelete={handleDelete}/>
-        </div>
-    );
+  return (
+    <div>
+      <h2>Реагенты</h2>
+      <DataTable 
+        rows={data} 
+        columns={columns} 
+        onAdd={handleOpenAdd} 
+        onEdit={handleOpenEdit} 
+        onDelete={handleOpenDelete}/>
+
+      <DialogReagents 
+        modalMode={modalMode} 
+        currentRecord={currentRecord} 
+        categories={categories}
+        handleAdd={handleAdd}
+        handleDelete={handleDelete}
+        handleSave={handleSave} 
+        handleClose={handleClose} />
+
+    </div>
+  );
 };
 export default Reagents;

@@ -24,7 +24,6 @@ const columnsWithActions = (props) => [
             };
 
             const handleDelete = () => {
-                console.log('Удалить:', params.row);
                 if (props.onDelete) props.onDelete(params.row);
                 else console.error('Не найден обработчик для удаления записи');
             };
@@ -62,7 +61,7 @@ const DataTable = (props) => {
     const useAutoHeight = props.rows.length < 10;
 
 
-    ///// Служат адапторами /////////////////////////////
+    ///// Служат адапторами для шапки ///////////////////
     const handleCreate = () => props.onAdd?.();
     
     const handleRefresh = async (value) => {
@@ -83,7 +82,7 @@ const DataTable = (props) => {
         <div className={styles.centerAlignment}>
             <div style={{ 
                 width: 'fit-content', 
-                maxWidth: '100%',
+                maxWidth: '1400px',
                 height: useAutoHeight ? 'auto' : 696,
                 overflow: useAutoHeight ? 'visible' : 'auto'
             }}>

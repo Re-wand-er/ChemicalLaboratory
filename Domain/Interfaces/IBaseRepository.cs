@@ -1,4 +1,6 @@
-﻿namespace ChemicalLaboratory.Domain.Interfaces
+﻿using ChemicalLaboratory.Domain.DTOs;
+
+namespace ChemicalLaboratory.Domain.Interfaces
 {
     public interface IBaseRepository<T>
     {
@@ -7,6 +9,9 @@
         Task AddAsync(T entity);
         void Update(T entity);
         Task DeleteAsync(int id);
+
+        Task DeleteManyAsync(IEnumerable<int> ids);
+
         Task SaveChangesAsync();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
-using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,20 +40,13 @@ namespace ChemicalLaboratory.WebApi.Controllers
             return Ok(new { succes = true });
         }
 
-
-        // Возможен также такой вариант
-        // PUT /api/users/5
-        // Body: UserUpdateDTO
-        // [HttpPut("{id}")]
-        // public IActionResult Update(int id, [FromBody] UserUpdateDTO dto)
-
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateNotification([FromBody] NotificationDTO notificationDTO) 
         {
             _logger.LogInformation($"Updated notification with id = {notificationDTO.Id} in controller");
 
-            await _notificationService.UpdateAsync(notificationDTO);
-            return Ok(new { success = true });
+            var updatedValue = await _notificationService.UpdateAsync(notificationDTO);
+            return Ok(updatedValue);
         }
     }
 }

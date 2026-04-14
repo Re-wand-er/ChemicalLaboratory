@@ -1,0 +1,49 @@
+/* Базовые настройки темы (Светлая по умолчанию) */
+:root {
+  
+  --chart-bg: #ffffff;           /* Фон контейнера */
+  --chart-grid: #e2e8f0;         /* Цвет сетки (CartesianGrid) */
+  --chart-text: #64748b;         /* Цвет подписей на осях (XAxis, YAxis) */
+  
+  --main-graphic-color: #8884d8; 
+  --chart-line-sub: #10b981;     
+  --chart-line-sub2: #e4a908;    
+  --chart-line-sub3: #3b82f6;    
+
+  --pie-fill-sub: #82ca9d;
+  --pie-fill-sub2: #ff7300;
+  --pie-fill-hover:#ae4343;
+
+  /* Стили для Tooltip (всплывающее окно) */
+  --tooltip-bg: rgba(255, 255, 255, 0.95);
+  --tooltip-border: #cbd5e1;
+  --tooltip-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
+  --tooltip-item-color: #333333;
+  
+  --chart-cursor: rgba(0, 0, 0, 0.05);
+}
+
+/* Темная тема (автоматически при настройках ОС) */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --chart-bg: #1e293b;
+    --chart-grid: #334155;
+    --chart-text: #94a3b8;
+    --chart-line-main: #60a5fa;
+    --chart-line-sub: #34d399;
+    
+    --tooltip-bg: rgba(30, 41, 59, 0.95);
+    --tooltip-border: #475569;
+    --tooltip-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    
+    --chart-cursor: rgba(255, 255, 255, 0.05);
+  }
+} */
+
+/* Дополнительный класс для контейнера (по желанию) */
+.chart-wrapper {
+  background-color: var(--chart-bg);
+  padding: 20px;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}

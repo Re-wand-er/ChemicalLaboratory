@@ -1,5 +1,6 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using ChemicalLaboratory.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,9 +21,20 @@ namespace ChemicalLaboratory.WebApi.Controllers
 		}
 
 		[HttpGet] public async Task<IActionResult> GetAllUsers() => Ok(await _userService.GetAllAsync());
-		[HttpGet("{id:int}")] public async Task<IActionResult> GetAllUsers(int id) => Ok(await _userService.GetByIdAsync(id));
+        [HttpGet("{id}")] public async Task<IActionResult> GetIdUsers(int id)
+        {
+            Console.WriteLine($"Before + {id}");
+            var f = await _userService.GetByIdAsync(id);
+            Console.WriteLine(f);
+            return Ok(f);
+        }
 
-		[HttpPost]
+
+        [HttpGet("name")]
+        public async Task<IActionResult> GetCategoriesName() => Ok(await _userService.GetAllIdNameAsync());
+
+
+        [HttpPost]
 		public async Task<IActionResult> AddUser([FromBody] UserCreateDTO userDTO)
 		{
             _logger.LogInformation("Creating user in controller");
@@ -31,12 +43,15 @@ namespace ChemicalLaboratory.WebApi.Controllers
             return Ok(new { success = true });
         }
 
-		[HttpDelete("{id:int}")]
-		public async Task<IActionResult> DeleteUser(int id)
+		[HttpPost("bulk-delete")]
+		public async Task<IActionResult> DeleteUser([FromBody] DeleteManyRequestDTO request)
 		{
-            _logger.LogInformation($"Deleted user with id = {id} in controller");
+            _logger.LogInformation($"Deleted user with ids UserController");
 
-            await _userService.DeleteAsync(id);
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _userService.DeleteAsync(request.Ids);
             return Ok(new { succes = true });
         }
 
@@ -45,8 +60,8 @@ namespace ChemicalLaboratory.WebApi.Controllers
         {
             _logger.LogInformation($"Updated user with id = {userDTO.Id} in controller");
 
-            await _userService.UpdateAsync(userDTO);
-            return Ok(new { success = true });
+            var updatedValue = await _userService.UpdateAsync(userDTO);
+            return Ok(updatedValue);
         }
     }
 }

@@ -1,0 +1,8 @@
+:root{
+    --main-ok: #2e7d32;
+    --main-warning: #edba02;
+    --main-error: #d32f2f;
+
+    --main-font-normal: normal;
+    --main-font-bold: bold;
+}

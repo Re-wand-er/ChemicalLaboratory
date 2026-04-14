@@ -1,9 +1,7 @@
-﻿using ChemicalLaboratory.Application.Interfaces;
-using ChemicalLaboratory.Application.UseCases.DTOs;
+﻿using ChemicalLaboratory.Application.UseCases.DTOs;
+using ChemicalLaboratory.Application.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Domain.Interfaces;
 using Mapster;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -22,6 +20,7 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         {
             _logger.LogInformation("Get all notifications");
             var notifications = await _unitOfWork.Notifications.GetAllAsync();
+
             return notifications.Adapt<IEnumerable<NotificationDTO>>();
         }
 
@@ -55,13 +54,18 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateAsync(NotificationDTO dto)
+        public async Task<NotificationDTO> UpdateAsync(NotificationDTO dto)
         {
             _logger.LogInformation($"Updated notification with id: {dto.Id}");
-            var notification = dto.Adapt<Notification>();
 
-            _unitOfWork.Notifications.Update(notification);
+            var existingNotification = await _unitOfWork.Notifications.GetByIdAsync(dto.Id);
+            if (existingNotification == null) throw new Exception("Notification not found");
+
+            dto.Adapt(existingNotification);
+
             await _unitOfWork.SaveAsync();
+
+            return existingNotification.Adapt<NotificationDTO>();
         }
     }
 }

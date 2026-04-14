@@ -1,72 +1,66 @@
 import { useEffect, useState } from 'react';
 import { 
-  Dialog, DialogTitle, DialogContent, DialogActions, Button, 
-  TextField, Typography, Grid, FormControl, InputLabel, 
+  Dialog, DialogTitle, DialogContent,
+  TextField, Grid, FormControl, InputLabel, 
   Select, MenuItem, FormControlLabel, Switch
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
    
-import DataTableDialogActions from "../../../components/DataTable/DataTableDialogActions.jsx";
-import { formatDate } from "../../../utils/formatDate.js";
+import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogAttribute.jsx";
+import { formatDate, dateConverter } from "../../../utils/formatDate.js";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
 const deleteColumns = [
-  { field: 'id',              headerName: 'ID',             width: 30,  type: 'number', },
+  { field: 'id',              headerName: 'ID',             width: 30 },
   { field: 'name',            headerName: 'Название',       width: 170, },
   { field: 'unit',            headerName: 'Ед. изм.',       width: 80, },
   { field: 'currentQuantity', headerName: 'Кол-во',         width: 80,  type: 'number', valueFormatter: (value) => `${value || 0}`, },
   { field: 'expirationDate',  headerName: 'Срок годности',  width: 140, type: 'date',   valueFormatter: (value) => formatDate(value, 'date'), },
 ];
-const defaultFormData = {
-  name: '',
-  chemicalFormula: '',
-  unit: '',
-  currentQuantity: 0,
-  minQuantity: 0,
-  expirationDate: '',
-  storageLocation: '',
-  categoryId: '',
-  isActive: true
-};
-const getFormDataFromRecord = (record) => ({
+const units = ['мл', 'л', 'г', 'кг', 'мг', 'шт']; 
+
+const getFormData = (record = {}) => ({
+  id: record.id || null,
   name: record.name || '',
   chemicalFormula: record.chemicalFormula || '',
   unit: record.unit || '',
   currentQuantity: record.currentQuantity || 0,
   minQuantity: record.minQuantity || 0,
-  expirationDate: record.expirationDate ? formatDate(record.expirationDate) : '',
+  expirationDate: record.expirationDate || null,
   storageLocation: record.storageLocation || '',
-  categoryId: record.categoryId || '',
-  isActive: record.isActive !== undefined ? record.isActive : true
+  categoryId: record.categoryId || 0,
+  isActive: record.isActive !== undefined ? record.isActive : 1
 });
 
-const units = ['мл', 'л', 'г', 'кг', 'мг', 'шт']; // Не должно быть так
-const categories = [
-        { id: 1, name: 'Кислоты' },
-        { id: 2, name: 'Щелочи' },
-        { id: 3, name: 'Металлы и неметаллы' }
-    ];
-
-const DialogReagents = ( { modalMode, currentRecord, handleClose, handleSave, handleDelete } ) => {    
-	const [formData, setFormData] = useState({defaultFormData});
+const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, handleSave, handleDelete, handleAdd } ) => {    
+	const [formData, setFormData] = useState(getFormData());
 	
   useEffect(() => {
     if (modalMode === 'add') {
-        setFormData({defaultFormData});
+        setFormData(getFormData());
     } else if (modalMode === 'edit' && currentRecord) {
-        setFormData(getFormDataFromRecord(currentRecord));
+        setFormData(getFormData(currentRecord));
     }
-  }, [modalMode, open]);
+  }, [modalMode]);
 
-    const handleChange = (field) => (event) => {
-        setFormData({
-            ...formData,
-            [field]: event.target.value
-        });
-    };
+  const handleChange = (field) => (event) => {
+    setFormData({
+        ...formData,
+        [field]: event.target.value
+    });
+  };
+
+  // Адаптеры
+  const onAdd = () =>{
+    handleAdd(formData);
+  }
+
+  const onSave = () =>{
+    handleSave(formData);
+  }
 
   return (        
-    <Dialog open={modalMode !== null} onClose={handleClose} >
+    <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
       <DialogContent>
         {(modalMode === 'delete' && currentRecord) 
           ? 
@@ -92,11 +86,9 @@ const DialogReagents = ( { modalMode, currentRecord, handleClose, handleSave, ha
           : 
         (
           <>
-            <DialogTitle>
-              Добавить реагент
-            </DialogTitle>
+            <DialogTitle children={modalMode === 'add' ? 'Добавить реагент' : `Изменить реагент`} />
 
-            <Grid container spacing={2} sx={{ mt: 0 }}>
+            <Grid container spacing={2} size={{ mt: 0 }}>
               <Grid size={12}>
                 <TextField
                   autoFocus
@@ -156,7 +148,7 @@ const DialogReagents = ( { modalMode, currentRecord, handleClose, handleSave, ha
                   label="Срок годности"
                   type="date"
                   fullWidth
-                  value={formData.expirationDate}
+                  value={dateConverter(formData.expirationDate)}
                   onChange={handleChange('expirationDate')}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -179,7 +171,7 @@ const DialogReagents = ( { modalMode, currentRecord, handleClose, handleSave, ha
                     label="Категория"
                     onChange={handleChange('categoryId')}
                     >
-                    <MenuItem value="">Не выбрано</MenuItem>
+                    <MenuItem value={0}>Не выбрано</MenuItem>
                     {categories.map(cat => (
                       <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
                     ))}
@@ -209,8 +201,9 @@ const DialogReagents = ( { modalMode, currentRecord, handleClose, handleSave, ha
               
       <DataTableDialogActions 
         modalMode={modalMode}
-        handleSave={handleSave} 
+        handleAdd={onAdd}
         handleDelete={handleDelete}
+        handleSave={onSave} 
         handleClose={handleClose}
         />
 

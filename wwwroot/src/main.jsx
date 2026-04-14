@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { Layout } from './components/Layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
-import { AuthProvider } from './context/AuthContext'; // ← Добавьте эту строку
+import { AuthProvider } from './context/AuthContext'; 
 import { Login } from './pages/Login/Login.jsx';
 import { ResetPassword } from './pages/Login/ResetPassword.jsx';
 
@@ -17,22 +17,24 @@ const Dashboard = lazy(()=>import('./pages/Dashboard/Dashboard.jsx'));
 const Inventory = lazy(()=>import('./pages/Inventory/Inventory.jsx'));
 const Reagents = lazy(()=>import('./pages/Inventory/Reagents/Reagents.jsx'));
 const Manufacturers = lazy(()=>import('./pages/Inventory/Manufacturers.jsx'));
-const Suppliers = lazy(()=>import('./pages/Inventory/Suppliers.jsx'));
+const Suppliers = lazy(()=>import('./pages/Inventory/Suppliers/Suppliers.jsx'));
 
 /*Аналитика*/
 const Analytics = lazy(()=>import('./pages/Analytics/Analytics.jsx'));
-const Statistics = lazy(()=>import('./pages/Analytics/Statistics.jsx'));
-const Graphics = lazy(()=>import('./pages/Analytics/Graphics.jsx'));
-const Predicts = lazy(()=>import('./pages/Analytics/Predicts.jsx'));
+const Statistics = lazy(()=>import('./pages/Analytics/Statistics/Statistics.jsx'));
+const Graphics = lazy(()=>import('./pages/Analytics/Graphics/Graphics.jsx'));
+const Predicts = lazy(()=>import('./pages/Analytics/Predicts/Predicts.jsx'));
 
 /*Отчеты*/
 const Reports = lazy(()=>import('./pages/Reports/Reports.jsx'));
 
 /*Настройки*/
 const Settings = lazy(()=>import('./pages/Settings/Settings.jsx'));
-const Users = lazy(()=>import('./pages/Settings/Users.jsx'));
-const Categories = lazy(()=>import('./pages/Settings/Categories.jsx'));
-const Notifications = lazy(()=>import('./pages/Settings/Notifications.jsx'));
+const Users = lazy(()=>import('./pages/Settings/Users/Users.jsx'));
+const Categories = lazy(()=>import('./pages/Settings/Categories/Categories.jsx'));
+const Notifications = lazy(()=>import('./pages/Settings/Notifications/Notifications.jsx'));
+
+const ProfileForm = lazy(()=>import('./pages/ProfileForm.jsx')); // Страница пользователя
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -51,12 +53,13 @@ createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           }>
 
-          <Route index element={<h1>Home</h1>}/>
+          <Route index element={<h2>Home</h2>}/>
           <Route path="leave" element={<h2>Выйти</h2>}/>
           <Route path="secret" element={<h2>Поздравляю вы вышли на секретную страницу</h2>}/>
 
           {/*Дашборд*/}
           <Route path="dashboard" element={<Dashboard />}/>
+          <Route path="user" element={<ProfileForm />}/>
 
           {/*Учет*/}
           <Route path="inventory" element={<Inventory />} />
