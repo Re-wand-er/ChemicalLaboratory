@@ -1,6 +1,6 @@
 ﻿namespace ChemicalLaboratory.Domain.DTOs.ReagentsDTO
 {
-    public class ReagentUsageTrendDTO
+    public record ReagentUsageTrendDTO
     {
         // Список имен ТОП-5 реагентов (для генерации <Line /> на фронте)
         public List<string> TopReagentNames { get; set; } = new();

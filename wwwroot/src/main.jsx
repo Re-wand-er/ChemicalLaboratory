@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { Layout } from './components/Layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './context/AuthContext'; 
+import { NotificationProvider } from './context/NotificationContext'; 
 import { Login } from './pages/Login/Login.jsx';
 import { ResetPassword } from './pages/Login/ResetPassword.jsx';
 
@@ -39,6 +40,7 @@ const ProfileForm = lazy(()=>import('./pages/ProfileForm.jsx')); // Страни
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <AuthProvider>
+    <NotificationProvider>  
       <Suspense fallback={<div>Подождите, идет загрузка...</div>}>
       <Routes>
         
@@ -53,12 +55,12 @@ createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           }>
 
-          <Route index element={<h2>Home</h2>}/>
+          <Route index element={<Dashboard />}/>{/*<h2>Home</h2> */}
           <Route path="leave" element={<h2>Выйти</h2>}/>
           <Route path="secret" element={<h2>Поздравляю вы вышли на секретную страницу</h2>}/>
 
           {/*Дашборд*/}
-          <Route path="dashboard" element={<Dashboard />}/>
+          <Route index path="dashboard" element={<Dashboard />}/>
           <Route path="user" element={<ProfileForm />}/>
 
           {/*Учет*/}
@@ -86,6 +88,7 @@ createRoot(document.getElementById('root')).render(
         </Route>
       </Routes>
       </Suspense>
+    </ NotificationProvider>
     </AuthProvider>
   </BrowserRouter>
 );

@@ -1,6 +1,7 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
+using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

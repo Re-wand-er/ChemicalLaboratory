@@ -11,6 +11,7 @@ namespace ChemicalLaboratory.Domain.Entities
         public string Title { get; set; } = null!;
         public string Message { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public bool IsRead { get; set; }
 
         public Reagent Reagent { get; set; } = null!;

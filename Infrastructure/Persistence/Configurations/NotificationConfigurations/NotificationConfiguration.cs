@@ -27,6 +27,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.Property(x => x.CreatedAt)
                 .HasDefaultValueSql("SYSDATETIME()");
 
+            builder.Property(x => x.DeletedAt);
+
             builder.Property(x => x.IsRead)
                 .HasDefaultValue(false);
 

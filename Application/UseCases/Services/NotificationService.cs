@@ -2,6 +2,8 @@
 using ChemicalLaboratory.Application.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
 using Mapster;
+using ChemicalLaboratory.Domain.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -67,5 +69,66 @@ namespace ChemicalLaboratory.Application.UseCases.Services
 
             return existingNotification.Adapt<NotificationDTO>();
         }
+
+
+        public async Task<int> GetUnreadCountAsync(int userId)
+            => await _unitOfWork.Notifications.GetUnreadCountAsync(userId);
+        
+
+        public async Task<List<NotificationSideBarDTO>> GetNotificationsAsync(int userId)
+        {
+            try
+            {
+                return await _unitOfWork.Notifications.GetUserNotificationsAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении уведомлений для пользователя {UserId}", userId);
+                throw;
+            }
+        }
+
+
+        public async Task MarkAllAsReadAsync(int userId)
+        {
+            try
+            {
+                await _unitOfWork.Notifications.MarkAllAsReadAsync(userId);
+                _logger.LogInformation("Пользователь {UserId} пометил все уведомления как прочитанные", userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при массовом прочтении уведомлений для {UserId}", userId);
+                throw;
+            }
+        }
+
+
+        public async Task MarkAsReadAsync(int id)
+        {
+            try
+            {
+                await _unitOfWork.Notifications.MarkAsReadAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при пометке уведомления {Id} как прочитанного", id);
+                throw;
+            }
+        }
+
+        public async Task SoftDeleteAsync(int id)
+        {
+            try
+            {
+                await _unitOfWork.Notifications.SoftDeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при удалении уведомления {Id}", id);
+                throw;
+            }
+        }
+
     }
 }

@@ -24,18 +24,19 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
         public override async Task DeleteManyAsync(IEnumerable<int> ids)
         {
-            var entities = await _context.Reagents
+            var entities = await _dbSet
                 .Where(c => ids.Contains(c.Id))
                 .ToListAsync();
 
-            _context.Reagents.RemoveRange(entities);
+            _dbSet.RemoveRange(entities);
             await _context.SaveChangesAsync();
         }
+
 
         public async Task<ReagentStockReportDTO> GetStockDistributionReportAsync()
         {
             // 1. Получаем сгруппированные данные из БД (Категория + Реагент = Сумма)
-            var rawData = await _context.Reagents
+            var rawData = await _dbSet
                 .Where(r => r.IsActive)
                 .GroupBy(r => new { CategoryName = r.Category.Name, ReagentName = r.Name })
                 .Select(g => new
@@ -77,12 +78,13 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             };
         }
 
+
         public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync()
         {
             var today = DateTime.UtcNow.Date;
             var limitDate = today.AddDays(90);
 
-            return await _context.Reagents
+            return await _dbSet
                 .Where(r => r.IsActive && r.ExpirationDate != null && r.ExpirationDate <= limitDate)
                 .OrderBy(r => r.ExpirationDate)
                 .Select(r => new ReagentExpirationDTO
@@ -90,14 +92,15 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                     Id = r.Id,
                     Name = r.Name,
                     ExpirationDate = r.ExpirationDate,
-                    DaysRemaining = EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value) // Срок годности может быть null
+                    DaysRemaining = EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value).ToString() // Срок годности может быть null
                 })
                 .ToListAsync();
         }
 
+
         public async Task<List<ReagentLowStockDTO>> GetLowStockReagentsAsync()
         {
-            return await _context.Reagents
+            return await _dbSet
                 .Where(r => r.IsActive && r.CurrentQuantity < r.MinQuantity)
                 .OrderBy(r => r.CurrentQuantity / r.MinQuantity) // Сначала самые критичные (где % остатка меньше)
                 .Select(r => new ReagentLowStockDTO
@@ -116,7 +119,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             var startDate = DateTime.UtcNow.AddDays(-daysLookback);
 
-            return await _context.Reagents
+            return await _dbSet
                 .Where(r => r.IsActive)
                 .Select(r => new ReagentPredictionDTO
                 {
@@ -133,6 +136,120 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                         .Select(o => (decimal?)Math.Abs(o.Quantity))
                         .Average() ?? 0
                 }).ToListAsync();
+        }
+
+
+        public async Task<int> GetActiveCountAsync()
+            => await _dbSet.CountAsync(r => r.IsActive);
+
+        public async Task<double> GetLowStockPercentageAsync()
+        {
+            var total = await _dbSet.CountAsync(r => r.IsActive);
+            if (total == 0) return 0;
+            var low = await _dbSet.CountAsync(r => r.IsActive && r.CurrentQuantity < r.MinQuantity);
+            return Math.Round((double)low / total * 100, 1);
+        }
+
+
+        public async Task<double> GetExpiredPercentageAsync()
+        {
+            var totalWithDate = await _dbSet.CountAsync(r => r.IsActive && r.ExpirationDate != null);
+            if (totalWithDate == 0) return 0;
+            var expired = await _dbSet.CountAsync(r => r.IsActive && r.ExpirationDate < DateTime.UtcNow);
+            return Math.Round((double)expired / totalWithDate * 100, 1);
+        }
+
+
+        public async Task<double> GetExpiringSoonPercentageAsync()
+        {
+            var now = DateTime.UtcNow;
+            var in30Days = now.AddDays(30);
+
+            // Считаем только те, у которых в принципе указан срок годности
+            var totalWithDate = await _dbSet
+                .CountAsync(r => r.IsActive && r.ExpirationDate != null);
+
+            if (totalWithDate == 0) return 0;
+
+            var expiringSoon = await _dbSet
+                .CountAsync(r => r.IsActive &&
+                                 r.ExpirationDate >= now &&
+                                 r.ExpirationDate <= in30Days);
+
+            return Math.Round((double)expiringSoon / totalWithDate * 100, 1);
+        }
+
+
+        // Сомнительные //////////////////////////////////////////////////
+        public async Task<double> GetIlliquidPercentageAsync(int days = 90)
+        {
+            var deadline = DateTime.UtcNow.AddDays(-days);
+            var totalActive = await _dbSet.CountAsync(r => r.IsActive);
+            if (totalActive == 0) return 0;
+
+            // Находим ID реагентов, по которым были движения
+            var activeIds = await _context.ReagentOperations
+                .Where(o => o.OperationDate >= deadline)
+                .Select(o => o.ReagentId)
+                .Distinct()
+                .ToListAsync();
+
+            var illiquidCount = await _dbSet
+                .CountAsync(r => r.IsActive && !activeIds.Contains(r.Id));
+
+            return Math.Round((double)illiquidCount / totalActive * 100, 1);
+        }
+
+
+        public async Task<double> GetDsiDaysAsync(int days = 90)
+        {
+            var startDate = DateTime.UtcNow.AddDays(-days);
+
+            var consumption = await _context.ReagentOperations
+                .Where(o => o.OperationDate >= startDate && o.Quantity < 0) // Сомнительно
+                .SumAsync(o => Math.Abs(o.Quantity));
+
+            if (consumption == 0) return 0;
+
+            var currentStock = await _dbSet.Where(r => r.IsActive).SumAsync(r => r.CurrentQuantity);
+
+            // Формула: (Средний остаток / Расход) * Период
+            // Здесь используем текущий остаток как упрощенный средний
+            return Math.Round((double)(currentStock / consumption) * days, 0);
+        }
+
+
+        public async Task<List<ReagentExpirationDTO>> GetUpcomingExpirationsAsync(int count = 5)
+        {
+            var now = DateTime.UtcNow.Date;
+
+            var reagents = await _dbSet
+                .Where(r => r.IsActive && r.ExpirationDate >= now)
+                .OrderBy(r => r.ExpirationDate)
+                .Take(count)
+                .ToListAsync();
+
+            return reagents.Select(r => new ReagentExpirationDTO
+            {
+                Id = r.Id,
+                Name = r.Name,
+                ExpirationDate = r.ExpirationDate,
+                DaysRemaining = FormatExpirationLabel(r.ExpirationDate!.Value )
+            }).ToList();
+        }
+
+
+        /// Private ////////////////////////////////////////////////////////////////////
+        private string FormatExpirationLabel(DateTime date)
+        {
+            var days = (date.Date - DateTime.UtcNow.Date).Days;
+            return days switch
+            {
+                0 => "Сегодня",
+                1 => "Завтра",
+                _ when days < 7 => $"{date:dd MMM} ({days} дн.)",
+                _ => date.ToString("dd.MM.yyyy")
+            };
         }
 
     }

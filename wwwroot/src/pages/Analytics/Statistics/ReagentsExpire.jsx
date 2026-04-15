@@ -24,7 +24,7 @@ const columns = [
       if (days <= 30) color = 'var(--main-error)'; // Red
       else if (days <= 60) color = 'var(--main-warning)'; // Yellow 
       return (
-        <span style={{ color, fontWeight: days <= 60 ? 'var(--main-font-bold)' : 'var(--main-font-normal)' }}>
+        <span style={{ color, fontWeight: Number(days) <= 60 ? 'var(--main-font-bold)' : 'var(--main-font-normal)' }}>
           {days < 0 ? `Просрочен (${Math.abs(days)})` : days}
         </span>
       );

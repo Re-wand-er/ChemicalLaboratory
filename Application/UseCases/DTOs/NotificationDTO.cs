@@ -9,6 +9,7 @@
         string Title,
         string Message,
         DateTime CreatedAt,
+        DateTime? DeletedAt,
         bool IsRead = false
     );
 }

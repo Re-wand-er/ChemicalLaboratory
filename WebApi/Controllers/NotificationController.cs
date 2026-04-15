@@ -1,5 +1,6 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,5 +49,47 @@ namespace ChemicalLaboratory.WebApi.Controllers
             var updatedValue = await _notificationService.UpdateAsync(notificationDTO);
             return Ok(updatedValue);
         }
+
+        [HttpGet("unread-count")]
+        public async Task<IActionResult> GetUnreadCount()
+        {
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+            return Ok(await _notificationService.GetUnreadCountAsync(userId));
+        }
+
+
+        [HttpGet("load")]
+        public async Task<IActionResult> Get()
+        {
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+            return Ok(await _notificationService.GetNotificationsAsync(userId)); 
+        }
+        
+
+        [HttpPost("read-all")]
+        public async Task<IActionResult> ReadAll()
+        {
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+
+            await _notificationService.MarkAllAsReadAsync(userId);
+            return NoContent();
+        }
+
+
+        [HttpPost("{id:int}/read")]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            await _notificationService.MarkAsReadAsync(id); 
+            return NoContent();
+        }
+
+
+        [HttpPost("{id:int}/delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _notificationService.SoftDeleteAsync(id); 
+            return NoContent();
+        }
+
     }
 }

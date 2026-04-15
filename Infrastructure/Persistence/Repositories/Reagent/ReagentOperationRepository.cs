@@ -17,13 +17,13 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             DateTime startDate = ResolveByPeriod(period, () => now.AddDays(-7));
 
             // 2. ТОП-5 
-            var top5Names = await _context.ReagentOperations
+            var top5Names = await _dbSet
                 .Where(o => o.OperationDate >= startDate && o.Quantity < 0)
                 .GroupBy(o => o.Reagent.Name)
                 .OrderByDescending(g => g.Sum(x => Math.Abs(x.Quantity)))
                 .Select(g => g.Key).Take(5).ToListAsync();
 
-            var rawData = await _context.ReagentOperations
+            var rawData = await _dbSet
                 .Where(o => o.OperationDate >= startDate && o.Quantity < 0 && top5Names.Contains(o.Reagent.Name))
                 .Select(o => new { Date = o.OperationDate, Name = o.Reagent.Name, Amount = Math.Abs(o.Quantity) })
                 .ToListAsync();
@@ -69,7 +69,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             DateTime startDate = ResolveByPeriod(period, () => DateTime.MinValue);
 
-            var query = _context.ReagentOperations
+            var query = _dbSet
                 .Where(o => o.OperationDate >= startDate && o.Quantity < 0) // Только расход
                 .GroupBy(o => new { o.ReagentId, o.Reagent.Name })
                 .Select(g => new ItemDTO
@@ -90,7 +90,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             var startDate = ResolveByPeriod(period, () => DateTime.UtcNow.AddDays(-30));
 
-            var query = _context.ReagentOperations.Where(o => o.OperationDate >= startDate);
+            var query = _dbSet.Where(o => o.OperationDate >= startDate);
 
             if (groupBy == OperationsGroupBy.Type)
             {
@@ -116,7 +116,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             DateTime startDate = ResolveByPeriod(period, () => DateTime.MinValue);
 
-            return await _context.ReagentOperations
+            return await _dbSet
                 .Where(o => o.OperationDate >= startDate)
                 // Группируем по названию типа операции
                 .GroupBy(o => o.OperationType.Name)
@@ -136,7 +136,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             var reagents = await _context.Reagents.Where(r => r.IsActive).ToListAsync();
 
             // 2. Получаем операции за период (для расхода) и ПОСЛЕ начала периода (для вычисления нач. остатка)
-            var operations = await _context.ReagentOperations
+            var operations = await _dbSet
                 .Where(o => o.OperationDate >= startDate)
                 .ToListAsync();
 
@@ -173,8 +173,62 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             return report;
         }
 
+        public async Task<int> GetOperationsTodayCountAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+            return await _dbSet
+                .CountAsync(o => o.OperationDate >= today);
+        }
+
+        public async Task<List<RecentOperationDTO>> GetRecentOperationsAsync(int count = 7)
+        {
+            var operations = await _dbSet
+                .Include(o => o.User)
+                .Include(o => o.Reagent)
+                .Include(o => o.OperationType)
+                .OrderByDescending(o => o.OperationDate)
+                .Take(count)
+                .ToListAsync();
+
+            return operations.Select(o => new RecentOperationDTO
+            {
+                Id = o.Id,
+                OperationDate = o.OperationDate,
+                // Столбец 1: ФИО
+                UserFullName = $"{o.User.LastName} {o.User.FirstName[0]}.{o.User.MiddleName[0]}.",
+                // Столбец 2: Суть действия
+                ActionDetails = $"{o.OperationType.Name.ToLower()} {Math.Abs(o.Quantity)}{o.Reagent.Unit} {o.Reagent.Name}",
+                RelativeTime = GetRelativeTime(o.OperationDate)
+            }).ToList();
+        }
+
+        public async Task<List<UserActivityDto>> GetTopActiveUsersAsync(int days = 1, int top = 5)
+        {
+            var startDate = DateTime.UtcNow.Date.AddDays(-(days - 1));
+
+            return await _dbSet
+                .Where(o => o.OperationDate >= startDate)
+                .GroupBy(o => new {
+                    o.UserId,
+                    o.User.LastName,
+                    o.User.FirstName,
+                    o.User.MiddleName
+                })
+                .Select(g => new UserActivityDto
+                {
+                    Id = g.Key.UserId,
+                    FullName = $"{g.Key.LastName} {g.Key.FirstName[0]}.{g.Key.MiddleName[0]}.",
+                    OperationsCount = g.Count()
+                })
+                .OrderByDescending(x => x.OperationsCount)
+                .Take(top)
+                .ToListAsync();
+        }
 
 
+
+
+        /// Private ////////////////////////////////////////////////////////////////////
         private static DateTime ResolveByPeriod(ReportPeriod period, Func<DateTime> defaultAction)
         {
             return period switch
@@ -197,5 +251,13 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             ReportPeriod.Month => date.ToString("MMM yyyy"),
             _ => date.ToString("dd.MM")
         };
+
+        private string GetRelativeTime(DateTime dateTime)
+        {
+            var span = DateTime.UtcNow - dateTime;
+            if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} мин. назад";
+            if (span.TotalHours < 24) return $"{(int)span.TotalHours} час. назад";
+            return dateTime.ToString("dd.MM HH:mm");
+        }
     }
 }

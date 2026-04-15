@@ -1,6 +1,6 @@
 ﻿namespace ChemicalLaboratory.Domain.DTOs.ReagentsDTO
 {
-    public class ReagentTurnoverDTO
+    public record ReagentTurnoverDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

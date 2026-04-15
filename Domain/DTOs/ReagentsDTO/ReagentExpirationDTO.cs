@@ -1,10 +1,10 @@
 ﻿namespace ChemicalLaboratory.Domain.DTOs.ReagentsDTO
 {
-    public class ReagentExpirationDTO
+    public record ReagentExpirationDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public DateTime? ExpirationDate { get; set; }
-        public int DaysRemaining { get; set; } // Разница в днях
+        public string DaysRemaining { get; set; } = string.Empty;// Разница в днях
     }
 }

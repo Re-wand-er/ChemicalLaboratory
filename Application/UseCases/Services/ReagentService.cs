@@ -88,6 +88,24 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             => await _unitOfWork.Reagents.GetLowStockReagentsAsync();
 
 
+        public async Task<DashboardDTO> GetMainDashboardKpiAsync()
+        {
+            return new DashboardDTO
+            {
+                ActiveReagentsCount = await _unitOfWork.Reagents.GetActiveCountAsync(),
+                LowStockPercentage = await _unitOfWork.Reagents.GetLowStockPercentageAsync(),
+                ExpiredPercentage = await _unitOfWork.Reagents.GetExpiredPercentageAsync(),
+                ExpiringSoonPercentage = await _unitOfWork.Reagents.GetExpiringSoonPercentageAsync(),
+                OperationsTodayCount = await _unitOfWork.ReagentOperations.GetOperationsTodayCountAsync(),
+                IlliquidPercentage = await _unitOfWork.Reagents.GetIlliquidPercentageAsync(),
+                DsiDays = await _unitOfWork.Reagents.GetDsiDaysAsync(),
+            };
+        }
+
+
+        public async Task<List<ReagentExpirationDTO>> GetExpirationCalendarAsync()
+            => await _unitOfWork.Reagents.GetUpcomingExpirationsAsync(5);
+
 
         /// ReagentOperations ////////////////////////////////////////////////////////////
         public async Task<List<ItemDTO>> GetTopUsageReportAsync(
@@ -125,5 +143,9 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         public async Task<List<ReagentTurnoverDTO>> GetTurnoverReportAsync(ReportPeriod period)
             => await _unitOfWork.ReagentOperations.GetTurnoverReportAsync(period);
 
+        public async Task<List<RecentOperationDTO>> GetRecentActivityAsync()
+            => await _unitOfWork.ReagentOperations.GetRecentOperationsAsync(7);
+        public async Task<List<UserActivityDto>> GetUserActivityTopAsync(int days)
+            => await _unitOfWork.ReagentOperations.GetTopActiveUsersAsync(days);
     }
 }

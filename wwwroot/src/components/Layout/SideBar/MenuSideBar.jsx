@@ -1,5 +1,3 @@
-import { NavLink } from 'react-router-dom';
-
 import SideBarSection from '../SideBarSection/SideBarSection';
 
 import styles from './sidebar.module.css';
@@ -44,7 +42,7 @@ const sections = [
     }
 ];
 
-export const SideBar = (props) =>{
+export const MenuSideBar = (props) =>{
     return (
         <aside className={`${styles.sidebar} ${!props.isOpen ? styles.closed : ''}`}>
             <nav>

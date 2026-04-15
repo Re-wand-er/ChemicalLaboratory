@@ -8,22 +8,32 @@ import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 import { formatDate } from "../../../utils/formatDate.js";
 
 const columns = [
-  {
-    field: 'id',
-    headerName: 'ID',
-    width: 50,
-    type: 'number',
+  // {
+  //   field: 'id',
+  //   headerName: 'ID',
+  //   width: 50,
+  //   type: 'number',
+  // },
+   {
+    field: 'userId',
+    headerName: 'Пользователь',
+    width: 150,
   },
   {
     field: 'reagentId',
-    headerName: 'ID реагента',
-    width: 50,
+    headerName: 'Реагент',
+    width: 150,
     type: 'number',
   },
   {
     field: 'notificationType',
     headerName: 'Тип уведомления',
     width: 140,
+  },
+  {
+    field: 'title',
+    headerName: 'Заголовок',
+    width: 100,
   },
   {
     field: 'message',

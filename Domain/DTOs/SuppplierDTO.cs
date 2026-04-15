@@ -1,6 +1,6 @@
 ﻿namespace ChemicalLaboratory.Domain.DTOs
 {
-    public class SuppplierDTO
+    public record SuppplierDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
