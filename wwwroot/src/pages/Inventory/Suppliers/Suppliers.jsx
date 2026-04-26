@@ -99,6 +99,7 @@ const Suppliers = () => {
       <DataTable 
         rows={data} 
         columns={columns} 
+        fileName="suppliers"
         onAdd={handleOpenAdd} 
         onEdit={handleOpenEdit} 
         onDelete={handleOpenDelete}/>

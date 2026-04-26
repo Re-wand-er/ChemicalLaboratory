@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
    
-import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogAttribute.jsx";
+import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogActions.jsx";
 import { formatDate, dateConverter } from "../../../utils/formatDate.js";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
@@ -24,12 +24,12 @@ const getFormData = (record = {}) => ({
   name: record.name || '',
   chemicalFormula: record.chemicalFormula || '',
   unit: record.unit || '',
-  currentQuantity: record.currentQuantity || 0,
+  currentQuantity: Number(record.currentQuantity) || 0,
   minQuantity: record.minQuantity || 0,
   expirationDate: record.expirationDate || null,
   storageLocation: record.storageLocation || '',
   categoryId: record.categoryId || 0,
-  isActive: record.isActive !== undefined ? record.isActive : 1
+  isActive: record.isActive !== undefined ? record.isActive : true
 });
 
 const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, handleSave, handleDelete, handleAdd } ) => {    

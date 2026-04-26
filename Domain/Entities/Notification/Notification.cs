@@ -1,6 +1,4 @@
-﻿using ChemicalLaboratory.Domain.Entities;
-
-namespace ChemicalLaboratory.Domain.Entities
+﻿namespace ChemicalLaboratory.Domain.Entities
 {
     public class Notification
     {

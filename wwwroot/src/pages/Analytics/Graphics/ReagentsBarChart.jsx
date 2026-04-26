@@ -6,7 +6,7 @@ import { fetchGetData } from '../../../api/fetch.js';
 /**
  * Аналитический компонент потребления реагентов
  */
-const ReagentsBarChart = ({ startPeriod = 'Week', localeWidth = '800px'}) => {
+const ReagentsBarChart = ({ startPeriod = 'Week', localeWidth = '800px', filterBar = false }) => {
   // 1. Состояние для данных и фильтров
   const [chartData, setChartData] = useState([]);
   const [filters, setFilters] = useState({
@@ -44,9 +44,11 @@ const ReagentsBarChart = ({ startPeriod = 'Week', localeWidth = '800px'}) => {
     }));
   };
 
+  console.log(chartData);
+
   return (
     <div style={{ minHeight: '400px', width: '100%',maxWidth: localeWidth }}>
-      {!startPeriod && (
+      {filterBar && (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <label>
             Период:

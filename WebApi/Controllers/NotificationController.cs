@@ -1,6 +1,6 @@
-﻿using ChemicalLaboratory.Application.UseCases.DTOs;
+﻿using ChemicalLaboratory.Application.Interfaces;
+using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
-using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +14,10 @@ namespace ChemicalLaboratory.WebApi.Controllers
         private readonly NotificationService _notificationService;
         private readonly ILogger<NotificationController> _logger;
 
-        public NotificationController(ILogger<NotificationController> logger, NotificationService notificationService)
+        public NotificationController(NotificationService notificationService, ILogger<NotificationController> logger)
         {
-            _logger = logger;
             _notificationService = notificationService;
+            _logger = logger;
         }
 
         [HttpGet] public async Task<IActionResult> GetAllNotifications() => Ok(await _notificationService.GetAllAsync()); 
@@ -52,26 +52,19 @@ namespace ChemicalLaboratory.WebApi.Controllers
 
         [HttpGet("unread-count")]
         public async Task<IActionResult> GetUnreadCount()
-        {
-            var userId = int.Parse(User.FindFirst("id")!.Value);
-            return Ok(await _notificationService.GetUnreadCountAsync(userId));
-        }
+            => Ok(await _notificationService.GetUnreadCountAsync());
+       
 
 
         [HttpGet("load")]
         public async Task<IActionResult> Get()
-        {
-            var userId = int.Parse(User.FindFirst("id")!.Value);
-            return Ok(await _notificationService.GetNotificationsAsync(userId)); 
-        }
+            => Ok(await _notificationService.GetNotificationsAsync()); 
         
 
         [HttpPost("read-all")]
         public async Task<IActionResult> ReadAll()
         {
-            var userId = int.Parse(User.FindFirst("id")!.Value);
-
-            await _notificationService.MarkAllAsReadAsync(userId);
+            await _notificationService.MarkAllAsReadAsync();
             return NoContent();
         }
 

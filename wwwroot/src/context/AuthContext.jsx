@@ -1,10 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
+import {Roles, ADMIN_LEVEL_ROLES} from '../constants/roles';
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = (props) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const isAuthenticated = !!user;
+  const isAdmin = ADMIN_LEVEL_ROLES.includes(user?.systemRoleId);
+  const isSuperAdmin = Roles.SUPER_ADMIN === user?.systemRoleId;
 
   // Проверяем, есть ли токен при загрузке приложения
   useEffect(() => {
@@ -38,10 +44,8 @@ export const AuthProvider = (props) => {
     }
   };
 
-  const isAuthenticated = !!user;
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin, isSuperAdmin, loading }}>
       {props.children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,5 @@
 ﻿using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Domain.Interfaces
 {

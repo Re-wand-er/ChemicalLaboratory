@@ -25,9 +25,11 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			_logger = logger;
 		}
 
-		[HttpGet] public async Task<IActionResult> GetAllReagents() 
+		[HttpGet]
+		[ProducesResponseType(typeof(IEnumerable<ReagentDTO>), StatusCodes.Status200OK)]
+		public async Task<ActionResult<IEnumerable<ReagentDTO>>> GetAll([FromQuery] bool includeInactive =  false) 
 		{
-			var result = await _reagentService.GetAllAsync();
+			var result = await _reagentService.GetAllAsync(includeInactive);
             return Ok(result);
 		}
 
@@ -61,7 +63,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
 
 
 		[HttpPut("{id:int}")]
-		public async Task<IActionResult> UpdateReagent([FromBody] ReagentDTO reagentDTO) 
+		public async Task<IActionResult> UpdateReagent([FromBody] ReagentUpdateDTO reagentDTO) 
 		{
             _logger.LogInformation($"Updated notification with id = {reagentDTO.Id} in controller");
             
@@ -84,12 +86,12 @@ namespace ChemicalLaboratory.WebApi.Controllers
 
 
         [HttpGet("low-stock")]
-        public async Task<ActionResult<List<ReagentLowStockDTO>>> GetLowStock()
-			=> Ok(await _reagentService.GetLowStockReportAsync());
+        public async Task<ActionResult<List<ReagentLowStockDTO>>> GetLowStock([FromQuery] LowStockFilterDTO filter)
+			=> Ok(await _reagentService.GetLowStockReportAsync(filter.CategoryId, filter.CriticalPercent, filter.ExcludeExpired));
 
 
         [HttpGet("forecast")]
         public async Task<IActionResult> GetReport()
-			=> Ok(await _reagentForecastService.GetForecastAsync());
+			=> Ok(await _reagentForecastService.GetForecastAsync(3)); // пароговый мультипликатор
     }
 }

@@ -1,11 +1,9 @@
-﻿using ChemicalLaboratory.Domain.DTOs;
+﻿using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
-    public class WorkScheduleRepository : BaseRepository<WorkSchedule>, IWorkSchedule
+    public class WorkScheduleRepository : BaseRepository<WorkSchedule>, IWorkScheduleRepository
     {
         public WorkScheduleRepository(DataBaseContext dataBaseContext) : base(dataBaseContext) { }
     }

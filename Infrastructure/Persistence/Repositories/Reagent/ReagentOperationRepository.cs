@@ -1,8 +1,9 @@
-﻿using ChemicalLaboratory.Domain.DTOs;
+﻿using static ChemicalLaboratory.Infrastructure.Persistence.VisualTimeFormater;
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
+using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Enums;
-using ChemicalLaboratory.Domain.Interfaces;
+using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
@@ -244,20 +245,5 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             };
         }
 
-        private string FormatDateByPeriod(DateTime date, ReportPeriod step) => step switch
-        {
-            ReportPeriod.Day => date.ToString("dd.MM"),
-            ReportPeriod.Week => $"Нед {System.Globalization.CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)}",
-            ReportPeriod.Month => date.ToString("MMM yyyy"),
-            _ => date.ToString("dd.MM")
-        };
-
-        private string GetRelativeTime(DateTime dateTime)
-        {
-            var span = DateTime.UtcNow - dateTime;
-            if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} мин. назад";
-            if (span.TotalHours < 24) return $"{(int)span.TotalHours} час. назад";
-            return dateTime.ToString("dd.MM HH:mm");
-        }
     }
 }

@@ -135,7 +135,7 @@ const Users = () => {
     };
 
     const handleSave = async (record) => {
-      const result = await fetchPutData(`api/user/${record.id}`, record, true);
+      const result = await fetchPutData(`api/user`, record, true);
       
       if(result){      
         setData(prevItems => prevItems.map(data => data.id === result.id ? result : data));
@@ -156,6 +156,7 @@ const Users = () => {
             <DataTable 
               rows={data} 
               columns={columns} 
+              fileName="users"
               onAdd={handleOpenAdd} 
               onEdit={handleOpenEdit} 
               onDelete={handleOpenDelete}/>

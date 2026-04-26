@@ -12,7 +12,7 @@ const sections = [
         title: "Учет",
         links:[
             {to: "/reagents", label: "Реагенты"},
-            {to: "/manufacturers", label: "Производители"},
+            // {to: "/manufacturers", label: "Производители"},
             {to: "/suppliers", label: "Поставщики"}
         ],
         to: ""

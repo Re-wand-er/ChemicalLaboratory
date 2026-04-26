@@ -58,7 +58,6 @@ namespace ChemicalLaboratory
                     {
                         OnMessageReceived = context =>
                         {
-
                             if (context.Request.Cookies.ContainsKey("jwtToken"))
                             {
                                 context.Token = context.Request.Cookies["jwtToken"];
@@ -95,6 +94,7 @@ namespace ChemicalLaboratory
             //------------------------------------------------------------------------------------------------------------
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpContextAccessor();
 
             //------------------------------------------------------------------------------------------------------------
 
@@ -106,11 +106,12 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<IReagentCategoryRepository, ReagentCategoryRepository>();
             builder.Services.AddScoped<IReagentOperationRepository, ReagentOperationRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IWorkSchedule, WorkScheduleRepository>();
+            builder.Services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
 

@@ -2,11 +2,10 @@
 using ChemicalLaboratory.Application.Interfaces;
 using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
-using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.Domain.Entities;
+using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.WebApi.Models;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -16,15 +15,24 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         private readonly ILogger<UserService> _logger;
         private readonly IDistributedCache _cache; 
         private readonly IJwtService _jwtService;
-        private readonly IEmailSender _emailSender;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IEmailSender _emailSender; 
         private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(IUnitOfWork unitOfWork, IDistributedCache cache, IJwtService jwtService, IEmailSender emailSender, IPasswordHasher passwordHasher, ILogger<UserService> logger)
+        public UserService(
+            IUnitOfWork unitOfWork, 
+            IDistributedCache cache, 
+            IJwtService jwtService, 
+            ICurrentUserService currentUserService, 
+            IEmailSender emailSender, 
+            IPasswordHasher passwordHasher, 
+            ILogger<UserService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _cache = cache;
             _jwtService = jwtService;
+            _currentUserService = currentUserService;
             _emailSender = emailSender;
             _passwordHasher = passwordHasher;
         }
@@ -42,16 +50,19 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         }
 
 
-        public async Task<User?> GetByIdAsync(int id) // UserReadDTO
+        public async Task<UserReadDTO?> GetByIdAsync() 
         {
-            _logger.LogInformation($"Get user with id: {id}");
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
+            var userId = _currentUserService.GetRequiredUserId();
+
+            _logger.LogInformation($"Get user with id: {userId}");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
             if (user == null)
             {
-                _logger.LogWarning($"User with id = {id} not found");
+                _logger.LogWarning($"User with id = {userId} not found");
                 return null;
             }
-            return user.Adapt<User>();
+            var adapt = user.Adapt<UserReadDTO>();
+            return adapt;
         }
 
 

@@ -23,9 +23,9 @@ public class JwtService : IJwtService
         // 1. payload
         var claims = new List<Claim>
         {
-            new Claim("id", user.Id.ToString()),
-            new Claim("name", user.Login),
-            new Claim("role", user.SystemRole ?? "Пользователь") // Если есть роли
+            new Claim("id", user.Id.ToString()), //ClaimTypes.NameIdentifier
+            new Claim("name", user.Login), //ClaimTypes.Name
+            new Claim("role", user.SystemRoleName ?? "Пользователь") //?? "Пользователь" | ClaimTypes.Role
         };
 
         // 2. Берем секретный ключ из appsetting.json

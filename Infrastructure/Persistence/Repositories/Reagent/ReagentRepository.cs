@@ -1,8 +1,8 @@
-﻿using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Domain.Interfaces;
+﻿using static ChemicalLaboratory.Infrastructure.Persistence.VisualTimeFormater;
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
+using ChemicalLaboratory.Domain.Interfaces;
+using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.DTOs;
-using ChemicalLaboratory.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
@@ -11,28 +11,60 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
     {
         public ReagentRepository(DataBaseContext dataBaseContext) : base(dataBaseContext) { }
 
-        public virtual Task AddRangeAsync(IEnumerable<Reagent> reagentDTOs)
+
+        public async Task<IEnumerable<Reagent>> GetAllAsync(bool includeInactive = false)
         {
-            throw new NotImplementedException();
+            IQueryable<Reagent> query = _dbSet;
+
+            if (includeInactive)
+                query = query.IgnoreQueryFilters();
+
+            return await query.Include(r => r.Category).ToListAsync();
         }
 
-        public async Task<IEnumerable<ListItemDTO>> GetAllIdNameAsync() =>
-            await _dbSet
+        public async Task<IEnumerable<ListItemDTO>> GetAllIdNameAsync() 
+            => await _dbSet
                 .AsNoTracking()
                 .Select(c => new ListItemDTO(c.Id, c.Name))
                 .ToListAsync();
+        public virtual Task AddRangeAsync(IEnumerable<Reagent> reagentDTOs) 
+            => throw new NotImplementedException();
 
-        public override async Task DeleteManyAsync(IEnumerable<int> ids)
+        //public override async Task DeleteManyAsync(IEnumerable<int> ids)
+        //{
+        //    var entities = await _dbSet
+        //        .Where(c => ids.Contains(c.Id))
+        //        .ToListAsync();
+
+        //    _dbSet.RemoveRange(entities);
+        //    await _context.SaveChangesAsync();
+        //}
+
+        public async Task SoftDeleteAsync(IEnumerable<int> ids)
         {
-            var entities = await _dbSet
-                .Where(c => ids.Contains(c.Id))
-                .ToListAsync();
+            await _dbSet
+                .Where(r => ids.Contains(r.Id))
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(r => r.IsActive, false)
+                    .SetProperty(r => r.DeletedAt, DateTime.UtcNow)
+                );
+        }
 
-            _dbSet.RemoveRange(entities);
-            await _context.SaveChangesAsync();
+        public async Task RestoreAsync(IEnumerable<int> ids) 
+        {
+            await _dbSet
+                .Where(r => ids.Contains(r.Id))
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(r => r.IsActive, false)
+                    .SetProperty(r => r.DeletedAt, DateTime.UtcNow)
+                );
         }
 
 
+
+
+
+        // Smart
         public async Task<ReagentStockReportDTO> GetStockDistributionReportAsync()
         {
             // 1. Получаем сгруппированные данные из БД (Категория + Реагент = Сумма)
@@ -98,18 +130,36 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<List<ReagentLowStockDTO>> GetLowStockReagentsAsync()
+        public async Task<List<ReagentLowStockDTO>> GetLowStockReagentsAsync(int? categoryId, decimal percent, bool expired)
         {
-            return await _dbSet
-                .Where(r => r.IsActive && r.CurrentQuantity < r.MinQuantity)
-                .OrderBy(r => r.CurrentQuantity / r.MinQuantity) // Сначала самые критичные (где % остатка меньше)
+            var query = _dbSet
+            .Where(r => r.IsActive && r.CurrentQuantity < r.MinQuantity)
+            .AsQueryable();
+
+            // Фильтр по категории
+            if (categoryId.HasValue)
+                query = query.Where(r => r.CategoryId == categoryId.Value);
+
+            // Исключить просроченные
+            if (expired)
+                query = query.Where(r =>
+                    r.ExpirationDate == null ||
+                    r.ExpirationDate >= DateTime.Today);
+
+
+            query = query.Where(r =>
+                (r.CurrentQuantity * 100m / r.MinQuantity) < percent);
+
+            return await query
+                .OrderBy(r => r.CurrentQuantity / r.MinQuantity)
                 .Select(r => new ReagentLowStockDTO
                 {
                     Id = r.Id,
                     Name = r.Name,
                     CurrentQuantity = r.CurrentQuantity,
                     MinQuantity = r.MinQuantity,
-                    Unit = r.Unit
+                    Unit = r.Unit,
+                    CriticalPercent = (r.CurrentQuantity / r.MinQuantity) * 100
                 })
                 .ToListAsync();
         }
@@ -120,7 +170,6 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             var startDate = DateTime.UtcNow.AddDays(-daysLookback);
 
             return await _dbSet
-                .Where(r => r.IsActive)
                 .Select(r => new ReagentPredictionDTO
                 {
                     Id = r.Id,
@@ -236,20 +285,6 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                 ExpirationDate = r.ExpirationDate,
                 DaysRemaining = FormatExpirationLabel(r.ExpirationDate!.Value )
             }).ToList();
-        }
-
-
-        /// Private ////////////////////////////////////////////////////////////////////
-        private string FormatExpirationLabel(DateTime date)
-        {
-            var days = (date.Date - DateTime.UtcNow.Date).Days;
-            return days switch
-            {
-                0 => "Сегодня",
-                1 => "Завтра",
-                _ when days < 7 => $"{date:dd MMM} ({days} дн.)",
-                _ => date.ToString("dd.MM.yyyy")
-            };
         }
 
     }

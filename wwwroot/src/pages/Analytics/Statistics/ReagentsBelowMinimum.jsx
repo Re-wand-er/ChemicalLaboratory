@@ -24,7 +24,17 @@ const columns = [
     field: 'unit', 
     headerName: 'Ед. изм.', 
     width: 80
-  }
+  },
+  { 
+    field: 'criticalPercent', 
+    headerName: 'Процент остатка', 
+    width: 90,
+    renderCell: (params) => (
+      <span style={{ color: 'var(--main-error)', fontWeight: 'var(--main-font-bold)',  }}>
+        {params.value}
+      </span>
+    )
+  },
 ];
 
 /**

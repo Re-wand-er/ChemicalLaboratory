@@ -21,13 +21,8 @@ namespace ChemicalLaboratory.WebApi.Controllers
 		}
 
 		[HttpGet] public async Task<IActionResult> GetAllUsers() => Ok(await _userService.GetAllAsync());
-        [HttpGet("{id}")] public async Task<IActionResult> GetIdUsers(int id)
-        {
-            Console.WriteLine($"Before + {id}");
-            var f = await _userService.GetByIdAsync(id);
-            Console.WriteLine(f);
-            return Ok(f);
-        }
+        [HttpGet("id")] public async Task<IActionResult> GetIdUsers()
+            => Ok(await _userService.GetByIdAsync());
 
 
         [HttpGet("name")]
@@ -55,7 +50,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
             return Ok(new { succes = true });
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO userDTO)
         {
             _logger.LogInformation($"Updated user with id = {userDTO.Id} in controller");

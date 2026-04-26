@@ -8,7 +8,7 @@ const Graphics = () => {
     <>
       <h2>Графика</h2>
       <CategoryPie />
-      <ReagentsBarChart />
+      <ReagentsBarChart filterBar={true}/>
       <ReagentsLineChart />
       <ReagentsPie />
     </>

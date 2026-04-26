@@ -25,6 +25,11 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.HasMany(x => x.Reagents)
                 .WithOne(x => x.Category)
                 .HasForeignKey(x => x.CategoryId);
+
+            builder.Property(x => x.IsActive)
+                .HasDefaultValue(true);
+
+            builder.Property(x => x.DeletedAt);
         }
     }
 }

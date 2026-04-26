@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogAttribute.jsx";
+import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogActions.jsx";
 import { formatDate } from "../../../utils/formatDate.js";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 

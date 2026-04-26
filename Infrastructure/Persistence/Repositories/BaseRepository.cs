@@ -1,6 +1,7 @@
 ﻿using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
@@ -20,7 +21,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.AsNoTracking().ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
         public virtual async Task<T?> GetByIdAsync(int id)

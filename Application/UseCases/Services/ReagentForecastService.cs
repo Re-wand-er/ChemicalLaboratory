@@ -12,7 +12,7 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             _reagentRepository = reagentRepository;
         }
 
-        public async Task<List<ReagentReportDTO>> GetForecastAsync()
+        public async Task<List<ReagentReportDTO>> GetForecastAsync(int multiplier = 3)
         {
             var rawData = await _reagentRepository.GetConsumptionHistoryAsync();
             var results = new List<ReagentReportDTO>();
@@ -28,7 +28,7 @@ namespace ChemicalLaboratory.Application.UseCases.Services
                 int daysToZero = predictedDailyConsumption > 0
                     ? (int)(item.CurrentQuantity / predictedDailyConsumption) : 999;
 
-                decimal maxQuantity = item.MinQuantity * 3; // Пример Max
+                decimal maxQuantity = item.MinQuantity * multiplier; // Пример Max
                 decimal recOrder = 0;
 
                 minDate = Math.Min(daysToZero, item.DaysToExpiry ?? 999);

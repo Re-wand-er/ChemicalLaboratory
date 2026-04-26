@@ -7,9 +7,9 @@ namespace ChemicalLaboratory.WebApi.Controllers
     [Route("api/work-schedule")]
     public class WorkScheduleController : ControllerBase
     {
-        private readonly IWorkSchedule _workSchedule;
+        private readonly IWorkScheduleRepository _workSchedule;
         private readonly ILogger<WorkScheduleController> _logger;
-        public WorkScheduleController(IWorkSchedule workSchedule, ILogger<WorkScheduleController> logger)
+        public WorkScheduleController(IWorkScheduleRepository workSchedule, ILogger<WorkScheduleController> logger)
         {
             _workSchedule = workSchedule;
             _logger = logger;

@@ -26,7 +26,7 @@ const ProfileForm = () => {
   };
 
   const handleSave = async () => {
-    const result = await fetchPutData(`api/user/${data.id}`, data, true);
+    const result = await fetchPutData(`api/user/id`, data, true);
     
     if(result){      
       setData(result);

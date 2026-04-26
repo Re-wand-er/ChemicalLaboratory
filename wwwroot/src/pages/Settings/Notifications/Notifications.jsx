@@ -80,8 +80,6 @@ const Notifications = () => {
         setReagent(reagents);
         setUser(users);
       }); 
-
-    console.log(data);  
   }, []);      
 
   //// Методы для открытия соотв. окон //////////////////////////  
@@ -146,6 +144,7 @@ const Notifications = () => {
       <DataTable 
         rows={data} 
         columns={columns} 
+        fileName="notifications"
         onAdd={handleOpenAdd} 
         onEdit={handleOpenEdit} 
         onDelete={handleOpenDelete}/>

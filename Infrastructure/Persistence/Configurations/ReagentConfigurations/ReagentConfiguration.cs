@@ -1,6 +1,7 @@
 ﻿using ChemicalLaboratory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Org.BouncyCastle.Pkix;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 {
@@ -9,8 +10,9 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Reagent> builder)
         {
             builder.ToTable("Reagents");
-
             builder.HasKey(x => x.Id);
+
+            builder.HasQueryFilter(x => x.IsActive);
 
             builder.Property(x => x.Name)
                 .HasMaxLength(200)
@@ -39,6 +41,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);
+
+            builder.Property(x => x.DeletedAt);
         }
     }
 

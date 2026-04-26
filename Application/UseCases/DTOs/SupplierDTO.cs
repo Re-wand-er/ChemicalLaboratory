@@ -5,6 +5,8 @@
         int Id,
         string Name,
         string? ContactInfo,
-        string? Address
+        string? Address,
+        DateTime? DeletedAt,
+        bool IsActive = true
     );
 }

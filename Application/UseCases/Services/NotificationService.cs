@@ -10,11 +10,13 @@ namespace ChemicalLaboratory.Application.UseCases.Services
     public class NotificationService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<NotificationService> _logger;
 
-        public NotificationService(IUnitOfWork unitOfWork, ILogger<NotificationService> logger)
+        public NotificationService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ILogger<NotificationService> logger)
         {
             _unitOfWork = unitOfWork;
+            _currentUserService = currentUserService;
             _logger = logger;
         }
 
@@ -71,64 +73,21 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         }
 
 
-        public async Task<int> GetUnreadCountAsync(int userId)
-            => await _unitOfWork.Notifications.GetUnreadCountAsync(userId);
-        
+        // Без логов - лень
+        public async Task<int> GetUnreadCountAsync()
+            => await _unitOfWork.Notifications.GetUnreadCountAsync(_currentUserService.GetRequiredUserId());
 
-        public async Task<List<NotificationSideBarDTO>> GetNotificationsAsync(int userId)
-        {
-            try
-            {
-                return await _unitOfWork.Notifications.GetUserNotificationsAsync(userId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при получении уведомлений для пользователя {UserId}", userId);
-                throw;
-            }
-        }
+        public async Task<List<NotificationSideBarDTO>> GetNotificationsAsync()
+            => await _unitOfWork.Notifications.GetUserNotificationsAsync(_currentUserService.GetRequiredUserId());
 
-
-        public async Task MarkAllAsReadAsync(int userId)
-        {
-            try
-            {
-                await _unitOfWork.Notifications.MarkAllAsReadAsync(userId);
-                _logger.LogInformation("Пользователь {UserId} пометил все уведомления как прочитанные", userId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при массовом прочтении уведомлений для {UserId}", userId);
-                throw;
-            }
-        }
-
+        public async Task MarkAllAsReadAsync()
+            => await _unitOfWork.Notifications.MarkAllAsReadAsync(_currentUserService.GetRequiredUserId());
 
         public async Task MarkAsReadAsync(int id)
-        {
-            try
-            {
-                await _unitOfWork.Notifications.MarkAsReadAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при пометке уведомления {Id} как прочитанного", id);
-                throw;
-            }
-        }
+            => await _unitOfWork.Notifications.MarkAsReadAsync(id);
 
         public async Task SoftDeleteAsync(int id)
-        {
-            try
-            {
-                await _unitOfWork.Notifications.SoftDeleteAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при удалении уведомления {Id}", id);
-                throw;
-            }
-        }
+            => await _unitOfWork.Notifications.SoftDeleteAsync(id);
 
     }
 }

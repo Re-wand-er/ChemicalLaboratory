@@ -1,7 +1,6 @@
 ﻿using ChemicalLaboratory.Application.UseCases.DTOs.UserDTOs;
 using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Domain.DTOs;
 using Mapster;
 
 // По хорошему должен быть отдельный mapster
@@ -20,25 +19,32 @@ namespace ChemicalLaboratory.Application.Mapping
                 .Ignore(n => n.CreatedAt);
 
             // Reagents ---------------------------------------------
-            config.NewConfig<Reagent, ReagentDTO>();
+            config.NewConfig<Reagent, ReagentDTO>()
+                .Map(dest => dest.CategoryName, src => src.Category.Name);
             config.NewConfig<ReagentDTO, Reagent>()
                 .Ignore(n => n.Id)
                 .Ignore(n => n.CreatedAt);
 
 
-            config.NewConfig<ReagentDTO, ReagentCreateDTO>();
-            config.NewConfig<ReagentCreateDTO, ReagentDTO>()
+            config.NewConfig<ReagentCreateDTO, Reagent>()
                 .Ignore(r => r.Id)
                 .Ignore(r => r.CreatedAt);
 
+            config.NewConfig<ReagentUpdateDTO, Reagent>();
+                //.Ignore(dest => dest.Category);
 
             config.NewConfig<ReagentCategory, CategoryDTO>();
             config.NewConfig<CategoryDTO, ReagentCategory>()
                 .Ignore(r => r.Id);
 
             // Users ------------------------------------------------
-            config.NewConfig<User, UserReadDTO>();
-            config.NewConfig<UserReadDTO, User>();
+            config.NewConfig<User, UserReadDTO>()
+                .Map(dest => dest.SystemRoleName, src => src.SystemRole != null ? src.SystemRole.Name : null);
+
+            config.NewConfig<UserReadDTO, User>()
+                .Ignore(r => r.SystemRole);
+
+
 
             config.NewConfig<User, UserUpdateDTO>();
             config.NewConfig<UserUpdateDTO, User>()

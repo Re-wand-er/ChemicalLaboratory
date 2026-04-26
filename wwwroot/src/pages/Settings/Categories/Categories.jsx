@@ -99,13 +99,14 @@ const Categories = () => {
             <DataTable 
               rows={data} 
               columns={columns} 
+              fileName="categories" 
               onAdd={handleOpenAdd} 
               onEdit={handleOpenEdit} 
               onDelete={handleOpenDelete}/>
 
               <DialogCategories
                 modalMode={modalMode} 
-                currentRecord={currentRecord} 
+                currentRecord={currentRecord}
                 handleAdd={handleAdd}
                 handleDelete={handleDelete}
                 handleSave={handleSave} 

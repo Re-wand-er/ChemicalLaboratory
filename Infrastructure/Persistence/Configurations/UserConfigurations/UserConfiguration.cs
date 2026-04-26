@@ -1,6 +1,6 @@
-﻿using ChemicalLaboratory.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ChemicalLaboratory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 {
@@ -33,9 +33,6 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Sex)
                 .HasMaxLength(2);
 
-            builder.Property(x => x.SystemRole)
-                .HasMaxLength(30);
-
             builder.Property(x => x.JobPosition)
                 .HasMaxLength(30);
 
@@ -52,9 +49,15 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);
 
+            builder.Property(x => x.DeletedAt);
+
             builder.HasOne(x => x.WorkSchedule)
                 .WithMany(x => x.Users)
                 .HasForeignKey(x => x.IdWorkSchedule);
+
+            builder.HasOne(x => x.SystemRole)
+                .WithMany(x => x.Users)
+                .HasForeignKey(x => x.SystemRoleId);
         }
     }
 }

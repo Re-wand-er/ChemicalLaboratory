@@ -1,8 +1,8 @@
-﻿using ChemicalLaboratory.Domain.Entities;
+﻿using ChemicalLaboratory.Domain.Interfaces;
 
 namespace ChemicalLaboratory.Domain.Entities
 {
-    public class Reagent
+    public class Reagent 
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
@@ -14,7 +14,8 @@ namespace ChemicalLaboratory.Domain.Entities
         public string? StorageLocation { get; set; }
         public int CategoryId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public bool IsActive { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public ReagentCategory Category { get; set; } = null!;
         public ICollection<ReagentOperation> Operations { get; set; } = new List<ReagentOperation>();

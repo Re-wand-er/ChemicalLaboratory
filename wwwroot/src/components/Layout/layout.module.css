@@ -4,22 +4,22 @@
     min-height: 100vh;
 }
 
-.content{ /*?*/
+.content{ 
     display: flex;
-    flex: 1 0 auto; /*Для footer-а*/
+    flex: 1 1 auto; 
     overflow: hidden;
 }
 
 .main{
-    flex: 1; /*Занимает все доступное место*/
+    flex: 1; 
     transition: margin-left 0.5s ease; 
 
     overflow: auto;
-    height: calc(100vh - 140px); /* Чтобы был виден footer, если не нужно чтобы был виден, можно оставить 100vh*/
+    height: calc(100vh - 110px); /* Чтобы был виден footer, если не нужно чтобы был виден, можно оставить 100vh*/
     /* display: flex; */
     flex-direction: column;
 }
 
-.footer{
+/* .footer{
     flex-shrink: 0;
-} 
+}  */

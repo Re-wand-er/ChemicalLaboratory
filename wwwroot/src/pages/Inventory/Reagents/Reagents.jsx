@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogReagents from "./DialogReagents.jsx";
+import { useAuth } from '../../../context/AuthContext.jsx';
 
 import { fetchGetData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
@@ -57,10 +58,10 @@ const columns = [
     width: 180,
   },
   {
-    field: 'categoryId',
+    field: 'categoryName',
     headerName: 'Категория',
     width: 150,
-    type: 'number',
+    //type: 'number',
   },
   {
     field: 'isActive',
@@ -80,21 +81,31 @@ const columns = [
   },
 ];
 
+const fetchWithParam = async (baseUrl, isAdmin) =>{
+  const urlParams = new URLSearchParams();
+  
+  if (isAdmin) {
+    urlParams.append("includeInactive", true);
+  }
+
+  return await fetchGetData(`${baseUrl}?${urlParams.toString()}`)
+}
 
 const Reagents = () => {
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]); 
+  const { isSuperAdmin } = useAuth(); 
 
-    useEffect(() =>{
-      Promise.all([
-        fetchGetData('/api/reagent'), 
-        fetchGetData('/api/category/name')
-      ])
-        .then(([reagents, categories]) => {
-          setData(reagents);
-          setCategories(categories);
-        }); 
-    }, []);    
+  useEffect(() =>{
+    Promise.all([
+      fetchWithParam('/api/reagent', isSuperAdmin), 
+      fetchGetData('/api/category/name')
+    ])
+      .then(([reagents, categories]) => {
+        setData(reagents);
+        setCategories(categories);
+      }); 
+  }, []);    
 
   //// Методы для открытия соотв. окон //////////////////////////  
   // Состояние модального окна
@@ -132,7 +143,14 @@ const Reagents = () => {
     const success = fetchDeleteByIds('api/reagent/bulk-delete', ids);
 
     if (success){
-      setData(prev => prev.filter(r => !ids.includes(r.id)));
+      setData(prevItems => prevItems.map(item => {
+
+        if (ids.includes(item.id)) {
+          return { ...item, isActive: false };
+        }
+        
+        return item;
+        }));
       handleClose();
     }
   };
@@ -158,6 +176,7 @@ const Reagents = () => {
       <DataTable 
         rows={data} 
         columns={columns} 
+        fileName="reagents"
         onAdd={handleOpenAdd} 
         onEdit={handleOpenEdit} 
         onDelete={handleOpenDelete}/>

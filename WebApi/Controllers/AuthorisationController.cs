@@ -40,11 +40,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> GetMe()
         {
-            // Достаем ID из Claims токена
-            var userIdClaim = User.FindFirst("id");
-            if (userIdClaim == null) return Unauthorized();
-
-            var user = await _userService.GetByIdAsync(int.Parse(userIdClaim.Value));
+            var user = await _userService.GetByIdAsync();
             return Ok(new { user });
         }
 

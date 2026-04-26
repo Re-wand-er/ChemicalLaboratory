@@ -28,6 +28,14 @@ const Predicts = lazy(()=>import('./pages/Analytics/Predicts/Predicts.jsx'));
 
 /*Отчеты*/
 const Reports = lazy(()=>import('./pages/Reports/Reports.jsx'));
+const BelowMinReport = lazy(()=>import('./pages/Reports/BelowMinReport.jsx'));
+const ExpiredReport = lazy(()=>import('./pages/Reports/ExpiredReport.jsx'));
+const DateBalanceReport = lazy(()=>import('./pages/Reports/DateBalanceReport.jsx'));
+const IncomeReport = lazy(()=>import('./pages/Reports/IncomeReport.jsx'));
+const ConsumptionReport = lazy(()=>import('./pages/Reports/ConsumptionReport.jsx'));
+const ExpenseReport = lazy(()=>import('./pages/Reports/ExpenseReport.jsx'));
+const TopUsageReport = lazy(()=>import('./pages/Reports/TopUsageReport.jsx'));
+const ForecastReport = lazy(()=>import('./pages/Reports/ForecastReport.jsx'));
 
 /*Настройки*/
 const Settings = lazy(()=>import('./pages/Settings/Settings.jsx'));
@@ -60,7 +68,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="secret" element={<h2>Поздравляю вы вышли на секретную страницу</h2>}/>
 
           {/*Дашборд*/}
-          <Route index path="dashboard" element={<Dashboard />}/>
+          <Route path="dashboard" element={<Dashboard />}/>
           <Route path="user" element={<ProfileForm />}/>
 
           {/*Учет*/}
@@ -76,7 +84,16 @@ createRoot(document.getElementById('root')).render(
           <Route path="predicts" element={<Predicts />}/>
 
           {/*Отчеты*/}
-          <Route path="reports" element={<Reports />}/>
+          <Route path="reports" element={<Reports />}>
+            <Route path="date-balance" element={<DateBalanceReport />}/>
+            <Route path="below-minimum" element={<BelowMinReport />}/>
+            <Route path="expired" element={<ExpiredReport />}/>
+            <Route path="income" element={<IncomeReport />}/>
+            <Route path="consumption" element={<ConsumptionReport />}/>
+            <Route path="expense" element={<ExpenseReport />}/>
+            <Route path="top-usage" element={<TopUsageReport />}/>
+            <Route path="forecast" element={<ForecastReport />}/>
+          </ Route>
 
           {/*Настройки*/}
           <Route path="settings" element={<Settings />}/>

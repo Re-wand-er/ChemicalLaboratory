@@ -7,5 +7,6 @@
         public decimal CurrentQuantity { get; set; }
         public decimal MinQuantity { get; set; }
         public string Unit { get; set; } = string.Empty;
+        public decimal CriticalPercent { get; set; }
     }
 }

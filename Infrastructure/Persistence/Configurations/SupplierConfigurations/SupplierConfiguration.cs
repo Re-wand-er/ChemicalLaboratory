@@ -21,6 +21,11 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.Address)
                 .HasMaxLength(200);
+
+            builder.Property(x => x.IsActive)
+                .HasDefaultValue(true);
+
+            builder.Property(x => x.DeletedAt);
         }
     }
 }

@@ -97,27 +97,27 @@ async function fetchDeleteByIds(path, ids) {
  */
 const fetchPutData = async (path, body, credentialsInclude = false) => {
     const options = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     };
 
     if (credentialsInclude) {
-        options.credentials = 'include';
+      options.credentials = 'include';
     }
 
     try {
-        const response = await fetch(path, options);
+      const response = await fetch(path, options);
 
-        if (!response.ok) {
-            throw new Error(`Ошибка: ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.status}`);
+      }
 
-        return await response.json();
+      return await response.json();
 
     } catch (err) {
-        console.error("Ошибка PUT-запроса:", err.message);        
-        throw err;
+      console.error("Ошибка PUT-запроса:", err.message);        
+      throw err;
     }
 };
 

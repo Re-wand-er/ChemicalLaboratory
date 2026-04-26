@@ -68,47 +68,47 @@ export const NotificationSideBar = ({ user, isOpen, onClose }) => {
         {notifications.map((item) => (
           <Box key={item.id}>
             <ListItem 
-  alignItems="flex-start"
-  sx={{ 
-    bgcolor: item.isRead ? 'action.hover' : 'transparent',
-    borderLeft: item.isRead ? 'none' : '4px solid #1976d2',
-    transition: '0.3s',
-    flexDirection: 'column',
-    alignItems: 'stretch'
-  }}
->
-  {/* Верхняя строка: заголовок + кнопки */}
-  <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
-    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-      {item.title}
-    </Typography>
-    <Box sx={{ display: 'flex', gap: 0.5 }}>
-      {!item.isRead && (
-        <IconButton size="small" onClick={() => handleRead(item.id)} sx={{ color: 'primary.main', p: 0.5 }}>
-          <DoneIcon fontSize="small" />
-        </IconButton>
-      )}
-      <IconButton size="small" onClick={() => handleDelete(item.id)} sx={{ color: 'text.secondary', p: 0.5 }}>
-        <DeleteOutlineIcon fontSize="small" />
-      </IconButton>
-    </Box>
-  </Box>
+              alignItems="flex-start"
+              sx={{ 
+                bgcolor: item.isRead ? 'action.hover' : 'transparent',
+                borderLeft: item.isRead ? 'none' : '4px solid #1976d2',
+                transition: '0.3s',
+                flexDirection: 'column',
+                alignItems: 'stretch'
+              }}
+            >
+             
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                  {item.title}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  {!item.isRead && (
+                    <IconButton size="small" onClick={() => handleRead(item.id)} sx={{ color: 'primary.main', p: 0.5 }}>
+                      <DoneIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <IconButton size="small" onClick={() => handleDelete(item.id)} sx={{ color: 'text.secondary', p: 0.5 }}>
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </Box>
 
-  {/* Сообщение */}
-  <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
-    {item.message}
-  </Typography>
+              {/* Сообщение */}
+              <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
+                {item.message}
+              </Typography>
 
-  {/* Нижняя строка: реактив + дата */}
-  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-    <Typography variant="caption" sx={{ bgcolor: 'grey.200', px: 1, borderRadius: 1 }}>
-      ⚛️ {item.reagentName}
-    </Typography>
-    <Typography variant="caption" color="text.secondary">
-      {item.createdAt}
-    </Typography>
-  </Box>
-</ListItem>
+              {/* Нижняя строка: реактив + дата */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="caption" sx={{ bgcolor: 'grey.200', px: 1, borderRadius: 1 }}>
+                  ⚛️ {item.reagentName}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {item.createdAt}
+                </Typography>
+              </Box>
+            </ListItem>
             <Divider component="li" />
           </Box>
         ))}
