@@ -48,8 +48,8 @@ const columns = [
   },
   {
     field: 'isRead',
-    headerName: 'Активен',
-    width: 100,
+    headerName: 'Прочитан',
+    width: 110,
     type: 'boolean',
     renderCell: (params) => (
     <span

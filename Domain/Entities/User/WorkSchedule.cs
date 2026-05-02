@@ -1,6 +1,8 @@
-﻿namespace ChemicalLaboratory.Domain.Entities
+﻿using ChemicalLaboratory.Domain.Interfaces;
+
+namespace ChemicalLaboratory.Domain.Entities
 {
-    public class WorkSchedule
+    public class WorkSchedule : IEntity
     {
         public int Id { get; set; }
         public string? WorkShift { get; set; }

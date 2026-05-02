@@ -4,7 +4,7 @@
     /// Это объект, который контроллер отправляет на фронтенд. 
     /// Он содержит вычисленные значения, которые видит пользователь в таблице.
     /// </summary>
-    public class ReagentReportDTO
+    public class ReagentPredictionReportDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

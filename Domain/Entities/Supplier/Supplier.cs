@@ -2,7 +2,7 @@
 
 namespace ChemicalLaboratory.Domain.Entities
 {
-    public class Supplier 
+    public class Supplier : ISoftDeletable
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

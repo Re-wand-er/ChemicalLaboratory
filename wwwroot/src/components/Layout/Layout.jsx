@@ -12,36 +12,36 @@ import styles from "./layout.module.css";
 export const Layout = () => {
   const { user, logout } = useAuth();  
 
-    const [isMenuSideBarOpen, setIsMenuSideBarOpen] = useState(true);
-    const toogleMenuSideBar = () => setIsMenuSideBarOpen(!isMenuSideBarOpen);
+  const [isMenuSideBarOpen, setIsMenuSideBarOpen] = useState(true);
+  const toogleMenuSideBar = () => setIsMenuSideBarOpen(!isMenuSideBarOpen);
 
-    const [isNotificationSideBarOpen, setIsNotificationSideBarOpen] = useState(false);
-    const toogleNotificationSideBar = () => setIsNotificationSideBarOpen(!isNotificationSideBarOpen);
+  const [isNotificationSideBarOpen, setIsNotificationSideBarOpen] = useState(false);
+  const toogleNotificationSideBar = () => setIsNotificationSideBarOpen(!isNotificationSideBarOpen);
 
-    return (
-        <div className={styles.appWrapper}>
-            <Header 
-							onMenuToggle={toogleMenuSideBar} 
-							onNotificationToggle={toogleNotificationSideBar}
-							logout={logout}
-							user={user}
-						/>
+  return (
+    <div className={styles.appWrapper}>
+      <Header 
+				onMenuToggle={toogleMenuSideBar} 
+				onNotificationToggle={toogleNotificationSideBar}
+				logout={logout}
+				user={user}
+			/>
 
-            <div className={styles.content}>
-                <MenuSideBar isOpen={isMenuSideBarOpen} />
+      <div className={styles.content}>
+        <MenuSideBar isOpen={isMenuSideBarOpen} />
 
-                <main className={styles.main}>
-                    <Outlet />
-                </main>
+        <main className={styles.main}>
+            <Outlet />
+        </main>
 
-                <NotificationSideBar 
-									isOpen={isNotificationSideBarOpen} 
-									onClose={toogleNotificationSideBar}
-									user={user}
-								/>
-            </div>
+        <NotificationSideBar 
+					isOpen={isNotificationSideBarOpen} 
+					onClose={toogleNotificationSideBar}
+					user={user}
+				/>
+      </div>
 
-            <Footer user={user} className={styles.footer}/>
-        </div>
-    );
+      <Footer user={user} className={styles.footer}/>
+    </div>
+  );
 };

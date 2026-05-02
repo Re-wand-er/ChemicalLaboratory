@@ -4,7 +4,9 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
         public DateTime? ExpirationDate { get; set; }
+        public decimal CurrentQuantity { get; set; }
         public string DaysRemaining { get; set; } = string.Empty;// Разница в днях
     }
 }

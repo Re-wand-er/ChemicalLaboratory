@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 
 import DataTable from "../../../components/DataTable/DataTable.jsx";
-import DialogReagents from "./DialogReagents.jsx";
 import { useAuth } from '../../../context/AuthContext.jsx';
+import DialogReagents from "./DialogReagents.jsx";
 
-import { fetchGetData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
+import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 import { formatDate } from "../../../utils/formatDate.js";
 
 const columns = [
-  {
-    field: 'id',
-    headerName: 'ID',
-    width: 40,
-    type: 'number',
-  },
+  // {
+  //   field: 'id',
+  //   headerName: 'ID',
+  //   width: 40,
+  //   type: 'number',
+  // },
   {
     field: 'name',
     headerName: 'Название',
@@ -81,16 +81,6 @@ const columns = [
   },
 ];
 
-const fetchWithParam = async (baseUrl, isAdmin) =>{
-  const urlParams = new URLSearchParams();
-  
-  if (isAdmin) {
-    urlParams.append("includeInactive", true);
-  }
-
-  return await fetchGetData(`${baseUrl}?${urlParams.toString()}`)
-}
-
 const Reagents = () => {
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]); 
@@ -98,7 +88,7 @@ const Reagents = () => {
 
   useEffect(() =>{
     Promise.all([
-      fetchWithParam('/api/reagent', isSuperAdmin), 
+      fetchGetSuperAdminData('/api/reagent', isSuperAdmin), 
       fetchGetData('/api/category/name')
     ])
       .then(([reagents, categories]) => {
@@ -126,6 +116,11 @@ const Reagents = () => {
     setCurrentRecord(record);
     setModalMode('delete');
   };
+
+  const handleOpenRestore = (record) => {
+    setCurrentRecord(record);
+    setModalMode('restore');
+  };
   ////////////////////////////////////////////////////////////////
 
   const handleAdd = async (record) => {
@@ -138,22 +133,50 @@ const Reagents = () => {
     }
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    console.log(currentRecord);
     const ids = getRecordsArray(currentRecord).map(item => item.id);
-    const success = fetchDeleteByIds('api/reagent/bulk-delete', ids);
+    const success = await fetchDeleteByIds('api/reagent/bulk-delete', ids);
+    console.log(ids);
 
     if (success){
-      setData(prevItems => prevItems.map(item => {
 
-        if (ids.includes(item.id)) {
-          return { ...item, isActive: false };
-        }
+      if(isSuperAdmin){
+        setData(prevItems => prevItems.map(item => {
+
+          if (ids.includes(item.id)) {
+            return { ...item, isActive: false };
+          }
         
-        return item;
+          return item;
         }));
+      }
+      else{
+        setData(prev => prev.filter(r => !ids.includes(r.id)));
+      }
+
       handleClose();
     }
   };
+
+  const handleRestore = async () => {
+    const ids = getRecordsArray(currentRecord).map(item => item.id);
+    const success = await fetchDeleteByIds('api/reagent/bulk-restore', ids);
+
+    if (success){
+
+      setData(prevItems => prevItems.map(item => {
+
+        if (ids.includes(item.id)) {
+          return { ...item, isActive: true };
+        }
+      
+        return item;
+      }));
+
+      handleClose();
+    }
+  }
 
   const handleSave = async (record) => {
     const result = await fetchPutData(`api/reagent/${record.id}`, record, true);
@@ -179,7 +202,10 @@ const Reagents = () => {
         fileName="reagents"
         onAdd={handleOpenAdd} 
         onEdit={handleOpenEdit} 
-        onDelete={handleOpenDelete}/>
+        onDelete={handleOpenDelete}
+        onRestore={handleOpenRestore}
+        isSuperAdmin={isSuperAdmin}
+      />
 
       <DialogReagents 
         modalMode={modalMode} 
@@ -187,8 +213,10 @@ const Reagents = () => {
         categories={categories}
         handleAdd={handleAdd}
         handleDelete={handleDelete}
+        handleRestore={handleRestore}
         handleSave={handleSave} 
-        handleClose={handleClose} />
+        handleClose={handleClose} 
+      />
 
     </div>
   );

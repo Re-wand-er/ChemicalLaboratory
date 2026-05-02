@@ -72,7 +72,8 @@ const CountOfOperations = () => {
         disableColumnMenu
         rowHeight={32}
         columnHeaderHeight={40}
-        density="compact"/>
+        density="compact"
+      />
         
     </div>
   );

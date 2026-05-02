@@ -1,27 +1,28 @@
 ﻿using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Domain.Enums;
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
 using ChemicalLaboratory.Domain.DTOs;
-using Microsoft.EntityFrameworkCore;
+using ChemicalLaboratory.Domain.Enums;
 
 namespace ChemicalLaboratory.Domain.Interfaces
 {
     public interface IReagentRepository : IBaseRepository<Reagent>
     {
         // Basic
-        public Task<IEnumerable<Reagent>> GetAllAsync(bool includeInactive = false);
+        //public Task<IEnumerable<Reagent>> GetAllAsync(bool includeInactive = false);
         Task<IEnumerable<ListItemDTO>> GetAllIdNameAsync();
+        Task<List<ReagentReportDTO>> GetReagentReportAsync(int? categoryId);
         Task AddRangeAsync(IEnumerable<Reagent> reagentDTOs);
-
-        // SoftDelete
-        Task SoftDeleteAsync(IEnumerable<int> ids);
-        Task RestoreAsync(IEnumerable<int> ids);
 
 
         
         // Smart
         Task<ReagentStockReportDTO> GetStockDistributionReportAsync();
-        Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync();
+        Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync(
+            ExpirationStatus status,
+            int? categoryId,
+            int daysAhead = 90,
+            bool onlyWithStock = true);
+        
         Task<List<ReagentLowStockDTO>> GetLowStockReagentsAsync(int? categoryId, decimal percent, bool expired);
         Task<List<ReagentPredictionDTO>> GetConsumptionHistoryAsync(int daysLookback = 90);
         Task<int> GetActiveCountAsync();

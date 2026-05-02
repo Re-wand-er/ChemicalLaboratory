@@ -20,7 +20,11 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			_logger = logger;
 		}
 
-		[HttpGet] public async Task<IActionResult> GetAllUsers() => Ok(await _userService.GetAllAsync());
+		[HttpGet] 
+        public async Task<IActionResult> GetAllUsers([FromQuery] bool includeInactive = false) 
+            => Ok(await _userService.GetAllAsync(includeInactive));
+
+
         [HttpGet("id")] public async Task<IActionResult> GetIdUsers()
             => Ok(await _userService.GetByIdAsync());
 
@@ -47,6 +51,18 @@ namespace ChemicalLaboratory.WebApi.Controllers
                 return BadRequest("No ids provided.");
 
             await _userService.DeleteAsync(request.Ids);
+            return Ok(new { succes = true });
+        }
+
+        [HttpPost("bulk-restore")]
+        public async Task<IActionResult> RestoreUser([FromBody] DeleteManyRequestDTO request)
+        {
+            _logger.LogInformation($"Deleted user with ids UserController");
+
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _userService.RestoreAsync(request.Ids);
             return Ok(new { succes = true });
         }
 

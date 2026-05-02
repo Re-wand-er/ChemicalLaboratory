@@ -9,6 +9,10 @@ import { NotificationProvider } from './context/NotificationContext';
 import { Login } from './pages/Login/Login.jsx';
 import { ResetPassword } from './pages/Login/ResetPassword.jsx';
 
+/// Theme ///////////////////////////////
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline'; // Сброс стилей браузера под MUI
+import { theme } from './assets/theme.js';
 import './assets/main.css';
 
 /*Дашборд*/
@@ -30,10 +34,12 @@ const Predicts = lazy(()=>import('./pages/Analytics/Predicts/Predicts.jsx'));
 const Reports = lazy(()=>import('./pages/Reports/Reports.jsx'));
 const BelowMinReport = lazy(()=>import('./pages/Reports/BelowMinReport.jsx'));
 const ExpiredReport = lazy(()=>import('./pages/Reports/ExpiredReport.jsx'));
-const DateBalanceReport = lazy(()=>import('./pages/Reports/DateBalanceReport.jsx'));
-const IncomeReport = lazy(()=>import('./pages/Reports/IncomeReport.jsx'));
-const ConsumptionReport = lazy(()=>import('./pages/Reports/ConsumptionReport.jsx'));
-const ExpenseReport = lazy(()=>import('./pages/Reports/ExpenseReport.jsx'));
+const ReagentReport = lazy(()=>import('./pages/Reports/ReagentReport.jsx'));
+const IncomeReport = lazy(()=>import('./pages/Reports/ActionReports/IncomeReport.jsx'));
+const ConsumptionReport = lazy(()=>import('./pages/Reports/ActionReports/ConsumptionReport.jsx'));
+const WriteOffReport = lazy(()=>import('./pages/Reports/ActionReports/WriteOffReport.jsx'));
+const AdjustmentReport = lazy(()=>import('./pages/Reports/ActionReports/AdjustmentReport.jsx'));
+const UpdateReport = lazy(()=>import('./pages/Reports/ActionReports/UpdateReport.jsx'));
 const TopUsageReport = lazy(()=>import('./pages/Reports/TopUsageReport.jsx'));
 const ForecastReport = lazy(()=>import('./pages/Reports/ForecastReport.jsx'));
 
@@ -46,66 +52,72 @@ const Notifications = lazy(()=>import('./pages/Settings/Notifications/Notificati
 const ProfileForm = lazy(()=>import('./pages/ProfileForm.jsx')); // Страница пользователя
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <AuthProvider>
-    <NotificationProvider>  
-      <Suspense fallback={<div>Подождите, идет загрузка...</div>}>
-      <Routes>
-        
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/reset-password" element={<ResetPassword />}></Route>
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    
+    <BrowserRouter>
+      <AuthProvider>
+        <NotificationProvider>  
+          <Suspense fallback={<div>Подождите, идет загрузка...</div>}>
+            <Routes>
 
-        <Route 
-          path="/" 
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }>
+              <Route path="/login" element={<Login />}></Route>
+              <Route path="/reset-password" element={<ResetPassword />}></Route>
 
-          <Route index element={<Dashboard />}/>{/*<h2>Home</h2> */}
-          <Route path="leave" element={<h2>Выйти</h2>}/>
-          <Route path="secret" element={<h2>Поздравляю вы вышли на секретную страницу</h2>}/>
-
-          {/*Дашборд*/}
-          <Route path="dashboard" element={<Dashboard />}/>
-          <Route path="user" element={<ProfileForm />}/>
-
-          {/*Учет*/}
-          <Route path="inventory" element={<Inventory />} />
-          <Route path="reagents" element={<Reagents />}/>
-          <Route path="manufacturers" element={<Manufacturers />}/>
-          <Route path="suppliers" element={<Suppliers />}/>
-
-          {/*Аналитика*/}
-          <Route path="analytics" element={<Analytics />}/>
-          <Route path="statistics" element={<Statistics />}/>
-          <Route path="graphics" element={<Graphics />}/>
-          <Route path="predicts" element={<Predicts />}/>
-
-          {/*Отчеты*/}
-          <Route path="reports" element={<Reports />}>
-            <Route path="date-balance" element={<DateBalanceReport />}/>
-            <Route path="below-minimum" element={<BelowMinReport />}/>
-            <Route path="expired" element={<ExpiredReport />}/>
-            <Route path="income" element={<IncomeReport />}/>
-            <Route path="consumption" element={<ConsumptionReport />}/>
-            <Route path="expense" element={<ExpenseReport />}/>
-            <Route path="top-usage" element={<TopUsageReport />}/>
-            <Route path="forecast" element={<ForecastReport />}/>
-          </ Route>
-
-          {/*Настройки*/}
-          <Route path="settings" element={<Settings />}/>
-          <Route path="users" element={<Users />}/>
-          <Route path="categories" element={<Categories />}/>
-          <Route path="notifications" element={<Notifications />}/>
-
-          <Route path="*" element={<h2>Такой страницы не существует</h2>}/>
-        </Route>
-      </Routes>
-      </Suspense>
-    </ NotificationProvider>
-    </AuthProvider>
-  </BrowserRouter>
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }>
+                
+                <Route index element={<Dashboard />}/>{/*<h2>Home</h2> */}
+                <Route path="leave" element={<h2>Выйти</h2>}/>
+                <Route path="secret" element={<h2>Поздравляю вы вышли на секретную страницу</h2>}/>
+              
+                {/*Дашборд*/}
+                <Route path="dashboard" element={<Dashboard />}/>
+                <Route path="user" element={<ProfileForm />}/>
+              
+                {/*Учет*/}
+                <Route path="inventory" element={<Inventory />} />
+                <Route path="reagents" element={<Reagents />}/>
+                <Route path="manufacturers" element={<Manufacturers />}/>
+                <Route path="suppliers" element={<Suppliers />}/>
+              
+                {/*Аналитика*/}
+                <Route path="analytics" element={<Analytics />}/>
+                <Route path="statistics" element={<Statistics />}/>
+                <Route path="graphics" element={<Graphics />}/>
+                <Route path="predicts" element={<Predicts />}/>
+              
+                {/*Отчеты*/}
+                <Route path="reports" element={<Reports />}>
+                  <Route path="reagent" element={<ReagentReport />}/>
+                  <Route path="below-minimum" element={<BelowMinReport />}/>
+                  <Route path="expired" element={<ExpiredReport />}/>
+                  <Route path="income" element={<IncomeReport />}/>
+                  <Route path="consumption" element={<ConsumptionReport />}/>
+                  <Route path="writeOff" element={<WriteOffReport />}/>
+                  <Route path="adjustment" element={<AdjustmentReport />}/>
+                  <Route path="update" element={<UpdateReport />}/>
+                  <Route path="top-usage" element={<TopUsageReport />}/>
+                  <Route path="forecast" element={<ForecastReport />}/>
+                </ Route>
+              
+                {/*Настройки*/}
+                <Route path="settings" element={<Settings />}/>
+                <Route path="users" element={<Users />}/>
+                <Route path="categories" element={<Categories />}/>
+                <Route path="notifications" element={<Notifications />}/>
+              
+                <Route path="*" element={<h2>Такой страницы не существует</h2>}/>
+              </Route>
+            </Routes>
+          </Suspense>
+        </ NotificationProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </ThemeProvider>
 );

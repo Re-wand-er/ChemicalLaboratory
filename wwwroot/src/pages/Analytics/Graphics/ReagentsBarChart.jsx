@@ -44,8 +44,6 @@ const ReagentsBarChart = ({ startPeriod = 'Week', localeWidth = '800px', filterB
     }));
   };
 
-  console.log(chartData);
-
   return (
     <div style={{ minHeight: '400px', width: '100%',maxWidth: localeWidth }}>
       {filterBar && (

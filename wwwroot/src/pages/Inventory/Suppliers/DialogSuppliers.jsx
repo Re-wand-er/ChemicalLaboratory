@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogActions.jsx";
+import { DataTableDialogActions, DataTableDialogLabel } from "../../../components/DataTable/DataTableDialogElements.jsx";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
 // Упрощённые колонки для отображения в режиме удаления
@@ -22,7 +22,7 @@ const getFormData = (record = {}) => ({
   address: record.address || ''
 });
 
-const DialogSuppliers = ({ modalMode, currentRecord, handleClose, handleSave, handleDelete, handleAdd }) => {
+const DialogSuppliers = ({ modalMode, currentRecord, handleClose, handleSave, handleDelete, handleRestore, handleAdd }) => {
   const [formData, setFormData] = useState(getFormData());
 
   useEffect(() => {
@@ -46,20 +46,23 @@ const DialogSuppliers = ({ modalMode, currentRecord, handleClose, handleSave, ha
   };
 
   const onSave = () => {
-    const { id, ...updateDto } = formData;
-    handleSave(updateDto);
+    handleSave(formData);
   };
 
   return (
     <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
       <DialogContent>
-        {modalMode === 'delete' && currentRecord ? (
+        {modalMode === 'delete' || modalMode === 'restore' && currentRecord ? (
           <>
-            <DialogTitle>
-              {currentRecord.size > 1
-                ? 'Удалить группу поставщиков?'
-                : `Удалить поставщика: ${currentRecord.name || currentRecord.title || '?'}`}
-            </DialogTitle>
+            <DataTableDialogLabel
+              modalMode={modalMode}
+              size={currentRecord.size}
+              deleteOne={`Удалить поставщика: ${currentRecord.name}`}
+              deleteMany="Удалить группу поставщиков?"
+              restoreOne={`Восстановить поставщика: ${currentRecord.name}`}
+              restoreMany="Восстановить группу поставщиков?"
+            />
+
             <DataGrid
               rows={getRecordsArray(currentRecord)}
               columns={deleteColumns}
@@ -112,6 +115,7 @@ const DialogSuppliers = ({ modalMode, currentRecord, handleClose, handleSave, ha
         modalMode={modalMode}
         handleAdd={onAdd}
         handleDelete={handleDelete}
+        handleRestore={handleRestore}
         handleSave={onSave}
         handleClose={handleClose}
       />

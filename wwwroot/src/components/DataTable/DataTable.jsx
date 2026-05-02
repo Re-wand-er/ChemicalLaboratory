@@ -4,6 +4,7 @@ import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
 import { Stack, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 
 import CustomToolBar from './CustomToolBar.jsx';
 import { exportCsvFile, exportJsonFile } from '../../utils/dataExportFotmat.js';
@@ -15,7 +16,7 @@ const columnsWithActions = (props) => [
   {
     field: 'actions',
     headerName: 'Действия',
-    width: 120,
+    width: 150,
     sortable: false,
     renderCell: (params) => {
       const handleEdit = () => {
@@ -26,6 +27,11 @@ const columnsWithActions = (props) => [
       const handleDelete = () => {
         if (props.onDelete) props.onDelete(params.row);
         else console.error('Не найден обработчик для удаления записи');
+      };
+
+      const handleRestore = () => {
+        if (props.onRestore) props.onRestore(params.row);
+        else console.error('Не найден обработчик для восстановления записи');
       };
 
       return (
@@ -39,14 +45,26 @@ const columnsWithActions = (props) => [
             <EditIcon />
           </IconButton>
 
-          <IconButton
-            color="error"
-            onClick={handleDelete}
-            size="medium"
-          >
+          {params.row.isActive &&
+            <IconButton
+              color="error"
+              onClick={handleDelete}
+              size="medium"
+            >
 
-          	<DeleteIcon />
-          </IconButton>
+              <DeleteIcon />
+            </IconButton>
+          }
+
+          {(props.isSuperAdmin && !params.row.isActive) &&
+            <IconButton 
+              color="success" 
+              onClick={handleRestore} 
+              size="medium"
+            >
+              <RestoreFromTrashIcon />
+            </IconButton>
+          }
         </Stack>
       );
     }    

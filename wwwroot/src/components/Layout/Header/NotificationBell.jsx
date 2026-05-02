@@ -16,7 +16,7 @@ const NotificationBell = ({ onOpenDrawer }) => {
   }, [updateCount]);
 
   return (
-    <IconButton onClick={onOpenDrawer} sx={{ color: '#ffffff' }}>
+    <IconButton onClick={onOpenDrawer} sx={{ color: '#000000' }}>
       <Badge badgeContent={unreadCount} color="error">
         <NotificationsIcon />
       </Badge>

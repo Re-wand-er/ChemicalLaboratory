@@ -9,8 +9,9 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.ToTable("Users");
-
             builder.HasKey(x => x.Id);
+
+            builder.HasQueryFilter(x => x.IsActive);
 
             builder.Property(x => x.FirstName)
                 .HasMaxLength(20)

@@ -7,6 +7,7 @@ using ChemicalLaboratory.Domain.DTOs;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -100,9 +101,23 @@ namespace ChemicalLaboratory.Application.UseCases.Services
                     await _unitOfWork.ReagentOperations.AddAsync(history);
                 }
 
-                await _unitOfWork.Reagents.SoftDeleteManyAsync(ids);
+                await _unitOfWork.Reagents.SoftDeleteAsync(ids);
             }
 
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task RestoreAsync(IEnumerable<int> ids)
+        {
+            var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException();
+
+            foreach (var id in ids)
+            {
+                var history = ReagentOperation.CreateForUpdate(userId, id, "Восстановление данных");
+                await _unitOfWork.ReagentOperations.AddAsync(history);
+            }
+
+            await _unitOfWork.Reagents.RestoreAsync(ids);
             await _unitOfWork.SaveAsync();
         }
 
@@ -132,8 +147,8 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             return await _unitOfWork.Reagents.GetStockDistributionReportAsync();
         }
 
-        public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsReportAsync()
-            => await _unitOfWork.Reagents.GetExpiringReagentsAsync();
+        public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsReportAsync(ExpirationFilterDTO filter)
+            => await _unitOfWork.Reagents.GetExpiringReagentsAsync(filter.Status, filter.CategoryId, filter.DaysAhead, filter.OnlyWithStock);
 
         public async Task<List<ReagentLowStockDTO>> GetLowStockReportAsync(int? categoryId, decimal percent, bool expired)
             => await _unitOfWork.Reagents.GetLowStockReagentsAsync(categoryId, percent, expired);
@@ -158,6 +173,14 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             => await _unitOfWork.Reagents.GetUpcomingExpirationsAsync(5);
 
 
+        public async Task<List<ReagentReportDTO>> GetReagentReportAsync(int? categoryId)
+            => await _unitOfWork.Reagents.GetReagentReportAsync(categoryId);
+
+
+
+
+
+
         /// ReagentOperations ////////////////////////////////////////////////////////////
         public async Task<List<ItemDTO>> GetTopUsageReportAsync(
             ReportPeriod period,
@@ -179,6 +202,17 @@ namespace ChemicalLaboratory.Application.UseCases.Services
                 throw;
             }
         }
+
+
+        public async Task<List<TopUsedReagentDTO>> GetTopUsedReportAsync(TopUsedFilterDTO filter)
+            => await _unitOfWork.ReagentOperations.GetTopUsedReagentsAsync(
+                filter.DateFrom,
+                filter.DateTo,
+                filter.Top,
+                filter.CategoryId,
+                filter.MinUsage);
+
+
         public async Task<ReagentUsageTrendDTO> GetUsageTrendReportAsync(ReportPeriod period, ReportPeriod step)
         {
             _logger.LogInformation("Запрос тренда потребления: Период {Period}, Шаг {Step}", period, step);
@@ -198,5 +232,10 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             => await _unitOfWork.ReagentOperations.GetRecentOperationsAsync(7);
         public async Task<List<UserActivityDto>> GetUserActivityTopAsync(int days)
             => await _unitOfWork.ReagentOperations.GetTopActiveUsersAsync(days);
+
+        public async Task<List<IncomingReportDTO>> GetReagentOperationsReportAsync(IncomingReportFilterDTO filter, OperationTypeEnum operationType)
+            => await _unitOfWork.ReagentOperations
+                .GetReagentOperationsReportAsync(filter.DateFrom, filter.DateTo, filter.CategoryId, filter.ReagentId, filter.MinQuantity, operationType);
+
     }
 }

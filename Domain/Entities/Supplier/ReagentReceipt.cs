@@ -1,6 +1,8 @@
-﻿namespace ChemicalLaboratory.Domain.Entities
+﻿using ChemicalLaboratory.Domain.Interfaces;
+
+namespace ChemicalLaboratory.Domain.Entities
 {
-    public class ReagentReceipt
+    public class ReagentReceipt : IEntity
     {
         public int Id { get; set; }
         public int ReagentId { get; set; }

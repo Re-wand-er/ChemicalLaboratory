@@ -10,6 +10,17 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
     {
         public NotificationRepository(DataBaseContext dataBaseContext) : base(dataBaseContext) { }
 
+        // Переопределен чтобы получать Категории
+        public override async Task<IEnumerable<Notification>> GetAllAsync(bool includeInactive = false)
+        {
+            IQueryable<Notification> query = _dbSet;
+
+            if (includeInactive)
+                query = query.IgnoreQueryFilters();
+
+            return await query.Include(n => n.User).Include(n => n.Reagent).ToListAsync();
+        }
+
         public Task AddRangeAsync(IEnumerable<Notification> notifications)
         {
             throw new NotImplementedException();

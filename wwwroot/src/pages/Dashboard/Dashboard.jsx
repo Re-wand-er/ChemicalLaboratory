@@ -25,7 +25,7 @@ const Dashboard = () => {
     { label: 'Операций сегодня', value: kpi.operationsTodayCount, unit: '', color: '#4caf50' },
     { label: 'Неликвид (180 дн)', value: kpi.illiquidPercentage, unit: '%', color: '#9c27b0' },
     { label: 'Срок хранения (DSI)', value: kpi.dsiDays, unit: ' дн.', color: '#00bcd4' },
-    //{ label: 'Операций сегодня', value: kpi.operationsTodayCount, unit: '', color: '#4caf50' }, ?
+    { label: 'Операций сегодня', value: kpi.operationsTodayCount, unit: '', color: '#4caf50' }, 
   ];
 
   return (

@@ -22,11 +22,13 @@ namespace ChemicalLaboratory.WebApi.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetCategories() => Ok(await _reagentCategoryRepository.GetAllAsync());
+        public async Task<IActionResult> GetCategories([FromQuery] bool includeInactive = false) 
+            => Ok(await _reagentCategoryRepository.GetAllAsync(includeInactive));
         
 
         [HttpGet("name")]
-        public async Task<IActionResult> GetCategoriesName() => Ok(await _reagentCategoryRepository.GetAllIdNameAsync());
+        public async Task<IActionResult> GetCategoriesName() 
+            => Ok(await _reagentCategoryRepository.GetAllIdNameAsync());
 
 
         [HttpPost]
@@ -51,7 +53,20 @@ namespace ChemicalLaboratory.WebApi.Controllers
             if (request.Ids == null || !request.Ids.Any())
                 return BadRequest("No ids provided.");
 
-            await _reagentCategoryRepository.DeleteManyAsync(request.Ids);
+            await _reagentCategoryRepository.SoftDeleteAsync(request.Ids);
+            return Ok(new { succes = true });
+        }
+
+
+        [HttpPost("bulk-restore")]
+        public async Task<IActionResult> RestoreCategory([FromBody] DeleteManyRequestDTO request)
+        {
+            _logger.LogInformation($"Deleted reagent with ids in ReagentController");
+
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _reagentCategoryRepository.RestoreAsync(request.Ids);
             return Ok(new { succes = true });
         }
 

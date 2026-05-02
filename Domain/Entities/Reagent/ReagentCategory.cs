@@ -2,7 +2,7 @@
 
 namespace ChemicalLaboratory.Domain.Entities
 {
-    public class ReagentCategory 
+    public class ReagentCategory : ISoftDeletable
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

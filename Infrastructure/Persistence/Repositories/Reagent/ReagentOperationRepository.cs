@@ -5,6 +5,8 @@ using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Enums;
 using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
@@ -66,17 +68,27 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             return new ReagentUsageTrendDTO { TopReagentNames = top5Names, ChartData = chartData };
         }
 
+
         public async Task<List<ItemDTO>> GetTopConsumingReagentsAsync(ReportPeriod period, int topCount = 5, bool ascending = false)
         {
             DateTime startDate = ResolveByPeriod(period, () => DateTime.MinValue);
 
             var query = _dbSet
-                .Where(o => o.OperationDate >= startDate && o.Quantity < 0) // Только расход
-                .GroupBy(o => new { o.ReagentId, o.Reagent.Name })
+                .Where(o => 
+                    o.OperationDate >= startDate &&
+                    o.OperationDate <= DateTime.UtcNow &&
+                    o.OperationTypeId == (int)OperationTypeEnum.Receipt) // Только расход
+                .GroupBy(o => new 
+                { 
+                    o.ReagentId, 
+                    o.Reagent.Name,
+                    o.Reagent.Unit,
+                    CategoryName = o.Reagent.Category.Name
+                })
                 .Select(g => new ItemDTO
                 {
                     Name = g.Key.Name,
-                    Value = Math.Abs(g.Sum(o => o.Quantity)) // Берем по модулю
+                    Value = g.Count() 
                 });
 
             // Сортировка
@@ -86,6 +98,55 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
             return await query.Take(topCount).ToListAsync();
         }
+
+
+        public async Task<List<TopUsedReagentDTO>> GetTopUsedReagentsAsync(
+            DateTime? dateFrom,
+            DateTime? dateTo,
+            int top,
+            int? categoryId,
+            decimal? minUsage)
+        {
+            var query = _dbSet
+                .Where(o => o.OperationTypeId == (int)OperationTypeEnum.Receipt);
+
+            if (dateFrom.HasValue)
+                query = query.Where(o => o.OperationDate >= dateFrom.Value);
+
+            DateTime endLimit = dateTo ?? DateTime.UtcNow;
+            query = query.Where(o => o.OperationDate <= endLimit);
+
+            if (categoryId.HasValue)
+                query = query.Where(o => o.Reagent.CategoryId == categoryId.Value);
+
+            var grouped = query
+                .GroupBy(o => new
+                {
+                    o.ReagentId,
+                    o.Reagent.Name,
+                    o.Reagent.Unit,
+                    CategoryName = o.Reagent.Category.Name
+                })
+                .Select(g => new TopUsedReagentDTO
+                {
+                    Id = g.Key.ReagentId,
+                    Name = g.Key.Name,
+                    Category = g.Key.CategoryName,
+                    Unit = g.Key.Unit,
+                    TotalUsed = Math.Abs(g.Sum(x => x.Quantity)),
+                    UsageCount = g.Count()
+                });
+
+            if (minUsage.HasValue)
+                grouped = grouped.Where(x => x.TotalUsed >= minUsage.Value);
+
+            grouped = grouped
+                .OrderByDescending(x => x.UsageCount)
+                .Take(top);
+
+            return await grouped.ToListAsync();
+        }
+
 
         public async Task<List<ItemDTO>> GetOperationsCountReportAsync(OperationsGroupBy groupBy, ReportPeriod period)
         {
@@ -227,6 +288,51 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         }
 
 
+        public async Task<List<IncomingReportDTO>> GetReagentOperationsReportAsync(
+            DateTime? dateFrom, 
+            DateTime? dateTo,
+            int? categoryId,
+            int? reagentId,
+            decimal? minQuantity,
+            OperationTypeEnum operationType
+            )
+        {
+            var query = _dbSet
+                .Where(o => o.OperationTypeId == (int)operationType); // Только поступления
+
+            if (dateFrom.HasValue)
+                query = query.Where(o => o.OperationDate >= dateFrom.Value);
+
+            DateTime endLimit = dateTo ?? DateTime.UtcNow;
+            query = query.Where(o => o.OperationDate <= endLimit);
+
+            if (reagentId.HasValue)
+                query = query.Where(o => o.ReagentId == reagentId.Value);
+
+            if (categoryId.HasValue)
+                query = query.Where(o => o.Reagent.CategoryId == categoryId.Value);
+
+            if (minQuantity.HasValue)
+                query = query.Where(o => o.Quantity >= minQuantity.Value);
+
+            query.IgnoreQueryFilters();
+
+            return await query
+                .OrderByDescending(o => o.OperationDate)
+                .Select(o => new IncomingReportDTO
+                {
+                    Id = o.Id,
+                    OperationDate = o.OperationDate,
+                    ReagentName = o.Reagent.Name,
+                    Category = o.Reagent.Category.Name,
+                    Quantity = o.Quantity,
+                    Unit = o.Reagent.Unit,
+                    UserName = o.User.Login,
+                    Comment = o.Comment
+                })
+                .ToListAsync();
+        }
+
 
 
         /// Private ////////////////////////////////////////////////////////////////////
@@ -234,13 +340,13 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             return period switch
             {
-                ReportPeriod.Day => DateTime.UtcNow.AddDays(-1),
-                ReportPeriod.Week => DateTime.UtcNow.AddDays(-7),
-                ReportPeriod.Month => DateTime.UtcNow.AddMonths(-1),
-                ReportPeriod.TwoMonth => DateTime.UtcNow.AddMonths(-2),
-                ReportPeriod.Quarter => DateTime.UtcNow.AddMonths(-3),
-                ReportPeriod.HalfYear => DateTime.UtcNow.AddMonths(-6),
-                ReportPeriod.Year => DateTime.UtcNow.AddYears(-1),
+                ReportPeriod.Day => DateTime.UtcNow.AddDays(-1).Date,
+                ReportPeriod.Week => DateTime.UtcNow.AddDays(-7).Date,
+                ReportPeriod.Month => DateTime.UtcNow.AddMonths(-1).Date,
+                ReportPeriod.TwoMonth => DateTime.UtcNow.AddMonths(-2).Date,
+                ReportPeriod.Quarter => DateTime.UtcNow.AddMonths(-3).Date,
+                ReportPeriod.HalfYear => DateTime.UtcNow.AddMonths(-6).Date,
+                ReportPeriod.Year => DateTime.UtcNow.AddYears(-1).Date,
                 _ => defaultAction()
             };
         }

@@ -1,4 +1,6 @@
-﻿using ChemicalLaboratory.Application.UseCases.Services;
+﻿using ChemicalLaboratory.Application.UseCases.DTOs;
+using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
+using ChemicalLaboratory.Application.UseCases.Services;
 using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
 using ChemicalLaboratory.Domain.Enums;
@@ -33,6 +35,9 @@ namespace ChemicalLaboratory.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("top-used-report")]
+        public async Task<ActionResult<List<TopUsedReagentDTO>>> GetTopUsed([FromQuery] TopUsedFilterDTO filter)
+            => Ok(await _reagentService.GetTopUsedReportAsync(filter));
 
 
         [HttpGet("usage-trend")]
@@ -57,5 +62,31 @@ namespace ChemicalLaboratory.WebApi.Controllers
         [HttpGet("turnover")]
         public async Task<ActionResult<List<ReagentTurnoverDTO>>> GetTurnover([FromQuery] ReportPeriod period)
            => Ok(await _reagentService.GetTurnoverReportAsync(period));
+
+
+        [HttpGet("incoming")]
+        public async Task<ActionResult<List<IncomingReportDTO>>> GetIncoming([FromQuery] IncomingReportFilterDTO filter)
+            => Ok(await _reagentService.GetReagentOperationsReportAsync(filter, OperationTypeEnum.Receipt));
+
+
+        [HttpGet("consumption")]
+        public async Task<ActionResult<List<IncomingReportDTO>>> GetConsumption([FromQuery] IncomingReportFilterDTO filter)
+            => Ok(await _reagentService.GetReagentOperationsReportAsync(filter, OperationTypeEnum.Consumption));
+
+
+        [HttpGet("write-off")]
+        public async Task<ActionResult<List<IncomingReportDTO>>> GetWriteOff([FromQuery] IncomingReportFilterDTO filter)
+            => Ok(await _reagentService.GetReagentOperationsReportAsync(filter, OperationTypeEnum.WriteOff));
+
+
+        [HttpGet("adjustment")]
+        public async Task<ActionResult<List<IncomingReportDTO>>> GetAdjustment([FromQuery] IncomingReportFilterDTO filter)
+           => Ok(await _reagentService.GetReagentOperationsReportAsync(filter, OperationTypeEnum.Adjustment));
+
+
+        [HttpGet("update")]
+        public async Task<ActionResult<List<IncomingReportDTO>>> GetUpdate([FromQuery] IncomingReportFilterDTO filter)
+           => Ok(await _reagentService.GetReagentOperationsReportAsync(filter, OperationTypeEnum.Update));
+
     }
 }

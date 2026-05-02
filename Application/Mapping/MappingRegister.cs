@@ -56,8 +56,8 @@ namespace ChemicalLaboratory.Application.Mapping
 
             // Suppliers --------------------------------------------
             config.NewConfig<Supplier, SupplierDTO>();
-            config.NewConfig<SupplierDTO, Supplier>()
-                .Ignore(s => s.Id);
+            config.NewConfig<SupplierDTO, Supplier>();
+                //.Ignore(s => s.Id);
 
             config.NewConfig<SupplierDTO, SupplierWithoutIdDTO>();
             config.NewConfig<SupplierWithoutIdDTO, SupplierDTO>()

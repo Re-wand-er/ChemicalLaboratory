@@ -1,8 +1,9 @@
 ﻿using ChemicalLaboratory.Domain.Enums;
+using ChemicalLaboratory.Domain.Interfaces;
 
 namespace ChemicalLaboratory.Domain.Entities
 {
-    public class ReagentOperation
+    public class ReagentOperation : IEntity
     {
         public int Id { get; set; }
         public int ReagentId { get; set; }
@@ -48,5 +49,17 @@ namespace ChemicalLaboratory.Domain.Entities
             };
         }
 
+        public static ReagentOperation CreateForUpdate(int userId, int reagentId, string comment)
+        {
+            return new ReagentOperation
+            {
+                UserId = userId,
+                ReagentId = reagentId,
+                OperationTypeId = (int)OperationTypeEnum.Update,
+                Quantity = 0,
+                OperationDate = DateTime.UtcNow,
+                Comment = comment
+            };
+        }
     }
 }

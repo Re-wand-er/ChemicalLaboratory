@@ -1,6 +1,8 @@
-﻿namespace ChemicalLaboratory.Domain.Entities
+﻿using ChemicalLaboratory.Domain.Interfaces;
+
+namespace ChemicalLaboratory.Domain.Entities
 {
-    public class OperationType
+    public class OperationType : IEntity
     {
         public int Id { get; set; }
         public string Code { get; set; } = null!;

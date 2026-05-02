@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogActions.jsx";
+import { DataTableDialogActions, DataTableDialogLabel } from "../../../components/DataTable/DataTableDialogElements.jsx";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
 // Упрощённые колонки для отображения в режиме удаления
@@ -21,7 +21,7 @@ const getFormData = (record = {}) => ({
   description: record.description || ''
 });
 
-const DialogCategories = ({ modalMode, currentRecord, handleClose, handleSave, handleDelete, handleAdd }) => {
+const DialogCategories = ({ modalMode, currentRecord, handleClose, handleSave, handleDelete, handleRestore, handleAdd }) => {
   const [formData, setFormData] = useState(getFormData());
 
   useEffect(() => {
@@ -51,13 +51,16 @@ const DialogCategories = ({ modalMode, currentRecord, handleClose, handleSave, h
   return (
     <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
       <DialogContent>
-        {modalMode === 'delete' && currentRecord ? (
+        {modalMode === 'delete' || modalMode === 'restore' && currentRecord ? (
           <>
-            <DialogTitle>
-              {currentRecord.size > 1
-                ? 'Удалить группу категорий?'
-                : `Удалить категорию: ${currentRecord.name || currentRecord.title || '?'}`}
-            </DialogTitle>
+            <DataTableDialogLabel
+              modalMode={modalMode}
+              size={currentRecord.size}
+              deleteOne={`Удалить категорию: ${currentRecord.name}`}
+              deleteMany="Удалить группу категорий?"
+              restoreOne={`Восстановить категорию: ${currentRecord.name}`}
+              restoreMany="Восстановить группу категорий?"
+            />
 
             <DataGrid
               rows={getRecordsArray(currentRecord)}
@@ -103,6 +106,7 @@ const DialogCategories = ({ modalMode, currentRecord, handleClose, handleSave, h
         modalMode={modalMode}
         handleAdd={onAdd}
         handleDelete={handleDelete}
+        handleRestore={handleRestore}
         handleSave={onSave}
         handleClose={handleClose}
       />

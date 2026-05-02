@@ -1,11 +1,13 @@
 ﻿using ChemicalLaboratory.Domain.DTOs;
+using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public abstract class BaseRepository<T> : IBaseRepository<T> where T : class, IEntity
     {
         protected readonly DataBaseContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -19,9 +21,16 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        //public virtual async Task<IEnumerable<T>> GetAllAsync() { return await _dbSet.ToListAsync(); }
+
+        public virtual async Task<IEnumerable<T>> GetAllAsync(bool includeInactive = false)
         {
-            return await _dbSet.ToListAsync();
+            IQueryable<T> query = _dbSet;
+
+            if (includeInactive)
+                query = query.IgnoreQueryFilters();
+
+            return await query.ToListAsync();
         }
 
         public virtual async Task<T?> GetByIdAsync(int id)
@@ -62,9 +71,35 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                 .ExecuteDeleteAsync(); 
         }
 
-        public virtual async Task SaveChangesAsync()
+        public virtual async Task SoftDeleteAsync(IEnumerable<int> ids)
         {
-            await _context.SaveChangesAsync();
+            if (typeof(ISoftDeletable).IsAssignableFrom(typeof(T)))
+            {
+                await _dbSet
+                    .Where(e => ids.Contains(e.Id))
+                    .IgnoreQueryFilters()
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(e => ((ISoftDeletable)e).IsActive, false)
+                        .SetProperty(e => ((ISoftDeletable)e).DeletedAt, DateTime.UtcNow)
+                    );
+            }
         }
+
+        public virtual async Task RestoreAsync(IEnumerable<int> ids)
+        {
+            if (typeof(ISoftDeletable).IsAssignableFrom(typeof(T)))
+            {
+                await _dbSet
+                    .Where(e => ids.Contains(e.Id))
+                    .IgnoreQueryFilters()
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(e => ((ISoftDeletable)e).IsActive, true)
+                        .SetProperty(e => ((ISoftDeletable)e).DeletedAt, (DateTime?)null)
+                    );
+            }
+        }
+
+        public virtual async Task SaveChangesAsync()
+            => await _context.SaveChangesAsync();
     }
 }

@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogActions.jsx";
+import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogElements.jsx";
 import { formatDate } from "../../../utils/formatDate.js";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
@@ -89,10 +89,9 @@ const DialogNotifications = ({ modalMode, currentRecord, reagents, users, handle
         {modalMode === 'delete' && currentRecord ? (
           <>
             <DialogTitle>
-              {currentRecord.size > 1
-                ? 'Удалить группу уведомлений?'
-                : `Удалить уведомление: ${currentRecord.title || currentRecord.name || '?'}`}
+              {currentRecord.size > 1 ? 'Удалить группу уведомлений?' : `Удалить уведомление: ${currentRecord.title || currentRecord.name || '?'}`}
             </DialogTitle>
+
             <DataGrid
               rows={getRecordsArray(currentRecord)}
               columns={deleteColumns}

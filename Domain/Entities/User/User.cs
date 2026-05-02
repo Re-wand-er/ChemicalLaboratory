@@ -2,7 +2,7 @@
 
 namespace ChemicalLaboratory.Domain.Entities
 {
-    public class User 
+    public class User : ISoftDeletable
     {
         public int Id { get; set; }
         public int IdWorkSchedule { get; set; }

@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
    
-import { DataTableDialogActions } from "../../../components/DataTable/DataTableDialogActions.jsx";
+import { DataTableDialogActions, DataTableDialogLabel } from "../../../components/DataTable/DataTableDialogElements.jsx";
 import { formatDate, dateConverter } from "../../../utils/formatDate.js";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
@@ -32,7 +32,7 @@ const getFormData = (record = {}) => ({
   isActive: record.isActive !== undefined ? record.isActive : true
 });
 
-const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, handleSave, handleDelete, handleAdd } ) => {    
+const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, handleSave, handleDelete, handleRestore, handleAdd } ) => {    
 	const [formData, setFormData] = useState(getFormData());
 	
   useEffect(() => {
@@ -62,13 +62,18 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
   return (        
     <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
       <DialogContent>
-        {(modalMode === 'delete' && currentRecord) 
+        {(modalMode === 'delete' || modalMode === 'restore' && currentRecord) 
           ? 
         (
           <>
-            <DialogTitle>
-              {currentRecord.size > 1 ? 'Удалить группу реагентов?' : `Удалить реагент: ${currentRecord.name}?`}
-            </DialogTitle>
+            <DataTableDialogLabel
+              modalMode={modalMode}
+              size={currentRecord.size}
+              deleteOne={`Удалить реагент: ${currentRecord.name}`}
+              deleteMany="Удалить группу реагентов?"
+              restoreOne={`Восстановить категорию: ${currentRecord.name}`}
+              restoreMany="Восстановить группу реагентов?"
+            />
 
             <DataGrid 
                 rows={getRecordsArray(currentRecord)}
@@ -203,6 +208,7 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
         modalMode={modalMode}
         handleAdd={onAdd}
         handleDelete={handleDelete}
+        handleRestore={handleRestore}
         handleSave={onSave} 
         handleClose={handleClose}
         />

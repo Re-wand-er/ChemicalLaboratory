@@ -16,7 +16,7 @@ const reportSections = [
   {
     title: "Реагенты",
     links: [
-      { to: "date-balance", label: "Остатки на дату" },
+      { to: "reagent", label: "Остатки реагентов" },
       { to: "below-minimum", label: "Ниже минимума" },
       { to: "expired", label: "Просроченный период" },
     ]
@@ -26,7 +26,9 @@ const reportSections = [
     links: [
       { to: "income", label: "Поступления за период" },
       { to: "consumption", label: "Расход за период" },
-      { to: "expense", label: "Списание" },
+      { to: "writeOff", label: "Списание за период" },
+      { to: "adjustment", label: "Корректировки за период" },
+      { to: "update", label: "Обновления за период" },
     ]
   },
   {

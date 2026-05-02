@@ -6,6 +6,7 @@ using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.DTOs;
 using ChemicalLaboratory.WebApi.Models;
 using Mapster;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -42,10 +43,10 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             => await _unitOfWork.Users.GetAllIdNameAsync();
 
 
-        public async Task<IEnumerable<UserReadDTO>> GetAllAsync()
+        public async Task<IEnumerable<UserReadDTO>> GetAllAsync(bool includeInactive = false)
         {
             _logger.LogInformation("Get all Users");
-            var Users = await _unitOfWork.Users.GetAllAsync();
+            var Users = await _unitOfWork.Users.GetAllAsync(includeInactive);
             return Users.Adapt<IEnumerable<UserReadDTO>>();
         }
 
@@ -97,7 +98,16 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         {
             _logger.LogInformation($"Deleted user with ids in UserService");
 
-            await _unitOfWork.Users.DeleteManyAsync(ids);
+            await _unitOfWork.Users.SoftDeleteAsync(ids);
+            await _unitOfWork.SaveAsync();
+        }
+
+
+        public async Task RestoreAsync(IEnumerable<int> ids)
+        {
+            _logger.LogInformation($"Deleted user with ids in UserService");
+
+            await _unitOfWork.Users.RestoreAsync(ids);
             await _unitOfWork.SaveAsync();
         }
 

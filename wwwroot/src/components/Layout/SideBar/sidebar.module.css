@@ -1,9 +1,9 @@
 .sidebar {
   width: 220px;
-  background: #f4f4f4;
+  background: #f4f4f4; /*f4f4f4*/
   transition: width 0.35s ease, padding 0.35s ease;
   overflow: hidden;
-  flex-shrink: 0; /* Не даёт сайдбару сжиматься самопроизвольно */
+  flex-shrink: 0;
 }
 
 .sidebar.closed {

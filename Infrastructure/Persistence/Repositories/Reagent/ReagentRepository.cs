@@ -1,7 +1,8 @@
-﻿using static ChemicalLaboratory.Infrastructure.Persistence.VisualTimeFormater;
+﻿using static ChemicalLaboratory.Infrastructure.Persistence.VisualTimeFormater; // Не должно быть здесь
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
 using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
+using ChemicalLaboratory.Domain.Enums;
 using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,8 +12,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
     {
         public ReagentRepository(DataBaseContext dataBaseContext) : base(dataBaseContext) { }
 
-
-        public async Task<IEnumerable<Reagent>> GetAllAsync(bool includeInactive = false)
+        // Переопределен чтобы получать Категории
+        public override async Task<IEnumerable<Reagent>> GetAllAsync(bool includeInactive = false)
         {
             IQueryable<Reagent> query = _dbSet;
 
@@ -22,11 +23,36 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             return await query.Include(r => r.Category).ToListAsync();
         }
 
+
+        public async Task<List<ReagentReportDTO>> GetReagentReportAsync(int? categoryId)
+        {
+            var query = _context.Reagents
+                .Where(r => r.IsActive);
+
+            if (categoryId.HasValue)
+                query = query.Where(r => r.CategoryId == categoryId.Value);
+
+            return await query
+                .Select(r => new ReagentReportDTO
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Category = r.Category.Name,
+                    CurrentQuantity = r.CurrentQuantity,
+                    MinQuantity = r.MinQuantity,
+                    Unit = r.Unit
+                })
+                .ToListAsync();
+        }
+
+
         public async Task<IEnumerable<ListItemDTO>> GetAllIdNameAsync() 
             => await _dbSet
                 .AsNoTracking()
                 .Select(c => new ListItemDTO(c.Id, c.Name))
                 .ToListAsync();
+
+
         public virtual Task AddRangeAsync(IEnumerable<Reagent> reagentDTOs) 
             => throw new NotImplementedException();
 
@@ -39,27 +65,6 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         //    _dbSet.RemoveRange(entities);
         //    await _context.SaveChangesAsync();
         //}
-
-        public async Task SoftDeleteAsync(IEnumerable<int> ids)
-        {
-            await _dbSet
-                .Where(r => ids.Contains(r.Id))
-                .ExecuteUpdateAsync(s => s
-                    .SetProperty(r => r.IsActive, false)
-                    .SetProperty(r => r.DeletedAt, DateTime.UtcNow)
-                );
-        }
-
-        public async Task RestoreAsync(IEnumerable<int> ids) 
-        {
-            await _dbSet
-                .Where(r => ids.Contains(r.Id))
-                .ExecuteUpdateAsync(s => s
-                    .SetProperty(r => r.IsActive, false)
-                    .SetProperty(r => r.DeletedAt, DateTime.UtcNow)
-                );
-        }
-
 
 
 
@@ -111,20 +116,75 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync()
+        //public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync()
+        //{
+        //    var today = DateTime.UtcNow.Date;
+        //    var limitDate = today.AddDays(90);
+
+        //    return await _dbSet
+        //        .Where(r => r.IsActive && r.ExpirationDate != null && r.ExpirationDate <= limitDate)
+        //        .OrderBy(r => r.ExpirationDate)
+        //        .Select(r => new ReagentExpirationDTO
+        //        {
+        //            Id = r.Id,
+        //            Name = r.Name,
+        //            ExpirationDate = r.ExpirationDate,
+        //            DaysRemaining = EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value).ToString() // Срок годности может быть null
+        //        })
+        //        .ToListAsync();
+        //}
+
+
+        public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync(
+            ExpirationStatus status, 
+            int? categoryId,
+            int daysAhead = 90,
+            bool onlyWithStock = true)
         {
             var today = DateTime.UtcNow.Date;
-            var limitDate = today.AddDays(90);
+            var limitDate = today.AddDays(daysAhead);
 
-            return await _dbSet
-                .Where(r => r.IsActive && r.ExpirationDate != null && r.ExpirationDate <= limitDate)
+            var query = _dbSet
+                .Where(r => r.IsActive && r.ExpirationDate != null);
+
+            // Фильтр по категории
+            if (categoryId.HasValue)
+                query = query.Where(r => r.CategoryId == categoryId.Value);
+
+            // Исключить нулевой остаток
+            if (onlyWithStock)
+                query = query.Where(r => r.CurrentQuantity > 0);
+
+            // Фильтр по статусу
+            switch (status)
+            {
+                case ExpirationStatus.ExpiredOnly:
+                    query = query.Where(r => r.ExpirationDate < today);
+                    break;
+
+                case ExpirationStatus.ExpiringSoon:
+                    query = query.Where(r =>
+                        r.ExpirationDate >= today &&
+                        r.ExpirationDate <= limitDate);
+                    break;
+
+                case ExpirationStatus.All:
+                    query = query.Where(r =>
+                        r.ExpirationDate <= limitDate);
+                    break;
+            }
+
+            return await query
                 .OrderBy(r => r.ExpirationDate)
                 .Select(r => new ReagentExpirationDTO
                 {
                     Id = r.Id,
                     Name = r.Name,
+                    Category = r.Category.Name,
                     ExpirationDate = r.ExpirationDate,
-                    DaysRemaining = EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value).ToString() // Срок годности может быть null
+                    CurrentQuantity = r.CurrentQuantity,
+                    DaysRemaining =
+                        EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value).ToString()
                 })
                 .ToListAsync();
         }

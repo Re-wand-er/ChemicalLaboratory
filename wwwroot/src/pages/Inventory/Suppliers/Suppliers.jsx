@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 
 import DataTable from "../../../components/DataTable/DataTable.jsx";
+import { useAuth } from "../../../context/AuthContext.jsx";
 import DialogSuppliers from "./DialogSuppliers.jsx";
 
-import { fetchGetData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
+import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
 const columns = [
-    {
-        field: 'id',
-        headerName: 'ID',
-        width: 50,
-        type: 'number',
-    },
+    // {
+    //     field: 'id',
+    //     headerName: 'ID',
+    //     width: 50,
+    //     type: 'number',
+    // },
     {
         field: 'name',
         headerName: 'Наименование',
@@ -32,9 +33,10 @@ const columns = [
 
 const Suppliers = () => {
   const [data, setData] = useState([]); 
+  const { isSuperAdmin } = useAuth();
 
   useEffect(() =>{
-    fetchGetData('/api/supplier', setData);
+    fetchGetSuperAdminData('/api/supplier', isSuperAdmin, setData);
   }, []);      
 
   //// Методы для открытия соотв. окон //////////////////////////  
@@ -56,6 +58,11 @@ const Suppliers = () => {
     setCurrentRecord(record);
     setModalMode('delete');
   };
+
+  const handleOpenRestore = (record) => {
+    setCurrentRecord(record);
+    setModalMode('restore');
+  };
   ////////////////////////////////////////////////////////////////
 
   const handleAdd = async (record) => {
@@ -73,10 +80,44 @@ const Suppliers = () => {
     const success = fetchDeleteByIds('api/supplier/bulk-delete', ids);
 
     if (success){
-      setData(prev => prev.filter(d => !ids.includes(d.id)));
+
+      if(isSuperAdmin){
+        setData(prevItems => prevItems.map(item => {
+
+          if (ids.includes(item.id)) {
+            return { ...item, isActive: false };
+          }
+        
+          return item;
+        }));
+      }
+      else{
+        setData(prev => prev.filter(r => !ids.includes(r.id)));
+      }
+
       handleClose();
     }
   };
+
+  const handleRestore = async () => {
+    const ids = getRecordsArray(currentRecord).map(item => item.id);
+    const success = await fetchDeleteByIds('api/supplier/bulk-restore', ids);
+
+    if (success){
+
+      setData(prevItems => prevItems.map(item => {
+
+        if (ids.includes(item.id)) {
+          return { ...item, isActive: true };
+        }
+      
+        return item;
+      }));
+
+      handleClose();
+    }
+  }
+
 
   const handleSave = async (record) => {
     const result = await fetchPutData(`api/supplier/${record.id}`, record, true);
@@ -102,15 +143,20 @@ const Suppliers = () => {
         fileName="suppliers"
         onAdd={handleOpenAdd} 
         onEdit={handleOpenEdit} 
-        onDelete={handleOpenDelete}/>
+        onDelete={handleOpenDelete}
+        onRestore={handleOpenRestore}
+        isSuperAdmin={isSuperAdmin}
+      />
             
       <DialogSuppliers
         modalMode={modalMode} 
         currentRecord={currentRecord} 
         handleAdd={handleAdd}
         handleDelete={handleDelete}
+        handleRestore={handleRestore}
         handleSave={handleSave} 
-        handleClose={handleClose} />
+        handleClose={handleClose} 
+      />
       </div>
   );
 };

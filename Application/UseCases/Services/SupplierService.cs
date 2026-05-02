@@ -16,10 +16,10 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<SupplierDTO>> GetAllAsync()
+        public async Task<IEnumerable<SupplierDTO>> GetAllAsync(bool includeInactive = false)
         {
             _logger.LogInformation("Get all Suppliers");
-            var Suppliers = await _unitOfWork.Suppliers.GetAllAsync();
+            var Suppliers = await _unitOfWork.Suppliers.GetAllAsync(includeInactive);
             return Suppliers.Adapt<IEnumerable<SupplierDTO>>();
         }
 
@@ -49,7 +49,15 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         {
             _logger.LogInformation($"Deleted supplier with ids SupplierService");
 
-            await _unitOfWork.Suppliers.DeleteManyAsync(ids);
+            await _unitOfWork.Suppliers.SoftDeleteAsync(ids);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task RestoreAsync(IEnumerable<int> ids)
+        {
+            _logger.LogInformation($"Deleted supplier with ids SupplierService");
+
+            await _unitOfWork.Suppliers.RestoreAsync(ids);
             await _unitOfWork.SaveAsync();
         }
 

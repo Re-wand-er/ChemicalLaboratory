@@ -22,7 +22,9 @@ namespace ChemicalLaboratory.WebApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet] public async Task<IActionResult> GetAllSuppliers() => Ok(await _supplierService.GetAllAsync());
+        [HttpGet] 
+        public async Task<IActionResult> GetAllSuppliers([FromQuery] bool includeInactive = false) 
+            => Ok(await _supplierService.GetAllAsync(includeInactive));
 
         [HttpGet("{id:int}")] public async Task<IActionResult> GetSupplierById(int id) => Ok(await _supplierService.GetByIdAsync(id));
 
@@ -44,6 +46,18 @@ namespace ChemicalLaboratory.WebApi.Controllers
                 return BadRequest("No ids provided.");
 
             await _supplierService.DeleteAsync(request.Ids);
+            return Ok(new { succes = true });
+        }
+
+        [HttpPost("bulk-restore")]
+        public async Task<IActionResult> RestoreSupplier([FromBody] DeleteManyRequestDTO request)
+        {
+            _logger.LogInformation($"Deleted supplier with ids in SupplierController");
+
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _supplierService.RestoreAsync(request.Ids);
             return Ok(new { succes = true });
         }
 

@@ -1,19 +1,73 @@
 #header {
     display: flex;
-    height: 50px;
+    height: 64px; 
     align-items: center;
-    background: lightblue;
+    justify-content: space-between;
+    background: var(--mui-palette-background-default);
+    padding: 0 24px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05); 
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.nav{
-    align-items: center;
-    margin-right: 20px;
-    margin-left: auto;
+.logo {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 16px;
 }
 
-.link{
+.logo button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--mui-palette-logo-main);
+    padding: 8px;
+    border-radius: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.logo button:hover {
+    background: var(--mui-palette-background-hover);
+    color: var(--mui-palette-primary-main); 
+}
+
+.linkLogo {
     text-decoration: none;
-    /* color: #333; */
+    color: var(--mui-palette-text-primary);
+    font-weight: 600;
+    font-size: 1.2rem;
+    letter-spacing: -0.01rem;
+}
+
+.link {
+    text-decoration: none;
+    color: var(--mui-palette-text-secondary);
+    font-size: 1.2em;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.link:hover {
+    background: var(--mui-palette-background-hover);
+    color: var(--mui-palette-primary-main);
+}
+
+.link[data-variant="danger"]:hover {
+    background: var(--mui-palette-error-light);
+    color: var(--mui-palette-error-main); 
+}
+
+.userName {
+    color: var(--mui-palette-text-secondary);
+    border-right: 2px solid var(--mui-palette-background-border);
+    padding-right: 20px;
+    margin-right: 8px;
+    font-size: 20px;
 }

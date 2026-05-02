@@ -1,6 +1,8 @@
-﻿namespace ChemicalLaboratory.Domain.Entities
+﻿using ChemicalLaboratory.Domain.Interfaces;
+
+namespace ChemicalLaboratory.Domain.Entities
 {
-    public class NotificationSetting
+    public class NotificationSetting : IEntity
     {
         public int Id { get; set; }
         public decimal LowQuantityThreshold { get; set; }

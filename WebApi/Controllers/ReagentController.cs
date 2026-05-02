@@ -6,6 +6,7 @@ using ChemicalLaboratory.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mapster;
+using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {
@@ -28,12 +29,12 @@ namespace ChemicalLaboratory.WebApi.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(IEnumerable<ReagentDTO>), StatusCodes.Status200OK)]
 		public async Task<ActionResult<IEnumerable<ReagentDTO>>> GetAll([FromQuery] bool includeInactive =  false) 
-		{
-			var result = await _reagentService.GetAllAsync(includeInactive);
-            return Ok(result);
-		}
+			=> Ok(await _reagentService.GetAllAsync(includeInactive));
 
-		[HttpGet("{id:int}")] public async Task<IActionResult> GetReagentById(int id) => Ok(await _reagentService.GetByIdAsync(id));
+
+		[HttpGet("{id:int}")] 
+		public async Task<IActionResult> GetReagentById(int id) 
+			=> Ok(await _reagentService.GetByIdAsync(id));
 
         [HttpGet("name")]
         public async Task<IActionResult> GetCategoriesName() => Ok(await _reagentService.GetAllIdNameAsync());
@@ -61,8 +62,19 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			return Ok(new { succes = true });
 		}
 
+        [HttpPost("bulk-restore")]
+        public async Task<IActionResult> RestoreReagent([FromBody] DeleteManyRequestDTO request)
+        {
+            _logger.LogInformation($"Restored reagent with ids in ReagentController");
 
-		[HttpPut("{id:int}")]
+            if (request.Ids == null || !request.Ids.Any())
+                return BadRequest("No ids provided.");
+
+            await _reagentService.RestoreAsync(request.Ids);
+            return Ok(new { succes = true });
+        }
+
+        [HttpPut("{id:int}")]
 		public async Task<IActionResult> UpdateReagent([FromBody] ReagentUpdateDTO reagentDTO) 
 		{
             _logger.LogInformation($"Updated notification with id = {reagentDTO.Id} in controller");
@@ -81,8 +93,8 @@ namespace ChemicalLaboratory.WebApi.Controllers
 
 
         [HttpGet("expiring")]
-        public async Task<ActionResult<List<ReagentExpirationDTO>>> GetExpiring()
-			=> Ok(await _reagentService.GetExpiringReagentsReportAsync());
+        public async Task<ActionResult<List<ReagentExpirationDTO>>> GetExpiring([FromQuery] ExpirationFilterDTO filter)
+			=> Ok(await _reagentService.GetExpiringReagentsReportAsync(filter));
 
 
         [HttpGet("low-stock")]
@@ -90,8 +102,16 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			=> Ok(await _reagentService.GetLowStockReportAsync(filter.CategoryId, filter.CriticalPercent, filter.ExcludeExpired));
 
 
+        //     [HttpGet("forecast")]
+        //     public async Task<IActionResult> GetReport()
+        //=> Ok(await _reagentForecastService.GetForecastAsync(3)); // пароговый мультипликатор
+
         [HttpGet("forecast")]
-        public async Task<IActionResult> GetReport()
-			=> Ok(await _reagentForecastService.GetForecastAsync(3)); // пароговый мультипликатор
+        public async Task<ActionResult<List<ReagentPredictionReportDTO>>> GetForecast([FromQuery] ForecastFilterDTO filter)
+            => Ok(await _reagentForecastService.GetForecastAsync(filter));
+
+        [HttpGet("report")]
+        public async Task<ActionResult<List<ReagentReportDTO>>> GetReagentReport([FromQuery] int? categoryId)
+			=> Ok(await _reagentService.GetReagentReportAsync(categoryId));
     }
 }
