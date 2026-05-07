@@ -12,50 +12,51 @@ const CustomToolbar = ({ isLoading, selectedCount, onCreate, onDelete, onCsvFile
         borderBottom: '1px solid', 
         borderColor: 'divider',
         width: '100%', 
-        display: 'flex'
       }}
     >
-      <Stack direction="row" spacing={1}>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />} 
-          onClick={onCreate} 
-          disabled={isLoading} 
-          size="small"
-        >
-          Создать
-        </Button>
-        <Button 
-          variant="outlined" 
-          color="error" 
-          startIcon={<DeleteIcon />} 
-          onClick={onDelete} 
-          size="small"
-        >
-           Удалить {selectedCount > 0 && `(${selectedCount})`}
-        </Button>
-      
-        {/* <Typography variant="caption" >
-            {selectedCount > 0 ? `✓ Выбрано: ${selectedCount}` : 'Выберите строки'}
-        </Typography> */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+        <Stack direction="row" spacing={1}>
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />} 
+            onClick={onCreate} 
+            disabled={isLoading} 
+            size="small"
+          >
+            Создать
+          </Button>
+          
+          <Button 
+            variant="outlined" 
+            color="error" 
+            startIcon={<DeleteIcon />} 
+            onClick={onDelete} 
+            size="small"
+            disabled={selectedCount === 0}
+          >
+            Удалить {selectedCount > 0 && `(${selectedCount})`}
+          </Button>
+        </Stack>
 
-        <Button 
-          variant="outlined" 
-					color="warning"
-          onClick={onCsvFileCreate} 
-          size="small"
-        >
-          Экспорт в csv 
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button 
+            variant="outlined" 
+			  		color="warning"
+            onClick={onCsvFileCreate} 
+            size="small"
+          >
+            Экспорт в csv 
+          </Button>
 
-        <Button 
-          variant="outlined" 
-          onClick={onJsonFileCreate} 
-          size="small"
-        >
-          Экспорт в json 
-        </Button>
-      </Stack>
+          <Button 
+            variant="outlined" 
+            onClick={onJsonFileCreate} 
+            size="small"
+          >
+            Экспорт в json 
+          </Button>
+        </Stack>
+      </Box>
     </Toolbar>
   );
 };

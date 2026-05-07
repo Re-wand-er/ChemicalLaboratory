@@ -6,6 +6,7 @@ import DialogSuppliers from "./DialogSuppliers.jsx";
 
 import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
+import { minWidth } from "@mui/system";
 
 const columns = [
     // {
@@ -17,7 +18,8 @@ const columns = [
     {
         field: 'name',
         headerName: 'Наименование',
-        width: 200,
+        minWidth: 400,
+        flex: 3,
     },
     {
         field: 'contactInfo',
@@ -27,7 +29,8 @@ const columns = [
     {
         field: 'address',
         headerName: 'Адрес',
-        width: 200,
+        minWidth: 300,
+        flex: 2,
     }
 ];
 

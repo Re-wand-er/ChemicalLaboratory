@@ -8,18 +8,16 @@
     display: flex;
     flex: 1 1 auto; 
     overflow: hidden;
+    position: relative;
 }
 
-.main{
+.main {
     flex: 1; 
-    transition: margin-left 0.5s ease; 
-
-    overflow: auto;
-    height: calc(100vh - 110px); /* Чтобы был виден footer, если не нужно чтобы был виден, можно оставить 100vh*/
-    /* display: flex; */
+    display: flex;
     flex-direction: column;
+    padding: 24px; 
+    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    height: calc(100vh - 113px); /*временно (навсегда) так закреплен footer*/
+    background-color: var(--mui-palette-background-outlet); 
 }
-
-/* .footer{
-    flex-shrink: 0;
-}  */

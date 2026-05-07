@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import { Box } from "@mui/material";
 import { Header } from "./Header/Header";
 import { MenuSideBar } from "./SideBar/MenuSideBar";
 import { NotificationSideBar } from "./SideBar/NotificationSideBar";
@@ -19,29 +20,32 @@ export const Layout = () => {
   const toogleNotificationSideBar = () => setIsNotificationSideBarOpen(!isNotificationSideBarOpen);
 
   return (
-    <div className={styles.appWrapper}>
+    <Box className={styles.appWrapper}>
       <Header 
-				onMenuToggle={toogleMenuSideBar} 
-				onNotificationToggle={toogleNotificationSideBar}
-				logout={logout}
-				user={user}
-			/>
+        onMenuToggle={toogleMenuSideBar} 
+        onNotificationToggle={toogleNotificationSideBar} 
+        logout={logout} 
+        user={user} 
+      />
 
-      <div className={styles.content}>
+      <Box className={styles.content}>
         <MenuSideBar isOpen={isMenuSideBarOpen} />
 
-        <main className={styles.main}>
-            <Outlet />
-        </main>
+        <Box 
+          component="main" 
+          className={styles.main}
+        >
+          <Outlet />
+        </Box>
 
         <NotificationSideBar 
-					isOpen={isNotificationSideBarOpen} 
-					onClose={toogleNotificationSideBar}
-					user={user}
-				/>
-      </div>
+          isOpen={isNotificationSideBarOpen} 
+          onClose={toogleNotificationSideBar} 
+          user={user} 
+        />
+      </Box>
 
-      <Footer user={user} className={styles.footer}/>
-    </div>
+      <Footer user={user} />
+    </Box>
   );
 };

@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 
-// Данные, адаптированные под вашу задачу
 const reportSections = [
   {
     title: "Реагенты",
@@ -42,62 +41,79 @@ const reportSections = [
 
 const Reports = () => {
   return (
-    <Box sx={{ display: 'flex', height: '100vh', width: '100%' }}>
-      {/* Левая панель: Список отчетов */}
+    <Box sx={{ display: 'flex', height:'100vh', width: '100%' }}>
       <Paper 
         elevation={0} 
         sx={{ 
-          width: '17%', 
-          borderRight: '1px solid', 
-          borderColor: 'divider',
-          display: 'flex',
-          flexDirection: 'column'
+          width: 280, 
+          flexShrink: 0, 
+          border: '1px solid', 
+          borderColor: 'divider', 
+          display: 'flex', 
+          flexDirection: "column",
+          bgcolor: 'background.paper',
+          height: 'fit-content',
+          maxHeight: '100%',
+          alignSelf: 'flex-start', 
         }}
       >
-        <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
-          Перечень отчетов
+        <Typography 
+          variant="subtitle1" 
+          sx={{ 
+            p:1.5, 
+            pl: 2.5, 
+            fontWeight: 700, 
+            color: 'var(--mui-palette-primary-main)' //color: 'primary.main'
+          }}>
+          Типы отчетов
         </Typography>
         <Divider />
-        
-        <List sx={{ flexGrow: 1, py: 0, overflowY: 'auto' }}>
+        <List sx={{ py: 0, overflowY: 'auto' }}>
           {reportSections.map((section, index) => (
-            <Fragment key={index}>
-							
-              {/* Заголовок секции (Реагенты, Движение и т.д.) */}
-              <ListItem sx={{ bgcolor: 'action.hover', py: 0.5 }}>
-                <Typography variant="overline" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                  {section.title}
-                </Typography>
-              </ListItem>
-              
-              {/* Ссылки внутри секции */}
+            <Box key={index}>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  px: 3, 
+                  pt: 2, 
+                  pb: 0.5, 
+                  display: 'block', 
+                  fontWeight: 700, 
+                  letterSpacing: 1,
+                  color: 'text.disabled',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {section.title}
+              </Typography>
               {section.links.map((link) => (
                 <ListItemButton 
-                  key={link.to}
-                  component={NavLink}
+                  key={link.to} 
+                  component={NavLink} 
                   to={link.to}
-                  // sx={{
-                  //   '&.active': {
-                  //     borderRight: '4px solid #1976d2',
-                  //     bgcolor: 'primary.light',
-                  //     color: 'primary.main',
-                  //     '& .MuiListItemText-primary': { fontWeight: 'bold' }
-                  //   }
-                  // }}
+                  sx={{
+                    mx: 1, 
+                    borderRadius: 2,
+                    '&.active': {
+                      bgcolor: 'var(--mui-palette-primary-light)',
+                      color: 'var(--mui-palette-background-paper)',
+                      '& .MuiTypography-root': { fontWeight: 600 }
+                    }
+                  }}
                 >
-
-                  <ListItemText primary={link.label} sx={{ pl: 1 }} />
-									
+                  <ListItemText 
+                    primary={link.label} 
+                    primaryTypographyProps={{ variant: 'body2' }} 
+                  />
                 </ListItemButton>
               ))}
-              <Divider />
-            </Fragment>
+              {index !== reportSections.length - 1 && <Box sx={{ height: 4 }} />}
+            </Box>
           ))}
         </List>
       </Paper>
 
-      {/* Правая панель: Параметры и контент */}
-      <Box sx={{ flexGrow: 1, p: 3, bgcolor: '#f5f5f5', overflowY: 'auto' }}>
+      <Box sx={{ flexGrow: 1, paddingLeft:3, minWidth:0}}>
         <Outlet />
       </Box>
     </Box>

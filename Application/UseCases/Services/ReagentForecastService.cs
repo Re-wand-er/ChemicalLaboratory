@@ -95,13 +95,13 @@ namespace ChemicalLaboratory.Application.UseCases.Services
                     AvgConsumption = avg,
                     DaysToZero = daysToZero,
                     DaysToExpiry = daysToExpiry,
-                    RecommendedOrder = recommended > 0 ? recommended : 0
+                    RecommendedOrder = recommended > 0 ? recommended : 0,
+                    //OrderDeadline = DateTime.UtcNow.Day + daysToZero
                 };
 
                 results.Add(dto);
             }
 
-            // 🔥 фильтры после расчета (ВАЖНО)
             if (filter.MaxDaysToZero.HasValue)
                 results = results
                     .Where(x => x.DaysToZero <= filter.MaxDaysToZero)

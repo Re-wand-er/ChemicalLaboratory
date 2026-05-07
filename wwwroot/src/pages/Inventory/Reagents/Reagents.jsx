@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { minWidth } from "@mui/system";
 
 import DataTable from "../../../components/DataTable/DataTable.jsx";
 import { useAuth } from '../../../context/AuthContext.jsx';
@@ -18,18 +19,20 @@ const columns = [
   {
     field: 'name',
     headerName: 'Название',
-    width: 200,
+    minWidth: 200,
+    flex: 2,
     // editable: true,
   },
   {
     field: 'chemicalFormula',
     headerName: 'Хим. формула',
     width: 150,
+    flex: 1,
   },
   {
     field: 'unit',
-    headerName: 'Ед. измерения',
-    width: 50,
+    headerName: 'Ед. изм.',
+    width: 80,
   },
   {
     field: 'currentQuantity',
@@ -55,7 +58,8 @@ const columns = [
   {
     field: 'storageLocation',
     headerName: 'Место хранения',
-    width: 180,
+    minWidth: 180,
+    flex: 2,
   },
   {
     field: 'categoryName',

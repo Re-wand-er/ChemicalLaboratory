@@ -1,53 +1,79 @@
 import { useState } from "react";
-import {
-  Box, Grid, TextField, MenuItem, Button, Typography,
-  Paper, Input, FormControlLabel, Checkbox
-} from "@mui/material";
+import { Box, MenuItem, Button, ButtonGroup, Select, Divider } from "@mui/material";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
-import { exportCsvFile, exportJsonFile } from '../../utils/dataExportFotmat'; 
+import { exportCsvFile, exportJsonFile } from '../../utils/dataExportFotmat';
 import { generateExcel } from "../../utils/generateExcel";
 import { generatePDF } from "../../utils/generatePDF";
 
 const ExportFormat = ({ title, columns, rows }) => {
   const [exportSelect, setExportSelect] = useState("pdf");
 
-   const handleExportFile = () => {
-      console.log(exportSelect);
-
-      switch(exportSelect){
-        case 'excel': generateExcel(title, columns, rows); break;
-        case 'pdf': generatePDF(title, columns, rows); break;
-        case 'csv': exportCsvFile(title, rows); break;
-        case 'json': exportJsonFile(title, rows); break;
-        default: console.error("Неизвестный формат");
-      }
+  const handleExportFile = () => {
+    switch (exportSelect) {
+      case 'excel':
+        generateExcel(title, columns, rows);
+        break;
+      case 'pdf':
+        generatePDF(title, columns, rows);
+        break;
+      case 'csv':
+        exportCsvFile(title, rows);
+        break;
+      case 'json':
+        exportJsonFile(title, rows);
+        break;
+      default:
+        console.error("Неизвестный формат");
     }
+  };
 
   return (
-    <Grid display='flex' alignItems='center' gap={2} > {/*xs={12} md={3} */}
-      <Typography variant="body1">
-        Сгенерировать в
-      </Typography>
-      <TextField
-        select
-        value={exportSelect}
-        label="Формат"
-        onChange={(e) => setExportSelect(e.target.value)}
-      >
-        <MenuItem value="pdf">PDF</MenuItem>
-        <MenuItem value="excel">EXCEL</MenuItem>
-        <MenuItem value="csv">CSV</MenuItem>
-        <MenuItem value="json">JSON</MenuItem>
-      </TextField>
-  
-      <Button 
-        variant="outlined"
-        onClick={() => handleExportFile()}
-      >
-        Сформировать 
-      </Button>
-    </Grid>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Divider 
+        orientation="vertical" 
+        flexItem 
+        sx={{ marginRight: 1.5, height: 32, alignSelf: 'center', borderColor: 'var(--mui-palette-background-border)' }} 
+      />
+
+      <ButtonGroup variant="outlined" size="small">
+
+        <Select
+          value={exportSelect}
+          onChange={(e) => setExportSelect(e.target.value)}
+          sx={{
+            width: 100,
+            height: 34, 
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            backgroundColor: 'background.paper',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderRight: 'none', 
+            },
+          }}
+        >
+          <MenuItem value="pdf">PDF</MenuItem>
+          <MenuItem value="excel">EXCEL</MenuItem>
+          <MenuItem value="csv">CSV</MenuItem>
+          <MenuItem value="json">JSON</MenuItem>
+        </Select>
+
+        <Button
+          onClick={handleExportFile}
+          variant="contained"
+          startIcon={<FileDownloadIcon />}
+          sx={{
+            height: 34,
+            px: 2,
+            textTransform: 'none', 
+            boxShadow: 'none',   
+          }}
+        >
+          Скачать
+        </Button>
+      </ButtonGroup>
+    </Box>
   );
-}
+};
 
 export default ExportFormat;

@@ -1,26 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { Box, Paper, Typography, FormControl, Select, MenuItem, Stack, useTheme } from '@mui/material';
 
 import { fetchGetData } from '../../../api/fetch.js';
-
-import "./graphicStyles.css";
 
 /**
  * Используеммые реагенты за определенное время: 30/60/90/180 дней
  * const data = [{name:'<название_реактива>', value:<кол-во потребления за период>}, ..., {<аналогично 1-му>} ]
  */
-const ReagentsPie = () => {
+const ReagentsPie = ({ title }) => {
   const [data, setData] = useState([]);
   const [filters, setFilters] = useState({
     period: "Month"
   });
-
-  const handleFilterChange = (field) => (event) => {
-    setFilters({
-      ...filters,
-      [field]: event.target.value 
-    });
-  };
 
   const loadData = useCallback(async () => {
     const baseUrl = '/api/reagent-operation/top-usage';
@@ -44,52 +36,81 @@ const ReagentsPie = () => {
   }, [loadData]);
 
 
+  const handleFilterChange = (event) => {
+    const { value } = event.target;
+    setFilters(prev => ({ 
+      ...prev, 
+      period: value 
+    }));
+  };
+
   return (
-    <div style={{ width:'100%', maxWidth: '400px', height:'400px'}}>
-      <div style={{display: 'flex', justifyContent: 'center', marginBottom: '10px'}}>
-        <label>
-          Период:
-          <select name="period" value={filters.period} onChange={handleFilterChange('period')}>
-            <option value="Month">30</option>
-            <option value="TwoMonth">60</option>
-            <option value="Quarter">90</option>
-            <option value="HalfYear">180</option>
-          </select>
-          дней
-        </label>
-      </div>
+    <Paper 
+      sx={{
+        p:2, 
+        borderRadius:2, 
+        height:'100%', 
+        //width:'50vh', 
+        display:'flex', 
+        flexDirection: 'column'
+      }}>
+
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+          {title}
+        </Typography>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="body2" color="var(--mui-palette-text-secondary)">Период:</Typography>
+          <FormControl size="small" sx={{ minWidth: 100 }}>
+            <Select
+              value={filters.period}
+              onChange={handleFilterChange}
+              sx={{ fontSize: '0.875rem' }}
+            >
+              <MenuItem value="Month">30 дней</MenuItem>
+              <MenuItem value="TwoMonth">60 дней</MenuItem>
+              <MenuItem value="Quarter">90 дней</MenuItem>
+              <MenuItem value="HalfYear">180 дней</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Stack>
     
-      <ResponsiveContainer width='100%' height='100%'>
-        <PieChart>
+      <Box sx={{ width: '100%', height: '100%' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
 
-          <Pie 
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            fill='var(--main-graphic-color)'
-            activeShape={{
-              fill: 'var(--pie-fill-hover)',
-            }}
-            label
-          />  
+            <Pie 
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              fill='var(--mui-palette-charts-main)'
+              activeShape={{
+                fill: 'var(--mui-palette-charts-hover)',
+              }}
+              label
+            />  
 
-          <Tooltip
+            <Tooltip
               cursor={{
-                stroke: 'var(--chart-cursor)'
+                stroke: 'var(--mui-palette-charts-cursor)'
               }}
               contentStyle={{
-                backgroundColor: 'var(--tooltip-bg)',
-                borderColor: 'var(--tooltip-border)',
-                boxShadow: 'var(--tooltip-shadow)'
+                backgroundColor: 'var(--mui-palette-charts-tooltip-bg)',
+                borderColor: 'var(--mui-palette-charts-tooltip-border)',
+                boxShadow: 'var(--mui-palette-charts-tooltip-shadow)',
+                borderRadius: 4
               }}
               itemStyle={{
-                color:'var(--tooltip-item-color)'
+                color:'var(--mui-palette-charts-tooltip-text)'
               }}
             /> 
-        </PieChart>
-      </ResponsiveContainer>
+          </PieChart>
+        </ResponsiveContainer>
+      </Box>
 
-    </div>  
+    </Paper>  
   );
 }
 

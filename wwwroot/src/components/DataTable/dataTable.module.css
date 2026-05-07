@@ -1,5 +1,31 @@
 .centerAlignment {
-    width: 100%;
     display: flex;
     justify-content: center;
+    width: 100%;
+    padding: 0 20px; 
 }
+
+.tableWrapper {
+    width: 100%;
+    max-width: 1600px; 
+    background-color: var(--mui-palette-background-paper);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+    overflow: hidden;
+    height: auto;
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.evenRow {
+    background-color: var(--mui-palette-background-paper);
+}
+
+.oddRow {
+    background-color: var(--mui-palette-background-oddRow);
+}
+
+.oddRow:hover, .evenRow:hover {
+    background-color: var(--mui-palette-action-hover);
+}
+

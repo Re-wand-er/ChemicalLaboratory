@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { minWidth } from "@mui/system";
 
 import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogNotifications from "./DialogNotifications.jsx";
@@ -17,13 +18,15 @@ const columns = [
    {
     field: 'userId',
     headerName: 'Пользователь',
-    width: 150,
+    minWidth: 200,
+    flex: 2,
   },
   {
     field: 'reagentId',
     headerName: 'Реагент',
-    width: 150,
+    minWidth: 150,
     type: 'number',
+    flex: 1,
   },
   {
     field: 'notificationType',
@@ -38,18 +41,19 @@ const columns = [
   {
     field: 'message',
     headerName: 'Сообщение',
-    width: 400,
+    minWidth: 500,
+    flex: 3,
   },
   {
     field: 'createdAt',
     headerName: 'Создано',
-    width: 160,
+    width: 140,
     renderCell: (date) => formatDate(date.value, 'datetime')
   },
   {
     field: 'isRead',
     headerName: 'Прочитан',
-    width: 110,
+    width: 100,
     type: 'boolean',
     renderCell: (params) => (
     <span

@@ -6,11 +6,11 @@ import { fetchGetData } from '../../../api/fetch';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 50 },
-  { field: 'name', headerName: 'Реактив', flex: 1 },
+  { field: 'name', headerName: 'Реактив', flex: 3 },
   { field: 'currentQuantity', headerName: 'Остаток', type: 'number', width: 100 },
   { field: 'minQuantity', headerName: 'Мин. кол-во', type: 'number', width: 100 },
   { field: 'unit', headerName: 'Ед. изм.', width: 90 },
-  { field: 'avgConsumption', headerName: 'Среднее потребление в день', width: 230 },
+  { field: 'avgConsumption', headerName: 'Среднее потр. в день', minWidth: 200, flex: 1 },
   { field: 'daysToExpiry', headerName: 'Дней до просрочки', width: 150 },
   { 
     field: 'daysToZero', 
@@ -28,11 +28,11 @@ const columns = [
     ), 
     width: 100 
   },
-  { 
-    field: 'orderDeadline', 
-    headerName: 'Крайний срок', 
-    width: 130,
-  },
+  // { 
+  //   field: 'orderDeadline', 
+  //   headerName: 'Крайний срок', 
+  //   width: 130,
+  // },
 ];
 
 /**

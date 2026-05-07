@@ -1,46 +1,65 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { List, ListItem, ListItemButton, ListItemText, Collapse } from "@mui/material";
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from '@mui/icons-material/ExpandLess';
 
 import styles from "./sideBarSection.module.css";
 
-const SideBarSection = (props) =>{
-    const [isOpen, setIsOpen] = useState(false);
-    const hasSubLinks = props.element.links && props.element.links.length > 0; 
+const SideBarSection = ({ element }) => {
+  const { pathname } = useLocation();
+  const hasSubLinks = element.links && element.links.length > 0;
+  
+  // Авто-открытие секции, если активная ссылка внутри неё
+  const isAnySubLinkActive = hasSubLinks && element.links.some(link => pathname.includes(link.to));
+  const [isOpen, setIsOpen] = useState(isAnySubLinkActive);
 
-    // Когда в меню есть выпадающий список
-    if (hasSubLinks) {
-        return (
-            <li className={styles.menuItem}>
-                <button 
-                    className={styles.toggleBtn} 
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {props.element.title}
-                    <span className={isOpen ? styles.rotate : ''}>▼</span>
-                </button>
-                
-                <ul className={`${styles.subMenu} ${isOpen ? styles.show : ''}`}>
-                    {props.element.links.map(link => (
-                        <li key={link.to}>
-                            <NavLink className={styles.singleLink} to={link.to}>{link.label}</NavLink>
-                        </li>
-                    ))}
-                </ul>
-            </li>
-        );
-    }
+  const toggleOpen = () => setIsOpen(!isOpen);
 
-    // Когда в меню нет выпадающего списка
+  if (hasSubLinks) {
     return (
-        <li className={styles.menuItem}>
-            <NavLink 
-                to={props.element.to}
-                className={styles.singleLink}
-            >
-                {props.element.title}
-            </NavLink>
-        </li>
+      <>
+        <ListItem disablePadding>
+          <ListItemButton 
+            onClick={toggleOpen} 
+            className={`${styles.toggleBtn}`}
+          >
+            <ListItemText primary={element.title} />
+            {isOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+          </ListItemButton>
+        </ListItem>
+        
+        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {element.links.map((link) => (
+              <NavLink 
+                key={link.to} 
+                to={link.to} 
+                className={({ isActive }) => 
+                  `${styles.subLink} ${isActive ? styles.activeLink : ''}`
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </List>
+        </Collapse>
+      </>
     );
-}
+  }
+
+  return (
+    <ListItem disablePadding>
+      <NavLink 
+        to={element.to} 
+        className={({ isActive }) => 
+          `${styles.singleLink} ${isActive ? styles.activeLink : ''}`
+        }
+      >
+        {element.title}
+      </NavLink>
+    </ListItem>
+  );
+};
+
 export default SideBarSection;

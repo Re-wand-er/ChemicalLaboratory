@@ -9,9 +9,11 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
+import ReportDataTable from "../../components/DataTable/ReportDataTable";
 import ExportFormat from "./ExportFormat";
 
 import { fetchGetData } from "../../api/fetch";
+import ReportTemplate from "./ReportTemplate";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -41,7 +43,7 @@ const ReagentReport = () => {
   const [categories, setCategories] = useState([]);
 
   const [filters, setFilters] = useState({
-    categoryId: ""
+    categoryId: 0,
   });
 
   // загрузка данных
@@ -50,7 +52,7 @@ const ReagentReport = () => {
 
     const params = new URLSearchParams();
 
-    if (filters.categoryId) {
+    if (filters.categoryId !== 0) {
       params.append("categoryId", filters.categoryId);
     }
 
@@ -83,54 +85,30 @@ const ReagentReport = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h5" mb={2}>
-        Отчет по реагентам
-      </Typography>
+    <ReportTemplate
+      rows={rows}
+      columns={columns}
+      title="Отчет по остаткам реагентов"
+      exportTitle="Остатки реагентов"
+    >
+      <TextField
+        select
+        name="categoryId"
+        label="Категория"
+        value={filters.categoryId || 0}
+        onChange={handleChange}
+        size="small"
+        fullWidth
+      >
+        <MenuItem value={0}>Все категории</MenuItem>
 
-      {/* ФИЛЬТРЫ */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Grid container spacing={2}>
-
-          <Grid item xs={12} md={4}>
-            <TextField
-              select
-              name="categoryId"
-              label="Категория"
-              value={filters.categoryId}
-              onChange={handleChange}
-              fullWidth
-            >
-              <MenuItem value="">Все категории</MenuItem>
-              {categories.map((c) => (
-                <MenuItem key={c.id} value={c.id}>
-                  {c.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <ExportFormat
-            title="Остатки реагентов"
-            columns={columns}
-            rows={rows}
-          />
-        
-        </Grid>
-      </Paper>
-
-      {/* ТАБЛИЦА */}
-      <Paper sx={{ height: 500 }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[10]}
-          disableRowSelectionOnClick
-          density="compact"
-        />
-      </Paper>
-    </Box>
+        {categories.map((c) => (
+          <MenuItem key={c.id} value={c.id}>
+            {c.name}
+          </MenuItem>
+        ))}
+      </TextField>
+    </ReportTemplate>
   );
 };
 

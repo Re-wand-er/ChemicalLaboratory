@@ -41,8 +41,9 @@ const ProfileForm = () => {
 
   return (
     <Paper sx={{ p: 4, maxWidth: 900, m: '20px auto' }}>
+      
       <Typography variant="h5" gutterBottom>Профиль пользователя: {data.login}</Typography>
-      <Typography variant="body2" color="textSecondary" mb={3}>
+      <Typography variant="body2" color="var(--mui-palette-text-secondary)" mb={3}>
         Роль в системе: {data.systemRole}
       </Typography>
       
@@ -78,7 +79,6 @@ const ProfileForm = () => {
           />
         </Grid>
 
-        {/* Системные данные */}
         <Grid size={6}>
           <TextField
             label="Email"
@@ -131,11 +131,7 @@ const ProfileForm = () => {
 
         <Grid size={12}><Divider sx={{ my: 1 }}>Безопасность</Divider></Grid>
 
-        <Grid size={12}>
-
-          <Typography size={8} variant="caption" color={data.isActive ? "success.main" : "error.main"}>
-            Статус: {data.isActive ? "Активен" : "Заблокирован"}
-          </Typography>
+        <Grid size={12} justifyContent='space-between' display='flex'>
 
           <Button variant="contained" size="large" onClick={handleRedirect}>
             Изменить пароль
@@ -144,6 +140,7 @@ const ProfileForm = () => {
           <Button variant="contained" size="large" onClick={handleSave}>
             Сохранить данные
           </Button>
+          
         </Grid>
       </Grid>
     </Paper>

@@ -29,7 +29,7 @@ const UserActivityTop = () => {
   return (
     <div style={{ width: '100%', maxWidth: '400px' }}>
       <div style={{ marginBottom: '8px', textAlign: 'right' }}>
-				<label>Сумма операций пользователей за период</label>
+				<label>Операций пользователей за период</label>
         <select 
            style={{ fontSize: '0.75rem', padding: '2px' }} 
            value={days} 

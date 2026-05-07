@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Legend, ResponsiveContainer, Tooltip } from "recharts";
+import { Box, Paper, Typography, FormControl, Select, MenuItem, Stack, InputLabel, useTheme } from '@mui/material';
 
 import { fetchGetData } from '../../../api/fetch.js';
 
 /**
  * Аналитический компонент потребления реагентов
  */
-const ReagentsBarChart = ({ startPeriod = 'Week', localeWidth = '800px', filterBar = false }) => {
+const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filterBar = false, title }) => {
   // 1. Состояние для данных и фильтров
   const [chartData, setChartData] = useState([]);
   const [filters, setFilters] = useState({
@@ -45,64 +46,114 @@ const ReagentsBarChart = ({ startPeriod = 'Week', localeWidth = '800px', filterB
   };
 
   return (
-    <div style={{ minHeight: '400px', width: '100%',maxWidth: localeWidth }}>
-      {filterBar && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <label>
-            Период:
-            <select name="period" value={filters.period} onChange={handleFilterChange}>
-              <option value="Day">День</option>
-              <option value="Week">Неделя</option>
-              <option value="Month">Месяц</option>
-              <option value="Year">Год</option>
-            </select>
-          </label>
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        p: 2, 
+        //width: '100%', 
+        maxWidth: localeWidth,
+        borderRadius: 2,
+        height:'100%'
+      }}
+    >
+      <Stack 
+        direction="row"  
+        alignItems="center" 
+        sx={{ 
+          mb: 2, 
+          justifyContent: title ? "space-between" : "center" 
+        }}
+      >
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+          {title}
+        </Typography>
 
-          <label>
-            Топ:
-            <select name="count" value={filters.count} onChange={handleFilterChange}>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
+        {filterBar && (
+          <Stack direction="row" spacing={1}>
+            <FormControl size="small" sx={{ minWidth: 100 }}>
+              <InputLabel>Период</InputLabel>
+              <Select
+                name="period"
+                label="Период"
+                value={filters.period}
+                onChange={handleFilterChange}
+              >
+                <MenuItem value="Day">День</MenuItem>
+                <MenuItem value="Week">Неделя</MenuItem>
+                <MenuItem value="Month">Месяц</MenuItem>
+                <MenuItem value="Year">Год</MenuItem>
+              </Select>
+            </FormControl>
 
-          <label>
-            Сортировка:
-            <select name="asc" value={filters.asc.toString()} onChange={handleFilterChange}>
-              <option value="false">По убыванию</option>
-              <option value="true">По возрастанию</option>
-            </select>
-          </label>
-        </div>
-      )}
+            <FormControl size="small" sx={{ minWidth: 70 }}>
+              <InputLabel>Топ</InputLabel>
+              <Select
+                name="count"
+                label="Топ"
+                value={filters.count}
+                onChange={handleFilterChange}
+              >
+                <MenuItem value="5">5</MenuItem>
+                <MenuItem value="10">10</MenuItem>
+                <MenuItem value="15">15</MenuItem>
+              </Select>
+            </FormControl>
 
-      <div style={{ height: '400px', minHeight: '400px' }}>
-        <ResponsiveContainer >
-          <BarChart
-            data={chartData}
-            layout="vertical"
+            <FormControl size="small" sx={{ minWidth: 140 }}>
+              <InputLabel>Сортировка</InputLabel>
+              <Select
+                name="asc"
+                label="Сортировка"
+                value={filters.asc.toString()}
+                onChange={handleFilterChange}
+              >
+                <MenuItem value="false">По убыванию</MenuItem>
+                <MenuItem value="true">По возрастанию</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+        )}
+      </Stack>
+
+      <Box sx={{ height: 400, width: '100%' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart 
+            data={chartData} 
+            layout="vertical" 
+            margin={{ left: 10, right: 30 }}
           >
-            <XAxis type="number" />
+            <XAxis 
+              type="number" 
+              tick={{ fill:'var(--mui-palette-charts-text)', fontSize:12 }}
+              stroke='var(--mui-palette-charts-grid)'
+            />
             <YAxis 
               dataKey="name" 
               type="category" 
-              width={100} 
-              tick={{ fontSize: 14 }}
+              tick={{ fill: 'var(--mui-palette-text-primary)', fontSize: 13 }}
+              stroke='var(--mui-palette-charts-grid)'
             />
-            <Tooltip />
-            <Legend />
-            <Bar
-              name="Потреблено (ед)"
-              dataKey="value"
-              fill='var(--main-graphic-color)'
+            <Tooltip 
+              cursor={{ fill: 'var(--mui-palette-charts-cursor)' }}
+              contentStyle={{ 
+                backgroundColor: 'var(--mui-palette-charts-tooltip-bg)',
+                borderColor: 'var(--mui-palette-charts-tooltip-border)',
+                boxShadow: 'var(--mui-palette-charts-tooltip-shadow)',
+                borderRadius: '8px'
+              }}
+            />
+            {/* <Legend verticalAlign="bottom" align="center" height={32} /> */}
+            <Bar 
+              name="Потреблено (кол.)" 
+              dataKey="value" 
+              fill='var(--mui-palette-charts-main)' 
               radius={[0, 5, 5, 0]}
-              isAnimationActive={true}
+              isAnimationActive={true} 
             />
           </BarChart>
         </ResponsiveContainer>
-      </div>
-    </div>
+      </Box>
+    </Paper>
   );
 };
 

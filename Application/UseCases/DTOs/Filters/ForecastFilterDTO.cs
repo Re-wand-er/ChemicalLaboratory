@@ -11,6 +11,6 @@
 
         public bool OnlyReorderNeeded { get; set; } = false;
 
-        public int Multiplier { get; set; } = 3;
+        public decimal Multiplier { get; set; } = 3;
     }
 }

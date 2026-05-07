@@ -8,6 +8,9 @@ import { useNotifications } from '../../../context/NotificationContext';
 
 import { fetchGetData, fetchPostData } from '../../../api/fetch';
 
+import styles from './notificationSideBar.module.css';
+
+
 export const NotificationSideBar = ({ user, isOpen, onClose }) => {
   const [notifications, setNotifications] = useState([]);
   const { updateCount } = useNotifications();
@@ -15,7 +18,6 @@ export const NotificationSideBar = ({ user, isOpen, onClose }) => {
   const loadNotifications = () => {
     if (isOpen) fetchGetData(`/api/notification/load`, setNotifications);
   }
-
 
   useEffect(() => {
     loadNotifications();
@@ -43,21 +45,20 @@ export const NotificationSideBar = ({ user, isOpen, onClose }) => {
   }
 
   return (
-    <Drawer
-      anchor="right"
-      open={isOpen}
+    <Drawer 
+      anchor="right" 
+      open={isOpen} 
       onClose={onClose}
-      // Регулируем ширину здесь
-      PaperProps={{ sx: { width: { xs: '100%', sm: 400 } } }}
+      classes={{ paper: styles.drawerPaper }}
     >
       {/* Шапка уведомлений */}
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6">Уведомления</Typography>
+      <Box className={styles.header}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>Уведомления</Typography>
         <Box>
-          <Button size="small" onClick={markAllRead} sx={{ mr: 1 }}>
+          <Button size="small" onClick={markAllRead} sx={{ mr: 1, textTransform: 'none', fontSize: 16 }}>
             Прочитать все
           </Button>
-          <IconButton onClick={onClose}>
+          <IconButton onClick={onClose} size="small">
             <CloseIcon />
           </IconButton>
         </Box>
@@ -68,53 +69,61 @@ export const NotificationSideBar = ({ user, isOpen, onClose }) => {
         {notifications.map((item) => (
           <Box key={item.id}>
             <ListItem 
+              className={styles.notificationItem}
               alignItems="flex-start"
               sx={{ 
                 bgcolor: item.isRead ? 'action.hover' : 'transparent',
-                borderLeft: item.isRead ? 'none' : '4px solid #1976d2',
-                transition: '0.3s',
-                flexDirection: 'column',
-                alignItems: 'stretch'
+                borderLeft: item.isRead ? 'none' : '4px solid var(--mui-palette-primary-main)',
               }}
             >
-             
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+              {/* Верх: Заголовок и действия */}
+              <Box className={styles.itemHeader}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
                   {item.title}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
                   {!item.isRead && (
-                    <IconButton size="small" onClick={() => handleRead(item.id)} sx={{ color: 'primary.main', p: 0.5 }}>
+                    <IconButton 
+                      size="small" 
+                      onClick={() => handleRead(item.id)} 
+                      sx={{ color: 'primary.main' }}
+                      title="Отметить как прочитанное"
+                    >
                       <DoneIcon fontSize="small" />
                     </IconButton>
                   )}
-                  <IconButton size="small" onClick={() => handleDelete(item.id)} sx={{ color: 'text.secondary', p: 0.5 }}>
+                  <IconButton 
+                    size="small" 
+                    onClick={() => handleDelete(item.id)} 
+                    sx={{ color: 'text.secondary' }}
+                    title="Удалить"
+                  >
                     <DeleteOutlineIcon fontSize="small" />
                   </IconButton>
                 </Box>
               </Box>
 
               {/* Сообщение */}
-              <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
+              <Typography variant="body2" className={styles.message}>
                 {item.message}
               </Typography>
 
-              {/* Нижняя строка: реактив + дата */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" sx={{ bgcolor: 'grey.200', px: 1, borderRadius: 1 }}>
+              {/* Низ: тег и дата */}
+              <Box className={styles.itemFooter}>
+                <Box className={styles.reagentTag}>
                   ⚛️ {item.reagentName}
-                </Typography>
+                </Box>
                 <Typography variant="caption" color="text.secondary">
                   {item.createdAt}
                 </Typography>
               </Box>
             </ListItem>
-            <Divider component="li" />
+            <Divider />
           </Box>
         ))}
-        
+
         {notifications.length === 0 && (
-          <Typography sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
+          <Typography sx={{ p: 4, textAlign: 'center', color: 'text.secondary', fontStyle: 'italic' }}>
             У вас пока нет уведомлений
           </Typography>
         )}
@@ -122,3 +131,90 @@ export const NotificationSideBar = ({ user, isOpen, onClose }) => {
     </Drawer>
   );
 };
+//   return (
+//     <Drawer
+//       anchor="right"
+//       open={isOpen}
+//       onClose={onClose}
+//       PaperProps={{ sx: { width: { xs: '100%', sm: 400 } } }}
+//     >
+      
+//       <Box className={styles.header}>
+//         <Typography variant="h6">Уведомления</Typography>
+//         <Box>
+//           <Button size="small" onClick={markAllRead} sx={{ mr: 1 }}>
+//             Прочитать все
+//           </Button>
+//           <IconButton onClick={onClose}>
+//             <CloseIcon />
+//           </IconButton>
+//         </Box>
+//       </Box>
+
+//       {/* Список уведомлений */}
+//       <List sx={{ p: 0 }}>
+//         {notifications.map((item) => (
+//           <Box key={item.id}>
+//             <ListItem 
+//               alignItems="flex-start"
+//               sx={{ 
+//                 bgcolor: item.isRead ? 'action.hover' : 'transparent',
+//                 borderLeft: item.isRead ? 'none' : '4px solid #1976d2',
+//                 transition: '0.3s',
+//                 flexDirection: 'column',
+//                 alignItems: 'stretch'
+//               }}
+//             >
+             
+//               <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
+//                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+//                   {item.title}
+//                 </Typography>
+//                 <Box sx={{ display: 'flex', gap: 0.5 }}>
+//                   {!item.isRead && (
+//                     <IconButton 
+//                       size="small" 
+//                       onClick={() => handleRead(item.id)} 
+//                       sx={{ color: 'primary.main', p: 0.5 }}
+//                       title='Отметить как прочитанное'>
+//                       <DoneIcon fontSize="small" />
+//                     </IconButton>
+//                   )}
+//                   <IconButton 
+//                     size="small" 
+//                     onClick={() => handleDelete(item.id)} 
+//                     sx={{ color: 'text.secondary', p: 0.5 }}
+//                     title='Удалить'>
+//                     <DeleteOutlineIcon fontSize="small" />
+//                   </IconButton>
+//                 </Box>
+//               </Box>
+
+//               {/* Сообщение */}
+//               <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
+//                 {item.message}
+//               </Typography>
+
+//               {/* Нижняя строка: реактив + дата */}
+//               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+//                 <Typography variant="caption" sx={{ bgcolor: 'grey.200', px: 1, borderRadius: 1 }}>
+//                   ⚛️ {item.reagentName}
+//                 </Typography>
+//                 <Typography variant="caption" color="text.secondary">
+//                   {item.createdAt}
+//                 </Typography>
+//               </Box>
+//             </ListItem>
+//             <Divider component="li" />
+//           </Box>
+//         ))}
+        
+//         {notifications.length === 0 && (
+//           <Typography sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
+//             У вас пока нет уведомлений
+//           </Typography>
+//         )}
+//       </List>
+//     </Drawer>
+//   );
+// };

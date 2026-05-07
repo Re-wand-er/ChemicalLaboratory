@@ -6,9 +6,11 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 
 import ReagentsBelowMinimum from "../Analytics/Statistics/ReagentsBelowMinimum";
+import ReportDataTable from "../../components/DataTable/ReportDataTable";
 import ExportFormat from "./ExportFormat";
 
 import { fetchGetData } from "../../api/fetch";
+import ReportTemplate from "./ReportTemplate";
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 50 },
@@ -50,7 +52,7 @@ const BelowMinReport = () => {
   const [categories, setCategories] = useState([]);
   const [exportSelect, setExportSelect] = useState("pdf");
   const [filters, setFilters] = useState({
-    categoryId: '',
+    categoryId: 0,
     criticalPercent: 100,
     excludeExpired: false
   });
@@ -59,8 +61,9 @@ const BelowMinReport = () => {
     const baseUrl = "/api/reagent/low-stock";
     const urlParams = new URLSearchParams();
 
-    if (filters.categoryId) 
+    if (filters.categoryId !== 0) 
       urlParams.append("CategoryId", filters.categoryId);
+
     urlParams.append("CriticalPercent", filters.criticalPercent);
     urlParams.append("ExcludeExpired", filters.excludeExpired);
 
@@ -92,75 +95,56 @@ const BelowMinReport = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h5">
-        Реагенты ниже минимального уровня
-      </Typography>
+    <ReportTemplate
+      rows={rows}
+      columns={columns}
+      title='Реагенты ниже минимального уровня'
+      exportTitle='Отчет реагентов ниже нуля'
+    >
+      <Grid size={4}>
+        <TextField
+          select
+          name="categoryId"
+          label="Категория"
+          value={filters.categoryId}
+          onChange={handleFilterChange}
+          size="small"
+          fullWidth
+        >
+          <MenuItem value={0}>Все категории</MenuItem>
+          {categories.map((cat) => (
+            <MenuItem key={cat.id} value={cat.id}>
+              {cat.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
-      {/* Блок параметров */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2} >
-          <Grid xs={12} md={3}>
-            <TextField
-              select
-              name="categoryId"
-              label="Категория"
-              value={filters.categoryId}
-              onChange={handleFilterChange}
-            >
-              <MenuItem value=''>Все категории</MenuItem>
-              {categories.map((cat) => (
-                <MenuItem key={cat.id} value={cat.id}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid>
-            <TextField
-              type="number"
-              name="criticalPercent"
-              label="Критичность (%)"
-              fullWidth
-              style={{width: '120px'}}
-              value={filters.criticalPercent}
-              onChange={handleFilterChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={3}>   
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="excludeExpired"
-                  checked={filters.excludeExpired}
-                  onChange={handleFilterChange}
-                />
-              }
-              label="Исключ. просрок"
-            />
-          </Grid> 
-
-          <ExportFormat 
-            title="Отчет по складским остаткам" 
-            columns={columns} 
-            rows={rows} 
-          />
-
-        </Grid>
-      </Paper>
-
-      <Paper sx={{ height: 450 }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[10]}
-          disableRowSelectionOnClick
+      <Grid size={3}>
+        <TextField
+          type="number"
+          name="criticalPercent"
+          label="Критичность (%)"
+          fullWidth
+          value={filters.criticalPercent}
+          onChange={handleFilterChange}
+          size="small"
         />
-      </Paper>
-    </Box>
+      </Grid>
+
+      <Grid size={4}>   
+        <FormControlLabel
+          control={
+            <Checkbox
+              name="excludeExpired"
+              checked={filters.excludeExpired}
+              onChange={handleFilterChange}
+            />
+          }
+          label="Искл. просрок"
+        />
+      </Grid> 
+    </ReportTemplate>
   );
 };
 

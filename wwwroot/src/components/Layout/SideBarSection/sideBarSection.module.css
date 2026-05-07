@@ -1,38 +1,38 @@
-.menuItem {
-    list-style: none;
-    width: 100%;
-}
-
-.toggleBtn, .singleLink {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #333;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
+.singleLink, .toggleBtn {
+  display: flex;
+	width: 100%;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--mui-palette-text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  border-radius: 0 20px 20px 0;
+  margin-right: 12px;
 }
 
 .singleLink:hover, .toggleBtn:hover {
-    background: #e9ecef;
+  background-color: var(--mui-palette-action-hover);
 }
 
-.subMenu {
-    /* list-style: none; Отображение точек рядом с элементами листа*/
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    padding-left: 20px; /* Сдвиг вложенных ссылок вправо */
+.activeLink {
+  background-color: var(--mui-palette-primary-light) !important;
+  color: var(--mui-palette-background-paper) !important;
+  font-weight: 600;
 }
 
-.show {
-    max-height: 200px;
-} 
+.subLink {
+  display: block;
+  padding: 8px 16px 8px 40px; 
+  text-decoration: none;
+  color: var(--mui-palette-text-secondary);
+  font-size: 0.875rem;
+  transition: 0.2s;
+  border-radius: 0 20px 20px 0; /*!!!! Насколько вообще нужно закругление*/
+  margin-right: 12px;
+}
 
-.rotate{
-    transform: rotate(180deg);
+.subLink:hover {
+  color: var(--mui-palette-text-primary);
+  background-color: var(--mui-palette-action-hover);
 }

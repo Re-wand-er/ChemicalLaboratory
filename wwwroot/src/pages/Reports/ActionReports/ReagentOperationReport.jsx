@@ -12,6 +12,7 @@ import ExportFormat from "../ExportFormat";
 
 import { formatDate } from "../../../utils/formatDate";
 import { fetchGetData } from "../../../api/fetch";
+import ReportTemplate from "../ReportTemplate";
 
 const columns = [
   {
@@ -46,8 +47,8 @@ const ReagentOperationReport = ({ title, path }) => {
   const [filters, setFilters] = useState({
     dateFrom: "",
     dateTo: "",
-    categoryId: "",
-    reagentId: "",
+    categoryId: 0,
+    reagentId: 0,
     minQuantity: ""
   });
 
@@ -61,10 +62,10 @@ const ReagentOperationReport = ({ title, path }) => {
     if (filters.dateTo)
       urlParams.append("DateTo", filters.dateTo);
 
-    if (filters.categoryId)
+    if (filters.categoryId !== 0)
       urlParams.append("CategoryId", filters.categoryId);
 
-    if (filters.reagentId)
+    if (filters.reagentId !== 0)
       urlParams.append("ReagentId", filters.reagentId);
 
     if (filters.minQuantity)
@@ -97,107 +98,92 @@ const ReagentOperationReport = ({ title, path }) => {
   };
 
   return (
-    <Box>
-      <Typography variant="h5" mb={2}>
-        {title}
-      </Typography>
-
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2}>
-
-          <Grid item xs={12} md={2}>
-            <TextField
-              type="date"
-              name="dateFrom"
-              label="С"
-              InputLabelProps={{ shrink: true }}
-              value={filters.dateFrom}
-              onChange={handleFilterChange}
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={2}>
-            <TextField
-              type="date"
-              name="dateTo"
-              label="По"
-              InputLabelProps={{ shrink: true }}
-              value={filters.dateTo}
-              onChange={handleFilterChange}
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={3}>
-            <TextField
-              select
-              name="categoryId"
-              label="Категория"
-              value={filters.categoryId}
-              onChange={handleFilterChange}
-              fullWidth
-            >
-              <MenuItem value="">Все категории</MenuItem>
-              {categories.map(cat => (
-                <MenuItem key={cat.id} value={cat.id}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={12} md={3}>
-            <TextField
-              select
-              name="reagentId"
-              label="Реагент"
-              value={filters.reagentId}
-              onChange={handleFilterChange}
-              fullWidth
-            >
-              <MenuItem value="">Все реагенты</MenuItem>
-              {reagents.map(r => (
-                <MenuItem key={r.id} value={r.id}>
-                  {r.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={12} md={2}>
-            <TextField
-              type="number"
-              name="minQuantity"
-              label="Мин. объем"
-              value={filters.minQuantity}
-              onChange={handleFilterChange}
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <ExportFormat
-              title={title}
-              columns={columns}
-              rows={rows}
-            />
-          </Grid>
-
-        </Grid>
-      </Paper>
-
-      <Paper sx={{ height: 500 }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[10]}
-          disableRowSelectionOnClick
-          density="compact"
+    <ReportTemplate
+      rows={rows}
+      columns={columns}
+      title={title}
+    >
+      <Grid>
+        <TextField
+          type="date"
+          name="dateFrom"
+          label="С"
+          InputLabelProps={{ shrink: true }}
+          value={filters.dateFrom}
+          onChange={handleFilterChange}
+          size="small"
+          fullWidth
+          sx={{maxWidth: '130px'}}
         />
-      </Paper>
-    </Box>
+      </Grid>
+    
+      <Grid>
+        <TextField
+          type="date"
+          name="dateTo"
+          label="По"
+          InputLabelProps={{ shrink: true }}
+          value={filters.dateTo}
+          onChange={handleFilterChange}
+          size="small"
+          fullWidth
+          sx={{maxWidth: '130px'}}
+        />
+      </Grid>
+    
+      <Grid>
+        <TextField
+          select
+          name="categoryId"
+          label="Категория"
+          value={filters.categoryId}
+          onChange={handleFilterChange}
+          size="small"
+          fullWidth
+          sx={{minWidth: '100px', maxWidth: '160px'}}
+        >
+          <MenuItem value={0}>Все категории</MenuItem>
+          {categories.map(cat => (
+            <MenuItem key={cat.id} value={cat.id}>
+              {cat.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
+        
+      <Grid>
+        <TextField
+          select
+          name="reagentId"
+          label="Реагент"
+          value={filters.reagentId}
+          onChange={handleFilterChange}
+          size="small"
+          fullWidth
+          sx={{maxWidth: '150px'}}
+        >
+          <MenuItem value={0}>Все реагенты</MenuItem>
+          {reagents.map(r => (
+            <MenuItem key={r.id} value={r.id}>
+              {r.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
+        
+      <Grid>
+        <TextField
+          type="number"
+          name="minQuantity"
+          label="Кол-во"
+          value={filters.minQuantity}
+          onChange={handleFilterChange}
+          size="small"
+          fullWidth
+          sx={{maxWidth: '80px'}}
+        />
+      </Grid>
+    </ReportTemplate>
   );
 };
 

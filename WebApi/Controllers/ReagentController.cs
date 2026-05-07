@@ -102,10 +102,6 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			=> Ok(await _reagentService.GetLowStockReportAsync(filter.CategoryId, filter.CriticalPercent, filter.ExcludeExpired));
 
 
-        //     [HttpGet("forecast")]
-        //     public async Task<IActionResult> GetReport()
-        //=> Ok(await _reagentForecastService.GetForecastAsync(3)); // пароговый мультипликатор
-
         [HttpGet("forecast")]
         public async Task<ActionResult<List<ReagentPredictionReportDTO>>> GetForecast([FromQuery] ForecastFilterDTO filter)
             => Ok(await _reagentForecastService.GetForecastAsync(filter));

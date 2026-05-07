@@ -1,0 +1,60 @@
+.drawerPaper {
+  width: 400px;
+  background-color: var(--mui-palette-background-paper);
+}
+
+.header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--mui-palette-divider);
+  position: sticky;
+  background: var(--mui-palette-background-paper);
+}
+
+.notificationItem {
+  transition: background-color 0.2s ease;
+  border-left: 4px solid transparent;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  width: 100%;
+}
+
+.reagentTag {
+  background-color: var(--mui-palette-background-default);
+  color: var(--mui-palette-text-secondary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500; 
+  align-items: center;
+  gap: 4px;
+}
+
+.message {
+  color: var(--mui-palette-text-primary);
+  margin-bottom: 8px;
+	text-align: left; 
+}
+
+.itemFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+
+@media (max-width: 600px) {
+  .drawerPaper {
+    width: 100%;
+  }
+}

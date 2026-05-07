@@ -21,19 +21,25 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
             // 2. ТОП-5 
             var top5Names = await _dbSet
-                .Where(o => o.OperationDate >= startDate && o.Quantity < 0)
+                .Where(o => o.OperationDate >= startDate && o.OperationDate <= now &&
+                            o.OperationTypeId == (int)OperationTypeEnum.Consumption && o.Quantity < 0)
                 .GroupBy(o => o.Reagent.Name)
                 .OrderByDescending(g => g.Sum(x => Math.Abs(x.Quantity)))
                 .Select(g => g.Key).Take(5).ToListAsync();
 
             var rawData = await _dbSet
-                .Where(o => o.OperationDate >= startDate && o.Quantity < 0 && top5Names.Contains(o.Reagent.Name))
+                .Where(o => o.OperationDate >= startDate && 
+                            o.OperationDate <= now && 
+                            o.OperationTypeId == (int)OperationTypeEnum.Consumption &&
+                            o.Quantity < 0 &&
+                            top5Names.Contains(o.Reagent.Name))
                 .Select(o => new { Date = o.OperationDate, Name = o.Reagent.Name, Amount = Math.Abs(o.Quantity) })
                 .ToListAsync();
 
             // 3. Генерация сетки согласно ШАГУ (Step)
             var allTimePoints = new List<string>();
             DateTime tempDate = startDate;
+
             while (tempDate <= now)
             {
                 string formatted = FormatDateByPeriod(tempDate, step);
@@ -138,7 +144,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                 });
 
             if (minUsage.HasValue)
-                grouped = grouped.Where(x => x.TotalUsed >= minUsage.Value);
+                grouped = grouped.Where(x => x.UsageCount >= minUsage.Value);
 
             grouped = grouped
                 .OrderByDescending(x => x.UsageCount)
@@ -152,7 +158,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             var startDate = ResolveByPeriod(period, () => DateTime.UtcNow.AddDays(-30));
 
-            var query = _dbSet.Where(o => o.OperationDate >= startDate);
+            var query = _dbSet.Where(o => o.OperationDate >= startDate && o.OperationDate <= DateTime.UtcNow);
 
             if (groupBy == OperationsGroupBy.Type)
             {
@@ -179,7 +185,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             DateTime startDate = ResolveByPeriod(period, () => DateTime.MinValue);
 
             return await _dbSet
-                .Where(o => o.OperationDate >= startDate)
+                .Where(o => o.OperationDate >= startDate && o.OperationDate <= DateTime.UtcNow)
                 // Группируем по названию типа операции
                 .GroupBy(o => o.OperationType.Name)
                 .Select(g => new ItemDTO
@@ -194,43 +200,43 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             DateTime startDate = ResolveByPeriod(period, () => DateTime.MinValue);
 
-            // 1. Получаем все реагенты
             var reagents = await _context.Reagents.Where(r => r.IsActive).ToListAsync();
 
-            // 2. Получаем операции за период (для расхода) и ПОСЛЕ начала периода (для вычисления нач. остатка)
             var operations = await _dbSet
-                .Where(o => o.OperationDate >= startDate)
+                .Where(o => o.OperationDate >= startDate && o.OperationDate <= DateTime.UtcNow)
                 .ToListAsync();
 
-            var report = reagents.Select(r =>
-            {
-                // Расход за период (отрицательные значения Quantity)
-                var consumption = Math.Abs(operations
-                    .Where(o => o.ReagentId == r.Id && o.Quantity < 0)
-                    .Sum(o => o.Quantity));
-
-                // Вычисляем остаток на начало периода: 
-                // Тек. остаток - (Сумма всех изменений с даты X до сегодня)
-                var changesSinceStart = operations.Where(o => o.ReagentId == r.Id).Sum(o => o.Quantity);
-                var stockAtStart = r.CurrentQuantity - changesSinceStart;
-
-                // Средний остаток (упрощенно)
-                var avgStock = (stockAtStart + r.CurrentQuantity) / 2;
-                if (avgStock < 0) avgStock = 0; // Защита от некорректных данных
-
-
-                // Коэффициент оборачиваемости
-                decimal ratio = avgStock > 0 ? consumption / avgStock : 0;
-
-                return new ReagentTurnoverDTO
+            var report = reagents
+                .Select(r =>
                 {
-                    Id = r.Id,
-                    Name = r.Name,
-                    TotalConsumption = consumption,
-                    AverageStock = avgStock,
-                    TurnoverRatio = Math.Round(ratio, 2)
-                };
-            }).OrderByDescending(x => x.TurnoverRatio).ToList();
+                    // Расход за период (отрицательные значения Quantity)
+                    var consumption = Math.Abs(operations
+                        .Where(o => o.ReagentId == r.Id && o.Quantity < 0 && o.OperationTypeId == (int)OperationTypeEnum.Consumption)
+                        .Sum(o => o.Quantity));
+
+                    // Вычисляем остаток на начало периода: 
+                    // Тек. остаток - (Сумма всех изменений с даты X до сегодня)
+                    var changesSinceStart = operations.Where(o => o.ReagentId == r.Id).Sum(o => o.Quantity);
+                    var stockAtStart = r.CurrentQuantity - changesSinceStart;
+
+                    // Средний остаток (упрощенно)
+                    var avgStock = (stockAtStart + r.CurrentQuantity) / 2;
+                    if (avgStock < 0) avgStock = 0; 
+
+                    decimal ratio = avgStock > 0 ? consumption / avgStock : 0;
+
+                    return new ReagentTurnoverDTO
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        TotalConsumption = consumption,
+                        AverageStock = avgStock,
+                        TurnoverRatio = Math.Round(ratio, 2)
+                    };
+                })
+                .Where(x => x.TurnoverRatio > 0)
+                .OrderByDescending(x => x.TurnoverRatio)
+                .ToList();
 
             return report;
         }
@@ -239,7 +245,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         {
             var today = DateTime.UtcNow.Date;
             return await _dbSet
-                .CountAsync(o => o.OperationDate >= today);
+                .CountAsync(o => o.OperationDate >= today && o.OperationDate <= today.AddDays(1));
         }
 
         public async Task<List<RecentOperationDTO>> GetRecentOperationsAsync(int count = 7)
@@ -256,9 +262,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             {
                 Id = o.Id,
                 OperationDate = o.OperationDate,
-                // Столбец 1: ФИО
                 UserFullName = $"{o.User.LastName} {o.User.FirstName[0]}.{o.User.MiddleName[0]}.",
-                // Столбец 2: Суть действия
                 ActionDetails = $"{o.OperationType.Name.ToLower()} {Math.Abs(o.Quantity)}{o.Reagent.Unit} {o.Reagent.Name}",
                 RelativeTime = GetRelativeTime(o.OperationDate)
             }).ToList();
@@ -266,10 +270,10 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
         public async Task<List<UserActivityDto>> GetTopActiveUsersAsync(int days = 1, int top = 5)
         {
-            var startDate = DateTime.UtcNow.Date.AddDays(-(days - 1));
+            var currentDate = DateTime.UtcNow;
 
             return await _dbSet
-                .Where(o => o.OperationDate >= startDate)
+                .Where(o => o.OperationDate >= currentDate.Date.AddDays(-(days - 1)) && o.OperationDate <= currentDate)
                 .GroupBy(o => new {
                     o.UserId,
                     o.User.LastName,
