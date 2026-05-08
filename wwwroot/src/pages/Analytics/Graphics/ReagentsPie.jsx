@@ -45,28 +45,25 @@ const ReagentsPie = ({ title }) => {
   };
 
   return (
-    <Paper 
+    <Box 
       sx={{
-        p:2, 
-        borderRadius:2, 
         height:'100%', 
-        //width:'50vh', 
-        display:'flex', 
+        width:'100%', 
+        display: 'flex',
         flexDirection: 'column'
-      }}>
-
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+      }}
+    >
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
           {title}
         </Typography>
         
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="body2" color="var(--mui-palette-text-secondary)">Период:</Typography>
-          <FormControl size="small" sx={{ minWidth: 100 }}>
+          <FormControl size="small" >
             <Select
               value={filters.period}
               onChange={handleFilterChange}
-              sx={{ fontSize: '0.875rem' }}
             >
               <MenuItem value="Month">30 дней</MenuItem>
               <MenuItem value="TwoMonth">60 дней</MenuItem>
@@ -77,8 +74,8 @@ const ReagentsPie = ({ title }) => {
         </Box>
       </Stack>
     
-      <Box sx={{ width: '100%', height: '100%' }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <Box sx={{ width: '100%', height: '100%', flexGrow:1, minHeight: 0, position:'relative' }}>
+        <ResponsiveContainer>
           <PieChart>
 
             <Pie 
@@ -110,7 +107,7 @@ const ReagentsPie = ({ title }) => {
         </ResponsiveContainer>
       </Box>
 
-    </Paper>  
+    </Box>  
   );
 }
 

@@ -1,6 +1,15 @@
-import TableWithLabel from '../../../components/DataTable/TableWithLabel.jsx'; 
+import { useState, useEffect } from 'react'; 
 
-import './statisticStyle.css';
+import StatisticCardTemplate from './StatisticCardTemplate.jsx';
+
+import { fetchGetData } from '../../../api/fetch.js';
+
+const errorRender = (params) =>
+(
+  <span style={{ color: 'var(--mui-palette-error-main)', fontWeight: 'bold',  }}>
+    {params.value}
+  </span>
+);  
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 50 },
@@ -9,11 +18,7 @@ const columns = [
     field: 'currentQuantity', 
     headerName: 'Остаток', 
     width: 90,
-    renderCell: (params) => (
-      <span style={{ color: 'var(--main-error)', fontWeight: 'var(--main-font-bold)',  }}>
-        {params.value}
-      </span>
-    )
+    renderCell: errorRender
   },
   { 
     field: 'minQuantity', 
@@ -29,11 +34,7 @@ const columns = [
     field: 'criticalPercent', 
     headerName: 'Процент остатка', 
     width: 90,
-    renderCell: (params) => (
-      <span style={{ color: 'var(--main-error)', fontWeight: 'var(--main-font-bold)',  }}>
-        {params.value}
-      </span>
-    )
+    renderCell: errorRender
   },
 ];
 
@@ -41,11 +42,20 @@ const columns = [
  * Список реактивов с количеством ниже минимума
  * Цвет текста поля с кол-вом меньше минимума - красный
  */
-const ReagentsBelowMinimum = () => {
+const ReagentsBelowMinimum = ({ title }) => {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    fetchGetData('/api/reagent/low-stock', setRows);
+  }, []);
+
   return (
-    <div>
-      <TableWithLabel title={"Данные2"} path="/api/reagent/low-stock" columns={columns} />
-    </div>
+    <StatisticCardTemplate
+      title={title}
+      rows={rows}
+      columns={columns}
+      typographyColor='var(--mui-palette-error-main)'
+    />
   );
 };
 

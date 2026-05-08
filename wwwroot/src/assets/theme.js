@@ -21,6 +21,12 @@ export const theme = createTheme({
       main: '#d32f2f',
       light: '#fae7e7',
     },
+    ok:{
+      main: '#2e7d32',
+    },
+    warning:{
+      main: '#dfb004',
+    },
     text: {
       primary: '#1a1a1a',
       secondary: '#666666',

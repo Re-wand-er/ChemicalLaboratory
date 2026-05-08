@@ -25,7 +25,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                             o.OperationTypeId == (int)OperationTypeEnum.Consumption && o.Quantity < 0)
                 .GroupBy(o => o.Reagent.Name)
                 .OrderByDescending(g => g.Sum(x => Math.Abs(x.Quantity)))
-                .Select(g => g.Key).Take(5).ToListAsync();
+                .Select(g => g.Key)
+                .Take(5).ToListAsync();
 
             var rawData = await _dbSet
                 .Where(o => o.OperationDate >= startDate && 
@@ -44,7 +45,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
             {
                 string formatted = FormatDateByPeriod(tempDate, step);
                 if (!allTimePoints.Contains(formatted)) allTimePoints.Add(formatted);
-
+                
                 tempDate = step switch
                 {
                     ReportPeriod.Day => tempDate.AddDays(1),

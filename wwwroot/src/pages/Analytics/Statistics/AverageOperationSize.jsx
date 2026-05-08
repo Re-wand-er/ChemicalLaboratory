@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import SimpleDataTable from '../../../components/DataTable/SimpleDataTable.jsx';
+import { Box, FormControl, Typography, Select, MenuItem } from '@mui/material';
+
+import StatisticCardTemplate from './StatisticCardTemplate.jsx';
 
 import { fetchGetData } from '../../../api/fetch.js';
 
@@ -17,7 +19,7 @@ const columns = [
  * Средний размер одной операции (по типам)
  * за определенный период месяц/квартал/год/все время
  */
-const AverageOperationSize = () => {
+const AverageOperationSize = ({ title }) => {
   const [rows, setRows] = useState([]);
   const [period, setPeriod] = useState('Month');
 
@@ -28,23 +30,24 @@ const AverageOperationSize = () => {
   }, [period]);
 
   return (
-    <div style={{ width: '100%', maxWidth: '450px' }}>
-      <div style={{ marginBottom: '10px' }}>
-        <label>Период анализа: </label>
-        <select value={period} onChange={(e) => setPeriod(e.target.value)}>
-          <option value="Month">Месяц</option>
-          <option value="Quarter">Квартал (90 дн)</option>
-          <option value="Year">Год</option>
-          <option value="AllTime">Все время</option>
-        </select>
-      </div>
-
-      <SimpleDataTable 
-        rows={rows} 
-        columns={columns}
-      />  
-
-    </div>
+    <StatisticCardTemplate
+      title={title}
+      rows={rows}
+      columns={columns}
+      typographyColor='var(--mui-palette-primary-main)'
+    >
+      <Box display='flex' alignItems='center'>
+        <Typography variant="body2" color="var(--mui-palette-text-secondary)">Период анализа: </Typography>
+        <FormControl size='small'>
+          <Select value={period} onChange={(e) => setPeriod(e.target.value)}>
+            <MenuItem value="Month">Месяц</MenuItem>
+            <MenuItem value="Quarter">Квартал (90 дн)</MenuItem>
+            <MenuItem value="Year">Год</MenuItem>
+            <MenuItem value="AllTime">Все время</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+    </StatisticCardTemplate>
   );
 };
 

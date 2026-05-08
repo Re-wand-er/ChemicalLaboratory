@@ -1,27 +1,6 @@
-// import AverageOperationSize from "./AverageOperationSize";
-// import CountOfOperations from "./CountOfOperations";
-// import ReagentsBelowMinimum from "./ReagentsBelowMinimum";
-// import ReagentsExpire from "./ReagentsExpire";
-// import ReagentsTurnOverRatio from "./ReagentsTurnOverRatio.jsx"
-
-// /**
-//  * Формат: таблицы, числа, условное форматирование (красный – критично, жёлтый – предупреждение).
-//  */
-// const Statistics = () => {
-//   return (
-//     <>
-//       <h2>Статистика</h2>
-//       <AverageOperationSize />
-//       <CountOfOperations />
-//       <ReagentsBelowMinimum />
-//       <ReagentsExpire />
-//       <ReagentsTurnOverRatio />
-//     </>
-//   );
-// };
-// export default Statistics;
-
 import { Grid, Container, Typography, Box, Paper } from "@mui/material";
+
+import CardContainer from "../CardContainer.jsx";
 import AverageOperationSize from "./AverageOperationSize";
 import CountOfOperations from "./CountOfOperations";
 import ReagentsBelowMinimum from "./ReagentsBelowMinimum";
@@ -37,50 +16,34 @@ const Statistics = () => {
 
       <Grid container spacing={3}>
         
-
         <Grid size={{ xs:12, sm:6, md:6}}>
-          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', height: '100%', borderRadius:2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
-              Размеры и объемы операций
-            </Typography>
-            <AverageOperationSize />
-          </Paper>
+          <CardContainer>
+            <AverageOperationSize title="Среднее количество операций"/>
+          </CardContainer>
         </Grid>
 
         <Grid size={{ xs:12, sm:6, md:6}}>
-          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
-              Интенсивность работы (кол-во записей)
-            </Typography>
-            <CountOfOperations />
-          </Paper>
+          <CardContainer>
+            <CountOfOperations title="Интенсивность работы"/>
+          </CardContainer>
         </Grid>
 
         <Grid size={{ xs:12, sm:6, md:6}}>
-          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'error.main' }}>
-              Дефицит (Ниже минимума)
-            </Typography>
-            <ReagentsBelowMinimum />
-          </Paper>
+          <CardContainer>
+            <ReagentsExpire title="Контроль сроков годности"/>
+          </CardContainer>
         </Grid>
 
         <Grid size={{ xs:12, sm:6, md:6}}>
-          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'warning.main' }}>
-              Контроль сроков годности
-            </Typography>
-            <ReagentsExpire />
-          </Paper>
+          <CardContainer>
+            <ReagentsTurnOverRatio title="Оборачиваемость реагентов"/>
+          </CardContainer>
         </Grid>
 
         <Grid size={{ xs:12, sm:6, md:6}}>
-          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'text.secondary' }}>
-              Оборачиваемость реагентов
-            </Typography>
-            <ReagentsTurnOverRatio />
-          </Paper>
+          <CardContainer>
+            <ReagentsBelowMinimum title="Дефицит (Ниже минимума)"/>
+          </CardContainer>
         </Grid>
 
       </Grid>

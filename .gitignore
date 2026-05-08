@@ -1,5 +1,6 @@
 Dockerfile*
 *.vs
+*.vscode
 /bin
 /obj
 /log
@@ -8,3 +9,8 @@ wwwroot/node_modules/*
 wwwroot/Temp/*
 *.json
 Properties
+
+.cursorrules
+.cursorignore
+./cursor/*
+./agents/*

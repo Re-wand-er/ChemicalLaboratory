@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { Box, FormControl, MenuItem, Select, Stack, Typography } from '@mui/material';
+
+import StatisticCardTemplate from './StatisticCardTemplate.jsx';
 
 import { fetchGetData } from '../../../api/fetch.js';
 
@@ -12,7 +14,7 @@ const columns = (filters) => [
  * Таблица количество операций по типам – это просто число записей в ReagentOperations, сгруппированных по OperationTypeId.
  * Можно 2 варианта: по типам, по пользователям. Также select по периоду выборки
  */
-const CountOfOperations = () => {
+const CountOfOperations = ({ title }) => {
   const [rows, setRows] = useState([]);
   const [filters, setFilters] = useState({
     groupBy: 'Type',
@@ -50,32 +52,31 @@ const CountOfOperations = () => {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: '600px' }}>
-      <div style={{ marginBottom: '10px', display: 'flex', gap: '10px' }}>
-        <select name="groupBy" value={filters.groupBy} onChange={handleFilterChange}>
-          <option value="Type">По категориям</option>
-          <option value="User">По пользователям</option>
-        </select>
+    <StatisticCardTemplate 
+      rows={rows} 
+      columns={columns(filters)} 
+      title={title}
+      typographyColor='var(--mui-palette-primary-main)'
+    >        
 
-        <select name="period" value={filters.period} onChange={handleFilterChange}>
-          <option value="Month">30 дней</option>
-          <option value="TwoMonth">60 дней</option>
-          <option value="Quarter">90 дней</option>
-        </select>
-      </div>
+      <Box display='flex' gap={1}>
+        <FormControl size='small'>
+          <Select name="groupBy" value={filters.groupBy} onChange={handleFilterChange}>
+            <MenuItem value="Type">По операциям</MenuItem>
+            <MenuItem value="User">По пользователям</MenuItem>
+          </Select>
+        </FormControl>
 
-      <DataGrid
-        rows={rows}
-        columns={columns(filters)}
-        autoHeight
-        hideFooter
-        disableColumnMenu
-        rowHeight={32}
-        columnHeaderHeight={40}
-        density="compact"
-      />
-        
-    </div>
+        <FormControl size='small'>
+          <Select name="period" value={filters.period} onChange={handleFilterChange}>
+            <MenuItem value="Month">30 дней</MenuItem>
+            <MenuItem value="TwoMonth">60 дней</MenuItem>
+            <MenuItem value="Quarter">90 дней</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+    </StatisticCardTemplate>
   );
 };
 

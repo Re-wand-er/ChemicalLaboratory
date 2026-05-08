@@ -43,8 +43,8 @@ namespace ChemicalLaboratory
                 .AddJwtBearer(options =>
                 {
                     var key = builder.Configuration["SecretKey"];
-                    // Валидация токена при котором в загаловке было бы Authorisation ...; Barear ...
-                    // Удобно например для мобильного или пк фронтенда
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ Authorisation ...; Barear ...
+                    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = false,
@@ -70,23 +70,23 @@ namespace ChemicalLaboratory
             
             builder.Services.AddAuthorization();
 
-            // Для сохранения поля с кодом на время
+            // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             builder.Services.AddDistributedMemoryCache();
 
             //------------------------------------------------------------------------------------------------------------
 
             var frontendIP = builder.Configuration["FrontendIP"];
-            // 1. Добавляем политику CORS
-            // Для получения запросов от другого адреса
+            // 1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CORS
+            // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins(frontendIP!) // Адрес вашего фронтенда
+                    policy.WithOrigins(frontendIP!) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
-                    // Для разработки можно разрешить всё:
+                    // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ:
                     // policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
@@ -131,7 +131,7 @@ namespace ChemicalLaboratory
 
             app.UseRouting();
 
-            app.UseCors("AllowFrontend"); // для CORS
+            app.UseCors("AllowFrontend"); // пїЅпїЅпїЅ CORS
 
             app.UseAuthentication();
             app.UseAuthorization();

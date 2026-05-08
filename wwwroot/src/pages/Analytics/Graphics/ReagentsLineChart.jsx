@@ -66,14 +66,13 @@ const ReagentsLineChart = ({ title }) => {
   };
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box>
       
       <Stack 
         direction={{ xs: 'column', sm: 'row' }} 
         spacing={2} 
         justifyContent="space-between"
         alignItems="center" 
-        sx={{ mb: 3 }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{title}</Typography>
         
@@ -148,7 +147,7 @@ const ReagentsLineChart = ({ title }) => {
           </LineChart>
         </ResponsiveContainer>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

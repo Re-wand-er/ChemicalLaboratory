@@ -46,16 +46,7 @@ const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filter
   };
 
   return (
-    <Paper 
-      elevation={0} 
-      sx={{ 
-        p: 2, 
-        //width: '100%', 
-        maxWidth: localeWidth,
-        borderRadius: 2,
-        height:'100%'
-      }}
-    >
+    <Box>
       <Stack 
         direction="row"  
         alignItems="center" 
@@ -120,7 +111,7 @@ const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filter
           <BarChart 
             data={chartData} 
             layout="vertical" 
-            margin={{ left: 10, right: 30 }}
+            margin={{ left: 20, right: 30 }}
           >
             <XAxis 
               type="number" 
@@ -153,7 +144,7 @@ const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filter
           </BarChart>
         </ResponsiveContainer>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

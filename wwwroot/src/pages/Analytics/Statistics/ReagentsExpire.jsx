@@ -1,8 +1,9 @@
-import TableWithLabel from '../../../components/DataTable/TableWithLabel.jsx';
+import { useState, useEffect } from 'react';
+
+import StatisticCardTemplate from './StatisticCardTemplate.jsx';  
 
 import { formatDate } from "../../../utils/formatDate.js";  
-
-import './statisticStyle.css';
+import { fetchGetData } from '../../../api/fetch.js'; 
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 50 },
@@ -21,10 +22,10 @@ const columns = [
       const days = params.value;
       let color = 'inherit'; 
       
-      if (days <= 30) color = 'var(--main-error)'; // Red
-      else if (days <= 60) color = 'var(--main-warning)'; // Yellow 
+      if (days <= 30) color = 'var(--mui-palette-error-main)'; 
+      else if (days <= 60) color = 'var(--mui-palette-warning-main)';
       return (
-        <span style={{ color, fontWeight: Number(days) <= 60 ? 'var(--main-font-bold)' : 'var(--main-font-normal)' }}>
+        <span style={{ color, fontWeight: Number(days) <= 60 ? 'bold' : 'normal' }}>
           {days < 0 ? `Просрочен (${Math.abs(days)})` : days}
         </span>
       );
@@ -36,9 +37,20 @@ const columns = [
  * Список реактивов с истекающим сроком (ближайшие 30/60/90 дней)
  * Цвет текста поля с ближ. сроком минимума - красный?
  */
-const ReagentsExpire = () => {
+const ReagentsExpire = ({ title }) => {
+  const [rows, setRows] = useState([]);
+  
+    useEffect(() => {
+      fetchGetData('/api/reagent/expiring', setRows);
+    }, []);
+
   return (
-    <TableWithLabel title="Данные" path="/api/reagent/expiring" columns={columns} />
+    <StatisticCardTemplate
+      title={title}
+      rows={rows}
+      columns={columns}
+      typographyColor='var(--mui-palette-warning-main)'
+    />
   );
 };
 

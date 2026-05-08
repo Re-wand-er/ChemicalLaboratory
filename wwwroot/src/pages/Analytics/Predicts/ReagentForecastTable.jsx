@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { Chip } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 
 import { fetchGetData } from '../../../api/fetch';
 
+import styles from '../../../components/DataTable/dataTable.module.css'; // Неправильно, но делать правильно лень
+import { Box } from '@mui/system';
+
 const columns = [
-  { field: 'id', headerName: 'ID', width: 50 },
+  // { field: 'id', headerName: 'ID', width: 50 },
   { field: 'name', headerName: 'Реактив', flex: 3 },
   { field: 'currentQuantity', headerName: 'Остаток', type: 'number', width: 100 },
   { field: 'minQuantity', headerName: 'Мин. кол-во', type: 'number', width: 100 },
@@ -15,7 +18,7 @@ const columns = [
   { 
     field: 'daysToZero', 
     headerName: 'Дней до исчерпания (Остаток/Ср. потр.)', 
-    width: 150,
+    width: 170,
     renderCell: (params) => (
        params.value != 999 ? params.value :'–'
     ),
@@ -41,24 +44,38 @@ const columns = [
  */
 const ReagentForecastTable = () => {
   const [rows, setRows] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
   
   useEffect(() => {
     fetchGetData('/api/reagent/forecast', setRows);
   }, []);
 
   return (
-    <div style={{ height: '90%', width: '100%' }}>
-      <DataGrid 
-        rows={rows} 
-        columns={columns} 
-        initialState={{
-          sorting: {
-            sortModel: [{ field: 'recommendedOrder', sort: 'desc' }],
-          },
-        }}
-      />
+    <DataGrid 
+      rows={rows} 
+      columns={columns} 
+      density="standard"
+      keepNonExistentRowsSelected
+      initialState={{
+        sorting: {
+          sortModel: [{ field: 'recommendedOrder', sort: 'desc' }]
+        },
+      }}
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      pageSizeOptions={[10, 20, 50]}
+      getRowClassName={(params) => 
+        params.indexRelativeToCurrentPage % 2 === 0 ? styles.evenRow : styles.oddRow
+      }
 
-    </div>
+      sx={{ 
+        borderRadius:'12px', 
+        boxShadow:'0 4px 20px rgba(0, 0, 0, 0.05)' 
+      }}
+    />
   );
 }
 

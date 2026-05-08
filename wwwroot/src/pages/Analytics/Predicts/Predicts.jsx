@@ -1,3 +1,5 @@
+import { Box } from '@mui/material';
+
 import ReagentForecastTable from "./ReagentForecastTable";
 
 /**
@@ -5,11 +7,20 @@ import ReagentForecastTable from "./ReagentForecastTable";
  */
 const Predicts = () => {
   return (
-    <>
+    <Box
+      sx={{ 
+        width: '100%', 
+        maxWidth:'1400px', 
+        display:'flex',
+        flexDirection:'column',
+        margin:'0 auto',
+        justifyContent:'center',
+      }}
+    >
       <h2>Прогноз</h2>
-      <label>Реагент необходимо заказать если остаток меньше мин. колич * 3</label>
+      {/* <label>Реагент необходимо заказать если остаток меньше мин. колич * 3</label> */}
       <ReagentForecastTable />
-    </>
+    </Box>
   );
 };
 export default Predicts;

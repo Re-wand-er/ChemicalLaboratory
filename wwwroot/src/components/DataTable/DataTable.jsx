@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ruRU } from '@mui/x-data-grid/locales';
 import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
-import { Stack, IconButton } from '@mui/material';
+import { Stack, IconButton, useTheme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
@@ -73,6 +73,7 @@ const columnsWithActions = (props) => [
 
 const DataTable = (props) => {
   const apiRef = useGridApiRef();
+  const theme = useTheme();
 
   const [rowSelectionMode, setRowSelectionModel] = useState([]);
   const [localLoading, setLocalLoading] = useState(false);

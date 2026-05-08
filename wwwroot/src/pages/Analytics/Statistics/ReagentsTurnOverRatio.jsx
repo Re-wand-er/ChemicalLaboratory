@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import SimpleDataTable from '../../../components/DataTable/SimpleDataTable.jsx';
+import { Box, FormControl, Select, MenuItem } from '@mui/material';
+
+import StatisticCardTemplate from './StatisticCardTemplate.jsx';
 
 import { fetchGetData } from '../../../api/fetch.js';
-
-import './statisticStyle.css';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 50 },
@@ -15,7 +15,7 @@ const columns = [
     headerName: 'Коэфф.', 
     width: 90,
     renderCell: (params) => (
-      <b style={{ color: params.value > 1 ? 'var(--main-ok)' : 'var(--main-error)' }}>
+      <b style={{ color: params.value > 1 ? 'var(--mui-palette-ok-main)' : 'var(--mui-palette-error-main)' }}>
         {params.value}
       </b>
     )
@@ -26,7 +26,7 @@ const columns = [
  * Коэффициент оборачиваемости 
  * за определенный период месяц/квартал/год/все время
  */
-const ReagentsTurnOverRatio = () => {
+const ReagentsTurnOverRatio = ({ title }) => {
   const [rows, setRows] = useState([]);
   const [period, setPeriod] = useState('Month');
 
@@ -35,23 +35,22 @@ const ReagentsTurnOverRatio = () => {
   }, [period]);
 
   return (
-    <div style={{ width: '100%', maxWidth: '600px' }}>
-      <div style={{ marginBottom: '10px' }}>
-        <label>Анализ оборачиваемости: </label>
-        <select value={period} onChange={(e) => setPeriod(e.target.value)}>
-          <option value="Month">Месяц</option>
-          <option value="Quarter">Квартал</option>
-          <option value="Year">Год</option>
-          <option value="AllTime">Все время</option>
-        </select>
-      </div>
+    <StatisticCardTemplate
+      rows={rows}
+      columns={columns}
+      title={title}
+      typographyColor='var(--mui-palette-text-secondary)'
+    >
+      <FormControl size="small">
+        <Select value={period} onChange={(e) => setPeriod(e.target.value)}>
+          <MenuItem value="Month">Месяц</MenuItem>
+          <MenuItem value="Quarter">Квартал</MenuItem>
+          <MenuItem value="Year">Год</MenuItem>
+          <MenuItem value="AllTime">Все время</MenuItem>
+        </Select>
+      </FormControl>
 
-      <SimpleDataTable
-        rows={rows}
-        columns={columns}
-      />
-      
-    </div>
+    </StatisticCardTemplate>
   );
 };
 

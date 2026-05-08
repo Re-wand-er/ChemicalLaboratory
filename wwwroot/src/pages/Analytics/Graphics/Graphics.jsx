@@ -1,10 +1,11 @@
 import { Grid, Container } from '@mui/system';
+import { Typography } from '@mui/material';
 
+import CardContainer from '../CardContainer.jsx';
 import CategoryPie from './CategoryPie.jsx'
 import ReagentsBarChart from './ReagentsBarChart.jsx';
 import ReagentsLineChart from './ReagentsLineChart.jsx';
 import ReagentsPie from './ReagentsPie.jsx';
-import { Typography } from '@mui/material';
 
 const Graphics = () => {
   return (
@@ -15,19 +16,29 @@ const Graphics = () => {
       
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <CategoryPie title="Потребление реагентов по категориям"/>
+          <CardContainer
+            title="Потребление реагентов по категориям"
+          >
+            <CategoryPie/>
+          </CardContainer>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ReagentsPie title="Использование реагентов"/>
+          <CardContainer>
+            <ReagentsPie title="Использование реагентов"/>
+          </CardContainer>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ReagentsBarChart filterBar={true} />{/* title="Топ используемых реагентов"*/}
+          <CardContainer>
+            <ReagentsBarChart filterBar={true} />{/* title="Топ используемых реагентов"*/}
+          </CardContainer>
         </Grid>
 
         <Grid size={12}>
-          <ReagentsLineChart title="Аналитика по периодам"/>
+          <CardContainer>
+            <ReagentsLineChart title="Аналитика по периодам"/>
+          </CardContainer>
         </Grid>
       </Grid>
     </Container>
