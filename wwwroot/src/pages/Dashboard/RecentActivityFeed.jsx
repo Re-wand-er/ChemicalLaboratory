@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { Box, Typography } from '@mui/material';
 
 import SimpleDataTable from '../../components/DataTable/SimpleDataTable';
 
 import { fetchGetData } from '../../api/fetch';
+import StatisticCardTemplate from '../Analytics/Statistics/StatisticCardTemplate';
 
-const RecentActivityFeed = () => {
+const RecentActivityFeed = ({ title }) => {
   const [rows, setRows] = useState([]);
 	const load = () => fetchGetData('/api/dashboard/recent-activity', setRows);
 
@@ -49,13 +51,12 @@ const RecentActivityFeed = () => {
 ];
 
   return (
-    <div style={{ width: '100%' }}> {/*backgroundColor: 'var(--surface-base)'*/}
-			<label>Последние пользовательские операции</label>
-      <SimpleDataTable 
-        rows={rows}
-        columns={columns}
-        />
-    </div>
+    <StatisticCardTemplate
+      rows={rows}
+      columns={columns}
+      title={title}
+      typographyColor="var(--mui-palette-text-secondary)"
+    />
   );
 };
 

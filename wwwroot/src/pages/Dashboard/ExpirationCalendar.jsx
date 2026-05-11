@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
-import SimpleDataTable from '../../components/DataTable/SimpleDataTable';
+import StatisticCardTemplate from '../Analytics/Statistics/StatisticCardTemplate';
 
 import { fetchGetData } from '../../api/fetch';
 
-const ExpirationCalendar = () => {
+const ExpirationCalendar = ({ title }) => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -42,21 +42,15 @@ const ExpirationCalendar = () => {
 			// 	);
 			// }
     },
-		// {
-		// 	field: 'expirationDate', 
-    //   headerName: 'Дата2', 
-    //   width: 140,
-		// },
   ];
 
   return (
-    <div style={{ width: '100%', maxWidth: '400px' }}>
-			<label>Самые близкие к просрочке</label>
-			<SimpleDataTable
-				rows={rows}
-        columns={columns}
-			/>
-    </div>
+		<StatisticCardTemplate
+			rows={rows}
+			columns={columns}
+			title={title}
+			typographyColor="var(--mui-palette-text-secondary)"
+		/>
   );
 };
 

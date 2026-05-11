@@ -8,7 +8,6 @@ import { fetchGetData } from '../../../api/fetch.js';
  * Аналитический компонент потребления реагентов
  */
 const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filterBar = false, title }) => {
-  // 1. Состояние для данных и фильтров
   const [chartData, setChartData] = useState([]);
   const [filters, setFilters] = useState({
     period: startPeriod,
@@ -52,10 +51,10 @@ const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filter
         alignItems="center" 
         sx={{ 
           mb: 2, 
-          justifyContent: title ? "space-between" : "center" 
+          justifyContent: filterBar ? "space-between" : "center" 
         }}
       >
-        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }} color='var(--mui-palette-text-secondary)'>
           {title}
         </Typography>
 

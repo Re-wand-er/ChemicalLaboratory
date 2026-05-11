@@ -16,9 +16,7 @@ const Graphics = () => {
       
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <CardContainer
-            title="Потребление реагентов по категориям"
-          >
+          <CardContainer title="Потребление реагентов по категориям">
             <CategoryPie/>
           </CardContainer>
         </Grid>

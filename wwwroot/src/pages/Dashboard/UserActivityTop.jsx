@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { FormControl, MenuItem, Select } from '@mui/material';
 
-import SimpleDataTable from '../../components/DataTable/SimpleDataTable';
+import StatisticCardTemplate from '../Analytics/Statistics/StatisticCardTemplate';
 
 import { fetchGetData } from '../../api/fetch';
 
-const UserActivityTop = () => {
+const UserActivityTop = ({ title }) => {
   const [rows, setRows] = useState([]);
-  const [days, setDays] = useState(1);
+  const [days, setDays] = useState(7);
 
   useEffect(() => {
     fetchGetData(`/api/dashboard/user-activity?days=${days}`, setRows);
@@ -27,24 +27,25 @@ const UserActivityTop = () => {
   ];
 
   return (
-    <div style={{ width: '100%', maxWidth: '400px' }}>
-      <div style={{ marginBottom: '8px', textAlign: 'right' }}>
-				<label>Операций пользователей за период</label>
-        <select 
-           style={{ fontSize: '0.75rem', padding: '2px' }} 
-           value={days} 
-           onChange={(e) => setDays(Number(e.target.value))}
+    <StatisticCardTemplate
+      rows={rows}
+      columns={columns}
+      title={title}
+      typographyColor='var(--mui-palette-text-secondary)'
+    >
+      <FormControl
+        size='small'
+      >
+        <Select 
+          //style={{ fontSize: '0.75rem', padding: '2px' }} 
+          value={days} 
+          onChange={(e) => setDays(e.target.value)}
         >
-          <option value={1}>Сегодня</option>
-          <option value={7}>За неделю</option>
-        </select>
-      </div>
-
-      <SimpleDataTable
-			  rows={rows}
-        columns={columns}
-		  />  
-    </div>
+          <MenuItem value={1}>Сегодня</MenuItem>
+          <MenuItem value={7}>За неделю</MenuItem>
+        </Select>
+      </FormControl>
+    </StatisticCardTemplate>
   );
 };
 

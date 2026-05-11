@@ -12,5 +12,6 @@ Properties
 
 .cursorrules
 .cursorignore
+.cursor
 ./cursor/*
 ./agents/*
