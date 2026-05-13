@@ -100,8 +100,8 @@ const ReagentReport = () => {
         size="small"
         fullWidth
       >
+        
         <MenuItem value={0}>Все категории</MenuItem>
-
         {categories.map((c) => (
           <MenuItem key={c.id} value={c.id}>
             {c.name}

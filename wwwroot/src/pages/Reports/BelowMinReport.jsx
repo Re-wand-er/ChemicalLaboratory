@@ -1,14 +1,8 @@
-import { useEffect, useState, useCallback, Fragment } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
-  Box, Grid, TextField, MenuItem, Button, Typography,
-  Paper, Input, FormControlLabel, Checkbox
+  Grid, TextField, MenuItem, 
+  FormControlLabel, Checkbox
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-
-import ReagentsBelowMinimum from "../Analytics/Statistics/ReagentsBelowMinimum";
-import ReportDataTable from "../../components/DataTable/ReportDataTable";
-import ExportFormat from "./ExportFormat";
-
 import { fetchGetData } from "../../api/fetch";
 import ReportTemplate from "./ReportTemplate";
 
@@ -40,7 +34,7 @@ const columns = [
     headerName: 'Процент остатка', 
     width: 90,
     renderCell: (params) => (
-      <span style={{ color: 'var(--main-error)', fontWeight: 'var(--main-font-bold)',  }}>
+      <span style={{ color: 'var(--mui-palette-error-main)', fontWeight: 'bold'  }}>
         {params.value}
       </span>
     )

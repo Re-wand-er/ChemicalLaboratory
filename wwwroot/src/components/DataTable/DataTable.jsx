@@ -114,7 +114,7 @@ const DataTable = (props) => {
           rows={props.rows}
           columns={columnsWithActions(props)}
           autoHeight={true}
-          localeText={ruRU}
+          localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
           density="standard"
           checkboxSelection
           disableRowSelectionOnClick

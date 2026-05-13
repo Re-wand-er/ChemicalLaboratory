@@ -37,7 +37,8 @@ namespace ChemicalLaboratory.WebApi.Controllers
 			=> Ok(await _reagentService.GetByIdAsync(id));
 
         [HttpGet("name")]
-        public async Task<IActionResult> GetCategoriesName() => Ok(await _reagentService.GetAllIdNameAsync());
+        public async Task<IActionResult> GetCategoriesName() 
+			=> Ok(await _reagentService.GetAllIdNameAsync());
 
 
         [HttpPost]

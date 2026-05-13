@@ -1,10 +1,8 @@
+import { useEffect } from 'react';
 import { Badge, IconButton } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useState, useEffect } from 'react';
 
 import { useNotifications } from '../../../context/NotificationContext';
-
-import { fetchGetData } from '../../../api/fetch';
 
 const NotificationBell = ({ onOpenDrawer }) => {
   const { unreadCount, updateCount } = useNotifications();

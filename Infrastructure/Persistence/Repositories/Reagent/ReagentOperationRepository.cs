@@ -244,29 +244,40 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
         public async Task<int> GetOperationsTodayCountAsync()
         {
-            var today = DateTime.UtcNow.Date;
+            var today = DateTime.UtcNow;
             return await _dbSet
-                .CountAsync(o => o.OperationDate >= today && o.OperationDate <= today.AddDays(1));
+                .CountAsync(o => o.OperationDate >= today.Date && o.OperationDate <= today);
         }
 
         public async Task<List<RecentOperationDTO>> GetRecentOperationsAsync(int count = 7)
         {
-            var operations = await _dbSet
+            if (count <= 0) count = 7;
+
+           var operations = await _dbSet
                 .Include(o => o.User)
                 .Include(o => o.Reagent)
                 .Include(o => o.OperationType)
+                .Where(o => o.OperationDate <= DateTime.UtcNow)
                 .OrderByDescending(o => o.OperationDate)
                 .Take(count)
-                .ToListAsync();
+                .ToListAsync(); 
 
-            return operations.Select(o => new RecentOperationDTO
+            var result = operations.Select(o =>
             {
-                Id = o.Id,
-                OperationDate = o.OperationDate,
-                UserFullName = $"{o.User.LastName} {o.User.FirstName[0]}.{o.User.MiddleName[0]}.",
-                ActionDetails = $"{o.OperationType.Name.ToLower()} {Math.Abs(o.Quantity)}{o.Reagent.Unit} {o.Reagent.Name}",
-                RelativeTime = GetRelativeTime(o.OperationDate)
+                var firstName = !string.IsNullOrEmpty(o.User?.FirstName) ? o.User.FirstName[0].ToString() : "";
+                var middleName = !string.IsNullOrEmpty(o.User?.MiddleName) ? o.User.MiddleName[0].ToString() : "";
+
+                return new RecentOperationDTO
+                {
+                    Id = o.Id,
+                    OperationDate = o.OperationDate,
+                    UserFullName = $"{o.User?.LastName} {firstName}.{middleName}.",
+                    ActionDetails = $"{o.OperationType?.Name?.ToLower()} {Math.Abs(o.Quantity)}{o.Reagent?.Unit} {o.Reagent?.Name}",
+                    RelativeTime = GetRelativeTime(o.OperationDate)
+                };
             }).ToList();
+
+            return result;
         }
 
         public async Task<List<UserActivityDto>> GetTopActiveUsersAsync(int days = 1, int top = 5)

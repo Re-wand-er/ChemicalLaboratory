@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import { ruRU } from '@mui/x-data-grid/locales';
 import { Chip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import { fetchGetData } from '../../../api/fetch';
 
 import styles from '../../../components/DataTable/dataTable.module.css'; // Неправильно, но делать правильно лень
-import { Box } from '@mui/system';
 
 const columns = [
   // { field: 'id', headerName: 'ID', width: 50 },
@@ -59,6 +59,7 @@ const ReagentForecastTable = () => {
       columns={columns} 
       density="standard"
       keepNonExistentRowsSelected
+      localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
       initialState={{
         sorting: {
           sortModel: [{ field: 'recommendedOrder', sort: 'desc' }]

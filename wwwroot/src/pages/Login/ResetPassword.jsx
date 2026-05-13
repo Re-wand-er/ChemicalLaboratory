@@ -90,7 +90,7 @@ export const ResetPassword = ({ login }) => {
         </form>
       )}
       
-      <p>
+      <p style={{ textAlign:'center', fontSize:14 }}>
         <NavLink to="#" onClick={handleBack}>Вернуться обратно</NavLink>
       </p>
 

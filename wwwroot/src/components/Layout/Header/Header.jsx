@@ -17,7 +17,6 @@ export const Header = ({ user, logout, onMenuToggle, onNotificationToggle }) => 
       <nav className={styles.nav}>
         <NotificationBell onOpenDrawer={onNotificationToggle} />
         
-        {/* Добавил отдельный класс для имени, чтобы отделить его от кнопки выхода */}
         <NavLink className={`${styles.link} ${styles.userName}`} to="/user">
           {user.lastName} {user.firstName[0]}.{user.middleName[0]}.
         </NavLink>

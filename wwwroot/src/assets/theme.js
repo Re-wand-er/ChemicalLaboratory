@@ -70,7 +70,7 @@ export const theme = createTheme({
     main: '16px',
     half: '8px',
     quarter: '4px',
-  }
+  },
   // shape: {
   //   borderRadius: 8, 
   // },

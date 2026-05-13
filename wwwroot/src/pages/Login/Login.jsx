@@ -77,7 +77,7 @@ export const Login = () => {
         
         <button type="submit">Войти</button>
         
-        <p style={{alignContent:'center'}}>
+        <p style={{textAlign:'center', fontSize:14}}>
           <NavLink to="/reset-password">Забыли пароль?</NavLink>
         </p>
       </form>

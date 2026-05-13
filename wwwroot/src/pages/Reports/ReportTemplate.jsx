@@ -17,7 +17,7 @@ const ReportTemplate = ({ title, exportTitle, children, rows, columns }) => {
       
       <Paper sx={{ p: 1, mb: 2}}>
         <Grid container spacing={1} alignItems="center" justifyContent='space-between'>
-          <Grid md={true}> 
+          <Grid size={{ md: 'grow' }}> 
             <Box 
               sx={{ 
                 display: 'flex', 
@@ -30,7 +30,7 @@ const ReportTemplate = ({ title, exportTitle, children, rows, columns }) => {
             </Box>
           </Grid>
           
-          <Grid md="auto">
+          <Grid size={{ md:'auto' }}>
             {columns.length > 0 && (
               <ExportFormat title={exportTitle || title || 'Отчет'} columns={columns} rows={rows} />
             )}

@@ -9,15 +9,11 @@ import {
   Checkbox,
   FormControlLabel
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 
 import ReportTemplate from "./ReportTemplate";
-import ExportFormat from "./ExportFormat";
 
 import { formatDate } from "../../utils/formatDate";
 import { fetchGetData } from "../../api/fetch";
-
-import '../Analytics/Statistics/statisticStyle.css';
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -42,10 +38,10 @@ const columns = [
       const days = params.value;
       let color = 'inherit'; 
       
-      if (days <= 30) color = 'var(--main-error)'; // Red
-      else if (days <= 60) color = 'var(--main-warning)'; // Yellow 
+      if (days <= 30) color = 'var(--mui-palette-error-main)'; // Red
+      else if (days <= 60) color = 'var(--mui-palette-warning-main)'; // Yellow 
       return (
-        <span style={{ color, fontWeight: Number(days) <= 60 ? 'var(--main-font-bold)' : 'var(--main-font-normal)' }}>
+        <span style={{ color, fontWeight: Number(days) <= 60 ? 'bold' : 'normal' }}>
           {days < 0 ? `Просрочен (${Math.abs(days)})` : days}
         </span>
       );

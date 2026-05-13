@@ -94,6 +94,7 @@ createRoot(document.getElementById('root')).render(
               
                 {/*Отчеты*/}
                 <Route path="reports" element={<Reports />}>
+                  <Route index element={<ReagentReport />}/>
                   <Route path="reagent" element={<ReagentReport />}/>
                   <Route path="below-minimum" element={<BelowMinReport />}/>
                   <Route path="expired" element={<ExpiredReport />}/>

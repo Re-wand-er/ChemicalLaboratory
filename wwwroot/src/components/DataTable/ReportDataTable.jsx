@@ -1,4 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid';
+import { ruRU } from '@mui/x-data-grid/locales';
 
 import styles from './dataTable.module.css';
 
@@ -8,6 +9,7 @@ const ReportDataTable = ({ rows, columns }) => {
       rows={rows}
       columns={columns}
       pageSize={10}
+      localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
       initialState={{
         pagination: { paginationModel: { pageSize: 10 } }
       }}

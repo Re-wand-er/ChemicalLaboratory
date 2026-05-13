@@ -33,7 +33,7 @@ const Dashboard = () => {
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Grid container spacing={3} justifyContent="center" sx={{ mb: 6 }}>
         {kpiItems.map((item, index) => (
-          <Grid item xs={12} sm={6} md={3} lg={1.7} key={index}> 
+          <Grid size={{ xs: 12, sm: 6, md: 3, lg: 1.7 }} key={index}> 
             <Card sx={{ 
               borderTop: `4px solid ${item.color}`, // Перенес акцент наверх для чистоты
               height: '100%',
@@ -53,23 +53,21 @@ const Dashboard = () => {
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs:12, sm:12, md:8}}>
-          <Grid container spacing={3}>
-            <Grid size={{ xs:12, sm:12, md:12}}>
-              <CardContainer>
-                <RecentActivityFeed title="Последние пользовательские операции"/>
-              </CardContainer>
-            </Grid>
-            <Grid size={{ xs:12, sm:12, md:6}}>
-              <CardContainer>
-                <ExpirationCalendar title="Близкие к просрочке"/>
-              </CardContainer>
-            </Grid>
-            <Grid size={{ xs:12, sm:12, md:6}}>
-              <CardContainer>
-                <UserActivityTop title="Операции за период"/>
-              </CardContainer>
-            </Grid>
+        <Grid container size={{ xs:12, sm:12, md:8}} spacing={3}>
+          <Grid size={{ xs:12, sm:12, md:12}}>
+            <CardContainer>
+              <RecentActivityFeed title="Последние пользовательские операции"/>
+            </CardContainer>
+          </Grid>
+          <Grid size={{ xs:12, sm:12, md:6}}>
+            <CardContainer>
+              <ExpirationCalendar title="Близкие к просрочке"/>
+            </CardContainer>
+          </Grid>
+          <Grid size={{ xs:12, sm:12, md:6}}>
+            <CardContainer>
+              <UserActivityTop title="Операции за период"/>
+            </CardContainer>
           </Grid>
         </Grid>
 

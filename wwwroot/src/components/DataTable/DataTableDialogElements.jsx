@@ -35,7 +35,7 @@ const DataTableDialogActions = (props) =>{
 
 const DataTableDialogLabel = ({modalMode, size, deleteOne, deleteMany, restoreOne, restoreMany}) =>{
 	const getTitle = () => {
-		if(modalMode === 'delet'){
+		if(modalMode === 'delete'){
 			return size > 1 ? deleteMany : deleteOne;
 		}
 		if (modalMode === 'restore') {

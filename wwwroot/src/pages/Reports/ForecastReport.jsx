@@ -1,19 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  Box,
   Grid,
   TextField,
-  MenuItem,
-  Paper,
-  Typography,
   FormControlLabel,
   Checkbox
 } from "@mui/material";
-import { flex, maxWidth, minWidth } from "@mui/system";
-import { DataGrid } from "@mui/x-data-grid";
 
 import ReportTemplate from "./ReportTemplate";
-import ExportFormat from "./ExportFormat";
 
 import { fetchGetData } from "../../api/fetch";
 
@@ -164,104 +157,6 @@ const ForecastReport = () => {
         />
       </Grid>
     </ReportTemplate>
-    // <Box>
-    //   <Typography variant="h5" mb={2}>
-    //     Прогноз расхода реагентов
-    //   </Typography>
-
-    //   <Paper sx={{ p: 2, mb: 2 }}>
-    //     <Grid container spacing={1} alignItems="center">
-
-    //       <Grid size={{ xs: 6, md: 1.5 }}>
-    //         <TextField
-    //           type="number"
-    //           name="forecastDays"
-    //           label="Прогноз (дней)"
-    //           value={filters.forecastDays}
-    //           onChange={handleChange}
-    //           //size="small"
-    //           fullWidth
-    //         />
-    //       </Grid>
-
-    //       <Grid size={{ xs: 6, md: 1.5 }}>
-    //         <TextField
-    //           type="number"
-    //           name="multiplier"
-    //           label="Коэф. запаса"
-    //           value={filters.multiplier}
-    //           onChange={handleChange}
-    //           fullWidth
-    //         />
-    //       </Grid>
-
-    //       <Grid size={{ xs: 6, md: 1.5 }}>
-    //         <TextField
-    //           type="number"
-    //           name="maxDaysToZero"
-    //           label="Макс. дней до 0"
-    //           value={filters.maxDaysToZero}
-    //           onChange={handleChange}
-    //           fullWidth
-    //         />
-    //       </Grid>
-
-    //       <Grid size={{ xs: 6, md: 1.5 }}>
-    //         <FormControlLabel
-    //           control={
-    //             <Checkbox
-    //               name="criticalOnly"
-    //               checked={filters.criticalOnly}
-    //               onChange={handleChange}
-    //             />
-    //           }
-    //           label="Критические"
-    //         />
-    //       </Grid>
-
-    //       <Grid size={{ xs: 6, md: 1.5 }}>
-    //         <FormControlLabel
-    //           control={
-    //             <Checkbox
-    //               name="onlyReorderNeeded"
-    //               checked={filters.onlyReorderNeeded}
-    //               onChange={handleChange}
-    //             />
-    //           }
-    //           label="Треб. заказ"
-    //         />
-    //       </Grid>
-
-    //       <Grid size={{ md: true }} /> {/*Забирает свободное простр-во*/}
-
-    //       <Grid size={{ xs: 12, md: 'auto' }} >
-    //         <ExportFormat
-    //           title="Отчет по прогнозу заказов"
-    //           columns={columns}
-    //           rows={rows}
-    //         />
-    //       </Grid>
-
-    //     </Grid>
-    //   </Paper>
-
-    //   {/* ТАБЛИЦА */}
-    //   <Paper sx={{ height: 500 }}>
-    //     <DataGrid
-    //       rows={rows}
-    //       columns={columns}
-    //       pageSize={10}
-    //       rowsPerPageOptions={[10]}
-    //       disableRowSelectionOnClick
-    //       density="compact"
-    //       initialState={{
-    //       sorting: {
-    //         sortModel: [{ field: 'recommendedOrder', sort: 'desc' }],
-    //       },
-    //     }}
-    //     />
-    //   </Paper>
-    // </Box>
   );
 };
 
