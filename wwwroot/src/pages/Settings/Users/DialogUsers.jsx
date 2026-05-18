@@ -8,6 +8,7 @@ import { DataGrid } from '@mui/x-data-grid';
 
 import { DataTableDialogActions, DataTableDialogLabel } from "../../../components/DataTable/DataTableDialogElements.jsx";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';  
+import { systemRoles } from '../../../constants/roles.js';
 
 // Упрощённые колонки для отображения в режиме удаления
   const deleteColumns = [
@@ -22,12 +23,6 @@ import { getRecordsArray } from '../../../utils/getRecordsArray.js';
     { value: 'F', label: 'Женский' }
   ];
 
-const systemRoleOptions = [
-    { value: 'Администратор', label: 'Администратор' },
-    { value: 'Пользователь', label: 'Пользователь' },
-    { value: 'Наблюдатель', label: 'Наблюдатель' }
-  ];
-
   const getFormData = (record = {}) => ({
     id: record.id || null,
     firstName: record.firstName || '',
@@ -37,7 +32,7 @@ const systemRoleOptions = [
     email: record.email || '',
     jobPosition: record.jobPosition || '',
     sex: record.sex || '',
-    systemRole: record.systemRole || '',
+    systemRole: record.systemRoleId || '',
     isActive: record.isActive !== undefined ? record.isActive : 1,
     idWorkSchedule: record.idWorkSchedule != null ? record.idWorkSchedule : 0,
     password: record.password || ''
@@ -52,6 +47,7 @@ const DialogUsers = ({ modalMode, currentRecord, schedules, handleClose, handleS
     } else if (modalMode === 'edit' && currentRecord) {
         setFormData(getFormData(currentRecord));
     }
+
   }, [modalMode]);
   
     const handleChange = (field) => (event) => {
@@ -188,9 +184,9 @@ const DialogUsers = ({ modalMode, currentRecord, schedules, handleClose, handleS
                     label="Системная роль"
                     onChange={handleChange('systemRole')}
                   >
-                    {systemRoleOptions.map(option => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
+                    {systemRoles.map(option => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -237,7 +233,7 @@ const DialogUsers = ({ modalMode, currentRecord, schedules, handleClose, handleS
                 </FormControl>
               </Grid>
 
-              <Grid size={12}>
+              {/* <Grid size={12}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -247,7 +243,7 @@ const DialogUsers = ({ modalMode, currentRecord, schedules, handleClose, handleS
                   }
                   label="Активен"
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
           </>
         )}

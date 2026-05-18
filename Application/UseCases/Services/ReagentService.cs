@@ -1,13 +1,11 @@
-﻿using ChemicalLaboratory.Application.Interfaces;
+﻿using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
 using ChemicalLaboratory.Application.UseCases.DTOs;
+using ChemicalLaboratory.Application.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Enums;
 using ChemicalLaboratory.Domain.DTOs.ReagentsDTO;
 using ChemicalLaboratory.Domain.DTOs;
 using Mapster;
-using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
 
 namespace ChemicalLaboratory.Application.UseCases.Services
 {
@@ -63,22 +61,6 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             await _unitOfWork.SaveAsync();
         }
 
-        //public async Task DeleteAsync(IEnumerable<int> ids)
-        //{
-        //    var userId = _currentUserService.GetRequiredUserId();
-
-        //    _logger.LogInformation($"Deleted reagent with ids in ReagentService");
-
-        //    foreach (var id in ids)
-        //    {
-        //        var historyEntry = ReagentOperation.CreateForDeletion(userId, id, $"Удаление реагента с id: {id}");
-        //        await _unitOfWork.ReagentOperations.AddAsync(historyEntry);
-        //    }
-
-        //    await _unitOfWork.Reagents.DeleteManyAsync(ids);
-
-        //    await _unitOfWork.SaveAsync();
-        //}
 
         public async Task DeleteAsync(IEnumerable<int> ids, bool hardDelete = false)
         {
@@ -121,11 +103,33 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             await _unitOfWork.SaveAsync();
         }
 
+        // public async Task<ReagentDTO> UpdateAsync(ReagentUpdateDTO dto)
+        // {
+        //     var userId = _currentUserService.GetRequiredUserId();
+
+        //     _logger.LogInformation($"Updated reagent with id: {dto.Id}");
+
+        //     var existingReagent = await _unitOfWork.Reagents.GetByIdAsync(dto.Id);
+        //     if (existingReagent == null) 
+        //         throw new KeyNotFoundException("Reagent not found");
+
+        //     var reagentDto = existingReagent.Adapt<ReagentDTO>();
+        //     dto.Adapt(existingReagent);
+
+        //     var historyEntry = ReagentOperation.Create(userId, OperationTypeEnum.Update, existingReagent, "Редактирование параметров реактива");
+            
+        //     await _unitOfWork.ReagentOperations.AddAsync(historyEntry);
+        //     await _unitOfWork.SaveAsync();
+
+        //     return existingReagent.Adapt<ReagentDTO>();
+        // }
+
+
         public async Task<ReagentDTO> UpdateAsync(ReagentUpdateDTO dto)
         {
             var userId = _currentUserService.GetRequiredUserId();
 
-            _logger.LogInformation($"Updated reagent with id: {dto.Id}");
+            _logger.LogInformation($"Updating reagent with id: {dto.Id}");
 
             var existingReagent = await _unitOfWork.Reagents.GetByIdAsync(dto.Id);
             if (existingReagent == null) 
@@ -133,13 +137,34 @@ namespace ChemicalLaboratory.Application.UseCases.Services
 
             dto.Adapt(existingReagent);
 
-            var historyEntry = ReagentOperation.Create(userId, OperationTypeEnum.Update, existingReagent, "Редактирование параметров реактива");
-            
+            var historyEntry = ReagentOperation.Create(
+                userId, 
+                OperationTypeEnum.Update, 
+                existingReagent, 
+                "Редактирование параметров реактива"
+            );
+
             await _unitOfWork.ReagentOperations.AddAsync(historyEntry);
             await _unitOfWork.SaveAsync();
 
-            return existingReagent.Adapt<ReagentDTO>();
+            if(existingReagent.CurrentQuantity < existingReagent.MinQuantity){
+                var quantityNotification = Notification.Create(
+                    userId,
+                    existingReagent,
+                    "Low_Quantity", // нужно менять
+                    $"Низкий остаток реактива {existingReagent.Name}",
+                    $"Низкое количество реактива {existingReagent.Name}."+ 
+                    $"Необходимо пополнить запас до {existingReagent.ExpirationDate?.ToString("dd.MM.yyyy") ?? DateTime.MinValue.ToString()}"
+                );
+
+                await _unitOfWork.Notifications.AddAsync(quantityNotification);
+                await _unitOfWork.SaveAsync();
+            }
+
+            // CategoryName почему-то пустой
+            return existingReagent.Adapt<ReagentDTO>(); 
         }
+
 
         public async Task<ReagentStockReportDTO> GetStockReportAsync()
         {

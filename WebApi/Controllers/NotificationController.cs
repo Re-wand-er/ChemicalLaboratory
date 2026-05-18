@@ -1,6 +1,6 @@
-﻿using ChemicalLaboratory.Application.Interfaces;
-using ChemicalLaboratory.Application.UseCases.DTOs;
+﻿using ChemicalLaboratory.Application.UseCases.DTOs;
 using ChemicalLaboratory.Application.UseCases.Services;
+using ChemicalLaboratory.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -83,6 +83,18 @@ namespace ChemicalLaboratory.WebApi.Controllers
             await _notificationService.SoftDeleteAsync(id); 
             return NoContent();
         }
+
+        // [HttpPost("bulk-delete")]
+        // public async Task<IActionResult> DeleteCategory([FromBody] DeleteManyRequestDTO request)
+        // {
+        //     _logger.LogInformation($"Deleted reagent with ids in ReagentController");
+
+        //     if (request.Ids == null || !request.Ids.Any())
+        //         return BadRequest("No ids provided.");
+
+        //     await _notificationService.DeleteAsync(request.Ids);
+        //     return Ok(new { succes = true });
+        // }
 
     }
 }

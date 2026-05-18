@@ -56,8 +56,11 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .WithMany(x => x.Users)
                 .HasForeignKey(x => x.IdWorkSchedule);
 
+            builder.Property(x => x.SystemRoleId)
+                .HasColumnName("SystemRoleId"); 
+
             builder.HasOne(x => x.SystemRole)
-                .WithMany(x => x.Users)
+                .WithMany(r => r.Users)
                 .HasForeignKey(x => x.SystemRoleId);
         }
     }

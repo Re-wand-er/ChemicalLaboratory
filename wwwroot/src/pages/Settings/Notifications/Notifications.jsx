@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { minWidth } from "@mui/system";
 
+import PageContainer from "../../../components/PageContainer.jsx";
 import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogNotifications from "./DialogNotifications.jsx";
 
@@ -16,23 +16,22 @@ const columns = [
   //   type: 'number',
   // },
    {
-    field: 'userId',
+    field: 'userName',//userId
     headerName: 'Пользователь',
     minWidth: 200,
     flex: 2,
   },
   {
-    field: 'reagentId',
+    field: 'reagentName',//reagentId
     headerName: 'Реагент',
     minWidth: 150,
-    type: 'number',
     flex: 1,
   },
-  {
-    field: 'notificationType',
-    headerName: 'Тип уведомления',
-    width: 140,
-  },
+  // {
+  //   field: 'notificationType',
+  //   headerName: 'Тип уведомления',
+  //   width: 140,
+  // },
   {
     field: 'title',
     headerName: 'Заголовок',
@@ -84,6 +83,8 @@ const Notifications = () => {
         setReagent(reagents);
         setUser(users);
       }); 
+
+    console.log(data);
   }, []);      
 
   //// Методы для открытия соотв. окон //////////////////////////  
@@ -108,7 +109,7 @@ const Notifications = () => {
   ////////////////////////////////////////////////////////////////  
 
   const handleAdd = async (record) => {
-    //const response = await fetchPostData('api/notification', record, true);
+    const response = await fetchPostData('api/notification', record, true);
 
     if(response.ok)
     {      
@@ -119,7 +120,7 @@ const Notifications = () => {
 
   const handleDelete = () => {
     const ids = getRecordsArray(currentRecord).map(item => item.id);
-    //const success = fetchDeleteByIds('api/notification/bulk-delete', ids);
+    const success = fetchDeleteByIds('api/notification/bulk-delete', ids);
 
     if (success){
       setData(prev => prev.filter(r => !ids.includes(r.id)));
@@ -128,7 +129,7 @@ const Notifications = () => {
   };
 
   const handleSave = async (record) => {
-    //const result = await fetchPutData(`api/notification/${record.id}`, record, true);
+    const result = await fetchPutData(`api/notification/${record.id}`, record, true);
     
     if(result){      
       setData(prevItems => prevItems.map(data => data.id === result.id ? result : data));
@@ -143,8 +144,7 @@ const Notifications = () => {
   };
 
   return (
-    <div>
-      <h2>Уведомления</h2>
+    <PageContainer title="Уведомления">
       <DataTable 
         rows={data} 
         columns={columns} 
@@ -162,7 +162,7 @@ const Notifications = () => {
         handleDelete={handleDelete}
         handleSave={handleSave}
         handleClose={handleClose}/>
-    </div>
+    </PageContainer>
   );
 };
 

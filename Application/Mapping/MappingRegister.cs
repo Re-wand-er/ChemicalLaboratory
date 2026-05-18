@@ -13,14 +13,18 @@ namespace ChemicalLaboratory.Application.Mapping
         public void Register(TypeAdapterConfig config) 
         {
             // Notifications ----------------------------------------
-            config.NewConfig<Notification, NotificationDTO>();
+            config.NewConfig<Notification, NotificationDTO>()
+                .Map(dest => dest.ReagentName, src => src.Reagent.Name)
+                .Map(dest => dest.UserName, src => src.User != null 
+                    ? $"{src.User.LastName} {src.User.FirstName[0]}. {src.User.MiddleName[0]}."
+                    : null);
             config.NewConfig<NotificationDTO, Notification>()
                 .Ignore(n => n.Id)
                 .Ignore(n => n.CreatedAt);
 
             // Reagents ---------------------------------------------
             config.NewConfig<Reagent, ReagentDTO>()
-                .Map(dest => dest.CategoryName, src => src.Category.Name);
+                .Map(dest => dest.CategoryName,  src => src.Category != null ? src.Category.Name : string.Empty);
             config.NewConfig<ReagentDTO, Reagent>()
                 .Ignore(n => n.Id)
                 .Ignore(n => n.CreatedAt);
@@ -38,8 +42,11 @@ namespace ChemicalLaboratory.Application.Mapping
                 .Ignore(r => r.Id);
 
             // Users ------------------------------------------------
-            config.NewConfig<User, UserReadDTO>()
-                .Map(dest => dest.SystemRoleName, src => src.SystemRole != null ? src.SystemRole.Name : null);
+            config.NewConfig<User, UserReadDTO>();
+                // .Map(dest => dest.SystemRoleName, src => src.SystemRole != null ? src.SystemRole.Name : null)
+                // .Map(dest => dest.WorkShift, src => src.WorkSchedule != null ? src.WorkSchedule.WorkShift : "")
+                // .Map(dest => dest.StartTime, src => src.WorkSchedule != null ? src.WorkSchedule.StartTime.ToString(@"hh\:mm") : "")
+                // .Map(dest => dest.EndTime, src => src.WorkSchedule != null ? src.WorkSchedule.EndTime.ToString(@"hh\:mm") : "");
 
             config.NewConfig<UserReadDTO, User>()
                 .Ignore(r => r.SystemRole);

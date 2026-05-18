@@ -16,7 +16,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCategories() => Ok(await _workSchedule.GetAllAsync());
+        public async Task<IActionResult> GetSchedules() => Ok(await _workSchedule.GetAllAsync());
 
     }
 }

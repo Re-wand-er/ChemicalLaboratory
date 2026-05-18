@@ -16,7 +16,7 @@ import { formatDate } from "../../utils/formatDate";
 import { fetchGetData } from "../../api/fetch";
 
 const columns = [
-  { field: "id", headerName: "ID", width: 70 },
+  //{ field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Реагент", flex: 1 },
   { field: "category", headerName: "Категория", flex: 1 },
   {

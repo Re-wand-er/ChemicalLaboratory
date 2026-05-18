@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-import DataTable from "../../../components/DataTable/DataTable.jsx";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import PageContainer from "../../../components/PageContainer.jsx";
+import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogSuppliers from "./DialogSuppliers.jsx";
 
 import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
-import { minWidth } from "@mui/system";
 
 const columns = [
     // {
@@ -138,8 +138,8 @@ const Suppliers = () => {
   };
 
   return (
-    <div>
-      <h2>Поставщики</h2>
+    <PageContainer title="Поставщики">
+      
       <DataTable 
         rows={data} 
         columns={columns} 
@@ -160,7 +160,7 @@ const Suppliers = () => {
         handleSave={handleSave} 
         handleClose={handleClose} 
       />
-      </div>
+    </PageContainer>
   );
 };
 export default Suppliers;

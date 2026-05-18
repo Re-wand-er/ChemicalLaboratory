@@ -14,5 +14,9 @@
         string? JobPosition,
         string Login,
         bool IsActive
+
+        // string WorkShift,
+        // string StartTime,
+        // string EndTime
     );
 }

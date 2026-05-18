@@ -129,7 +129,7 @@ const DialogNotifications = ({ modalMode, currentRecord, reagents, users, handle
                 />
               </Grid>
               
-              <Grid size={4}>
+              <Grid size={6}>
                 <FormControl fullWidth>
                   <InputLabel>Пользователь</InputLabel>
                   <Select
@@ -145,7 +145,7 @@ const DialogNotifications = ({ modalMode, currentRecord, reagents, users, handle
                 </FormControl>
               </Grid>
 
-              <Grid size={4}>
+              <Grid size={6}>
                 <FormControl fullWidth>
                   <InputLabel>Реагент</InputLabel>
                   <Select
@@ -163,7 +163,8 @@ const DialogNotifications = ({ modalMode, currentRecord, reagents, users, handle
                 </FormControl>
               </Grid>
               
-              <Grid size={4}>
+              {/* Нужно сделать отдельную таблицу */}
+              {/* <Grid size={4}>
                 <FormControl fullWidth>
                   <InputLabel>Тип уведомления</InputLabel>
                   <Select
@@ -178,7 +179,7 @@ const DialogNotifications = ({ modalMode, currentRecord, reagents, users, handle
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
+              </Grid> */}
 
               {/* <Grid size={4}>
                 <FormControlLabel

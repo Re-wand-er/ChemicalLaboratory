@@ -11,7 +11,7 @@ import ExportFormat from "./ExportFormat";
 import { fetchGetData } from "../../api/fetch";
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
+  //{ field: 'id', headerName: 'ID', width: 70 },
   { field: 'name', headerName: 'Реагент', flex: 1 },
   { field: 'category', headerName: 'Категория', flex: 1 },
   { field: 'totalUsed', headerName: 'Израсходовано', width: 150 },

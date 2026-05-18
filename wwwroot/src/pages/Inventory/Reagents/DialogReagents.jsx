@@ -159,7 +159,7 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
                 />
               </Grid>
 
-              <Grid size={12}>
+              <Grid size={8}>
                 <TextField
                   label="Место хранения"
                   fullWidth
@@ -168,8 +168,8 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
                 />
               </Grid>
 
-              <Grid>
-                <FormControl>
+              <Grid size={4}>
+                <FormControl fullWidth>
                   <InputLabel>Категория</InputLabel>
                   <Select
                     value={formData.categoryId}
@@ -185,7 +185,7 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
                 </FormControl>
               </Grid>
 
-              <Grid>
+              {/* <Grid>
 
                 <FormControlLabel
                   control={
@@ -196,7 +196,7 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
                   }
                   label="Активен"
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
 
           </>

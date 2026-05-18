@@ -11,6 +11,7 @@ using Serilog.Events;
 using Serilog;
 using Mapster;
 using ChemicalLaboratory.Infrastructure.Email;
+using ChemicalLaboratory.Application.Mapping;
 
 namespace ChemicalLaboratory
 {
@@ -107,6 +108,7 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<IReagentOperationRepository, ReagentOperationRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
+            builder.Services.AddScoped<ISystemRoleRepository, SystemRoleRepository>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
@@ -123,6 +125,9 @@ namespace ChemicalLaboratory
 
             //------------------------------------------------------------------------------------------------------------
 
+            var config = TypeAdapterConfig.GlobalSettings;
+            config.Scan(typeof(MappingRegister).Assembly);
+            builder.Services.AddSingleton(config);
             builder.Services.AddMapster();
 
             //------------------------------------------------------------------------------------------------------------

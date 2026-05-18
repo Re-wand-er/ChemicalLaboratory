@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
-import DataTable from "../../../components/DataTable/DataTable.jsx";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import PageContainer from "../../../components/PageContainer.jsx";
+import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogCategories from "./DialogCategories.jsx";
 
 import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
@@ -134,8 +135,7 @@ const Categories = () => {
   };
 
   return (
-    <>
-      <h2>Категории</h2>
+    <PageContainer title="Категории">
       <DataTable 
         rows={data} 
         columns={columns} 
@@ -157,7 +157,7 @@ const Categories = () => {
         handleClose={handleClose} 
       />
 
-    </>
+    </PageContainer>
   );
 };
 export default Categories;

@@ -1,11 +1,8 @@
-﻿using ChemicalLaboratory.Application.UseCases.Services;
-using ChemicalLaboratory.Domain.Entities;
+﻿using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.WebApi.Models;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+using Mapster;
 
 namespace ChemicalLaboratory.WebApi.Controllers
 {

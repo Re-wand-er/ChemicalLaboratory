@@ -4,7 +4,12 @@
     (
         int Id,
         int ReagentId,
+        string ReagentName,
         int? UserId,
+        string UserName,
+        // string? FirstName,
+        // string? MiddleName,
+        // string? LastName,
         string NotificationType,
         string Title,
         string Message,

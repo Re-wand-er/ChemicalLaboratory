@@ -25,7 +25,7 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             _logger.LogInformation("Get all notifications");
             var notifications = await _unitOfWork.Notifications.GetAllAsync();
 
-            return notifications.Adapt<IEnumerable<NotificationDTO>>();
+            return notifications.Adapt<List<NotificationDTO>>(); 
         }
 
         public async Task<NotificationDTO?> GetByIdAsync(int id) 
@@ -63,7 +63,8 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             _logger.LogInformation($"Updated notification with id: {dto.Id}");
 
             var existingNotification = await _unitOfWork.Notifications.GetByIdAsync(dto.Id);
-            if (existingNotification == null) throw new Exception("Notification not found");
+            if (existingNotification == null) 
+                throw new Exception("Notification not found");
 
             dto.Adapt(existingNotification);
 

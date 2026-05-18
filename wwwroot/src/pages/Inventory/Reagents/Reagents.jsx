@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { minWidth } from "@mui/system";
 
-import DataTable from "../../../components/DataTable/DataTable.jsx";
 import { useAuth } from '../../../context/AuthContext.jsx';
+import PageContainer from "../../../components/PageContainer.jsx";
+import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogReagents from "./DialogReagents.jsx";
 
+import { useNotifications } from "../../../context/NotificationContext.jsx";
 import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 import { formatDate } from "../../../utils/formatDate.js";
@@ -26,13 +27,13 @@ const columns = [
   {
     field: 'chemicalFormula',
     headerName: 'Хим. формула',
-    width: 150,
+    minWidth: 150,
     flex: 1,
   },
   {
     field: 'unit',
     headerName: 'Ед. изм.',
-    width: 80,
+    width: 60,
   },
   {
     field: 'currentQuantity',
@@ -88,6 +89,7 @@ const columns = [
 const Reagents = () => {
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]); 
+  const { updateCount } = useNotifications();
   const { isSuperAdmin } = useAuth(); 
 
   useEffect(() =>{
@@ -113,6 +115,8 @@ const Reagents = () => {
 
   const handleOpenEdit = (record) => {
     setCurrentRecord(record);
+
+    console.log(record);
     setModalMode('edit');
   };
 
@@ -184,9 +188,10 @@ const Reagents = () => {
 
   const handleSave = async (record) => {
     const result = await fetchPutData(`api/reagent/${record.id}`, record, true);
-      
+
     if(result){      
       setData(prevItems => prevItems.map(data => data.id === result.id ? result : data));
+      updateCount();
       handleClose();
     }
   };
@@ -198,8 +203,8 @@ const Reagents = () => {
   };
 
   return (
-    <div>
-      <h2>Реагенты</h2>
+    <PageContainer title="Реагенты">
+
       <DataTable 
         rows={data} 
         columns={columns} 
@@ -222,7 +227,7 @@ const Reagents = () => {
         handleClose={handleClose} 
       />
 
-    </div>
+    </PageContainer>
   );
 };
 export default Reagents;

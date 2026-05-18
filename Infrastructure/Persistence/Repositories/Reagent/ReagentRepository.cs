@@ -24,6 +24,17 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         }
 
 
+        public override async Task<Reagent?> GetByIdAsync(int id)
+        {
+            var reagent = await _dbSet
+                //.AsNoTracking()
+                .Include(u => u.Category)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            return reagent;
+        }
+
+
         public async Task<List<ReagentReportDTO>> GetReagentReportAsync(int? categoryId)
         {
             var query = _context.Reagents
@@ -53,20 +64,10 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                 .ToListAsync();
 
 
+
+
         public virtual Task AddRangeAsync(IEnumerable<Reagent> reagentDTOs) 
             => throw new NotImplementedException();
-
-        //public override async Task DeleteManyAsync(IEnumerable<int> ids)
-        //{
-        //    var entities = await _dbSet
-        //        .Where(c => ids.Contains(c.Id))
-        //        .ToListAsync();
-
-        //    _dbSet.RemoveRange(entities);
-        //    await _context.SaveChangesAsync();
-        //}
-
-
 
 
         // Smart
@@ -114,25 +115,6 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                 Reagents = reagents
             };
         }
-
-
-        //public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync()
-        //{
-        //    var today = DateTime.UtcNow.Date;
-        //    var limitDate = today.AddDays(90);
-
-        //    return await _dbSet
-        //        .Where(r => r.IsActive && r.ExpirationDate != null && r.ExpirationDate <= limitDate)
-        //        .OrderBy(r => r.ExpirationDate)
-        //        .Select(r => new ReagentExpirationDTO
-        //        {
-        //            Id = r.Id,
-        //            Name = r.Name,
-        //            ExpirationDate = r.ExpirationDate,
-        //            DaysRemaining = EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value).ToString() // Срок годности может быть null
-        //        })
-        //        .ToListAsync();
-        //}
 
 
         public async Task<List<ReagentExpirationDTO>> GetExpiringReagentsAsync(

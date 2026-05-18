@@ -2,14 +2,26 @@
 using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Mapster;
-using ChemicalLaboratory.Application.UseCases.DTOs;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
         public UserRepository(DataBaseContext dataBaseContext) : base(dataBaseContext) { }
+
+        public override async Task<IEnumerable<User>> GetAllAsync(bool includeInactive = false)
+        {
+            IQueryable<User> query = _dbSet;
+
+            if (includeInactive)
+                query = query.IgnoreQueryFilters();
+
+            return 
+                await query
+                    // .Include(u => u.SystemRole)
+                    // .Include(u => u.WorkSchedule)
+                    .ToListAsync();
+        }
 
         public override async Task<User?> GetByIdAsync(int id)
         {
@@ -22,7 +34,11 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
         }
 
         public virtual async Task<User?> GetByLoginAsync(string login) 
-            => await _dbSet.FirstOrDefaultAsync(r=>r.Login == login);//.Include(u => u.SystemRole)
+            => await _dbSet
+                //.AsNoTracking()
+                // .Include(u => u.SystemRole)
+                // .Include(u => u.WorkSchedule)
+                .FirstOrDefaultAsync(r=>r.Login == login);
 
         public async Task<IEnumerable<ListItemDTO>> GetAllIdNameAsync() 
             => await _dbSet

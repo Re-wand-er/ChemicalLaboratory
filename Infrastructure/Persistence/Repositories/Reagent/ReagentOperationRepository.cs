@@ -5,8 +5,6 @@ using ChemicalLaboratory.Domain.Entities;
 using ChemicalLaboratory.Domain.Enums;
 using ChemicalLaboratory.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using ChemicalLaboratory.Application.UseCases.DTOs.Filters;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {

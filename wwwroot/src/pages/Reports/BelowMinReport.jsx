@@ -7,7 +7,7 @@ import { fetchGetData } from "../../api/fetch";
 import ReportTemplate from "./ReportTemplate";
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 50 },
+  //{ field: 'id', headerName: 'ID', width: 50 },
   { field: 'name', headerName: 'Реагент', flex: 1 },
   { 
     field: 'currentQuantity', 

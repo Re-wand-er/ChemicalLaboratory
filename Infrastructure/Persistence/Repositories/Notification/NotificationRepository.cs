@@ -28,7 +28,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 
         public async Task<int> GetUnreadCountAsync(int userId)
         {
-            return await _context.Notifications
+            return await _dbSet
                 .CountAsync(n => n.UserId == userId && !n.IsRead && n.DeletedAt == null);
         }
 

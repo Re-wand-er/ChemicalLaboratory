@@ -46,8 +46,8 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         public async Task<IEnumerable<UserReadDTO>> GetAllAsync(bool includeInactive = false)
         {
             _logger.LogInformation("Get all Users");
-            var Users = await _unitOfWork.Users.GetAllAsync(includeInactive);
-            return Users.Adapt<IEnumerable<UserReadDTO>>();
+            var users = await _unitOfWork.Users.GetAllAsync(includeInactive);
+            return users.Adapt<IEnumerable<UserReadDTO>>();
         }
 
 

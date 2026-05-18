@@ -23,6 +23,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
 		[HttpGet] 
         public async Task<IActionResult> GetAllUsers([FromQuery] bool includeInactive = false) 
             => Ok(await _userService.GetAllAsync(includeInactive));
+  
 
 
         [HttpGet("id")] public async Task<IActionResult> GetIdUsers()

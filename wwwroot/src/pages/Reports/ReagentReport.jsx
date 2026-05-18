@@ -1,22 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  Box,
-  Grid,
   TextField,
   MenuItem,
-  Paper,
-  Typography
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 
-import ReportDataTable from "../../components/DataTable/ReportDataTable";
-import ExportFormat from "./ExportFormat";
-
-import { fetchGetData } from "../../api/fetch";
 import ReportTemplate from "./ReportTemplate";
 
+import { fetchGetData } from "../../api/fetch";
+
 const columns = [
-  { field: "id", headerName: "ID", width: 70 },
+  //{ field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Реагент", flex: 1 },
   { field: "category", headerName: "Категория", flex: 1 },
 

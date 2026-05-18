@@ -16,5 +16,27 @@ namespace ChemicalLaboratory.Domain.Entities
 
         public Reagent Reagent { get; set; } = null!;
         public User User { get; set; } = null!;
+
+        public static Notification Create(
+            int userId, 
+            Reagent reagent, 
+            string notificationType, 
+            string title, 
+            string message) 
+        {
+            if (reagent == null) throw new ArgumentNullException(nameof(reagent));
+
+            return new Notification
+            {
+                UserId = userId,
+                NotificationType = notificationType,
+                Title = title,
+                Message = message,
+                IsRead = false,
+                Reagent = reagent,
+                CreatedAt = DateTime.UtcNow,
+                DeletedAt = null
+            };
+        }
     }
 }

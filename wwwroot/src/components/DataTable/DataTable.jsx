@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ruRU } from '@mui/x-data-grid/locales';
 import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
-import { Stack, IconButton, useTheme } from '@mui/material';
+import { Stack, IconButton, useTheme, Paper } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
@@ -16,7 +16,7 @@ const columnsWithActions = (props) => [
   {
     field: 'actions',
     headerName: 'Действия',
-    width: 150,
+    width: 120,
     sortable: false,
     renderCell: (params) => {
       const handleEdit = () => {
@@ -107,56 +107,64 @@ const DataTable = (props) => {
   /////////////////////////////////////////////////////
 
   return (
-    <div className={styles.centerAlignment}>
-      <div className={styles.tableWrapper}>
-        <DataGrid
-          apiRef={apiRef}
-          rows={props.rows}
-          columns={columnsWithActions(props)}
-          autoHeight={true}
-          localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
-          density="standard"
-          checkboxSelection
-          disableRowSelectionOnClick
-          onRowSelectionModelChange={setRowSelectionModel}
-          keepNonExistentRowsSelected
-          loading={isLoading}
-          showToolbar
-          slots={{ toolbar: CustomToolBar }}
-          slotProps={{
-            toolbar: {
-              isLoading,
-              selectedCount: apiRef.current ? apiRef.current.getSelectedRows().size : 0,
-              onCreate: handleCreate,
-              onRefresh: handleRefresh,
-              onDelete: handleDeleteClick,
-							onCsvFileCreate: handleCsvExportClick,
-							onJsonFileCreate: handleJsonExportClick,
-            }
-          }}
-          sx={{
-            border: 'none',
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: 'var(--mui-palette-background-default)',
-              borderBottom: '2px solid var(--mui-palette-divider)',
-            },
-            '& .MuiDataGrid-cell': {
-              borderBottom: '1px solid var(--mui-palette-divider)',
-            },
-            '& .MuiDataGrid-cell:focus': {
-              outline: 'none',
-            },
-          }}
-          getRowClassName={(params) => 
-            params.indexRelativeToCurrentPage % 2 === 0 ? styles.evenRow : styles.oddRow
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        width: '100%',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3, // Твои 12px
+        overflow: 'hidden',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)'
+      }}
+    >
+      <DataGrid
+        apiRef={apiRef}
+        rows={props.rows}
+        columns={columnsWithActions(props)}
+        autoHeight={true}
+        localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
+        density="standard"
+        checkboxSelection
+        disableRowSelectionOnClick
+        onRowSelectionModelChange={setRowSelectionModel}
+        keepNonExistentRowsSelected
+        loading={isLoading}
+        showToolbar
+        slots={{ toolbar: CustomToolBar }}
+        slotProps={{
+          toolbar: {
+            isLoading,
+            selectedCount: apiRef.current ? apiRef.current.getSelectedRows().size : 0,
+            onCreate: handleCreate,
+            onRefresh: handleRefresh,
+            onDelete: handleDeleteClick,
+						onCsvFileCreate: handleCsvExportClick,
+						onJsonFileCreate: handleJsonExportClick,
           }
-          initialState={{
-            pagination: { paginationModel: { pageSize: 10 } }
-          }}
-          pageSizeOptions={[10, 20, 50]}
-        />
-      </div>
-    </div>
+        }}
+        sx={{
+          border: 'none',
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: 'var(--mui-palette-background-default)',
+            borderBottom: '2px solid var(--mui-palette-divider)',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid var(--mui-palette-divider)',
+          },
+          '& .MuiDataGrid-cell:focus': {
+            outline: 'none',
+          },
+        }}
+        getRowClassName={(params) => 
+          params.indexRelativeToCurrentPage % 2 === 0 ? styles.evenRow : styles.oddRow
+        }
+        initialState={{
+          pagination: { paginationModel: { pageSize: 10 } }
+        }}
+        pageSizeOptions={[10, 20, 50]}
+      />
+    </Paper>
   );
 };
 

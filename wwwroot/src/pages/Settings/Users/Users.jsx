@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 
-import DataTable from "../../../components/DataTable/DataTable.jsx";
 import { useAuth } from '../../../context/AuthContext.jsx';
+import PageContainer from "../../../components/PageContainer.jsx";
+import DataTable from "../../../components/DataTable/DataTable.jsx";
 import DialogUsers from "./DialogUsers.jsx";
 
 import { fetchGetData, fetchGetSuperAdminData, fetchDeleteByIds, fetchPostData, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
+import { systemRoles } from '../../../constants/roles.js';
 
-const columns = [
+const columns =(schedules) => [
   // { 
   //     field: 'id', 
   //     headerName: 'ID', 
@@ -30,9 +32,25 @@ const columns = [
     width: 130 
   },
   { 
-    field: 'idWorkSchedule', 
+    field: 'idworkSchedule', //idworkSchedule
     headerName: 'График работы', 
-    width: 130 
+    width: 130,
+    valueGetter: (value, row) => {
+      if (!schedules || schedules.length === 0) return 'Загрузка...';
+  
+      const currentId = value || row?.idWorkSchedule;
+      const foundSchedule = schedules.find(s => s.id === currentId);
+  
+      if (foundSchedule) {
+        // if (foundSchedule.workShift) {
+        //   return foundSchedule.workShift;
+        // }
+
+        return `${foundSchedule.startTime.slice(0, 5)} - ${foundSchedule.endTime.slice(0, 5)}`
+      }
+  
+      return schedules[0]?.workShift || '';
+    }
   },
   { 
     field: 'email', 
@@ -46,9 +64,13 @@ const columns = [
     valueFormatter: (params) => params.value === 'MALE' ? 'М' : 'Ж' // Пример форматирования
   },
   { 
-    field: 'systemRole', 
+    field: 'systemRoleId', 
     headerName: 'Роль', 
-    width: 120 
+    width: 120,
+    valueGetter: (value, row)=>{
+      const role = systemRoles.find(r => r.id == row?.systemRoleId);
+      return role.name;
+    }
   },
   { 
     field: 'jobPosition', 
@@ -80,7 +102,7 @@ const columns = [
 
 const Users = () => {
     const [data, setData] = useState([]); 
-    const [workSchedule, setworkSchedule] = useState([]);
+    const [workSchedule, setWorkSchedule] = useState([]);
     const { isSuperAdmin } = useAuth();   
 
     useEffect(() =>{
@@ -88,13 +110,13 @@ const Users = () => {
         fetchGetSuperAdminData('/api/user', isSuperAdmin), 
         fetchGetData('/api/work-schedule')
       ])
-        .then(([users, schedules]) => {
+        .then(([users, schedules, roles]) => {
           setData(users);
-          setworkSchedule(schedules);
+          setWorkSchedule(schedules);
         }); 
     }, []);     
 
-  //// Методы для открытия соотв. окон //////////////////////////  
+//// Методы для открытия соотв. окон //////////////////////////  
   // Состояние модального окна
   const [modalMode, setModalMode] = useState(null); // 'add' | 'edit' | 'delete'
   const [currentRecord, setCurrentRecord] = useState(null); // Данные для редактирования
@@ -191,11 +213,10 @@ const Users = () => {
 
 
   return (
-    <>
-      <h2>Пользователи</h2>
+    <PageContainer title="Пользователи">
       <DataTable 
         rows={data} 
-        columns={columns} 
+        columns={columns(workSchedule)} 
         fileName="users"
         onAdd={handleOpenAdd} 
         onEdit={handleOpenEdit} 
@@ -213,9 +234,9 @@ const Users = () => {
         handleRestore={handleRestore}
         handleSave={handleSave} 
         handleClose={handleClose} 
-      />   
+      />    
 
-    </>
+    </PageContainer>
   );
 };
 export default Users;
