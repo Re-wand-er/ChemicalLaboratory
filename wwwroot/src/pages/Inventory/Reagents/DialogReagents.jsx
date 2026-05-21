@@ -192,71 +192,100 @@ const DialogReagents = ({
   return (        
     <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
       <DialogContent>
-        {((modalMode === 'writeOff' || modalMode === 'income' || modalMode === 'order') && currentRecord)
-          &&
-        (
-          <>
-            <DialogTitle>
-              {modalMode === 'writeOff' ? 'Списание' : modalMode === 'income' ? 'Внесение' : 'Заказ'}
+        {(modalMode === 'writeOff' || modalMode === 'income' || modalMode === 'order' && currentRecord) && (
+          <Box sx={{ width: '100%' }}>
+            <DialogTitle sx={{ textAlign: 'center', mb: 1, fontSize: 32, fontWeight: 'bold'}}>
+              {modalMode === 'writeOff' ? 'Списание' : modalMode === 'income' ? 'Внесение' : 'Заказ реагента'}
             </DialogTitle>
-
-            {writeOffRows.map(row => (
-            <Grid container spacing={2} alignItems="center" key={row.id} sx={{ mb: 2 }}>
-
-              <Grid item xs={4}>
-                <Typography>{row.name}</Typography>
-              </Grid>
-              
+        
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              pb: 1, 
+              mb: 2, 
+              borderBottom: '1px solid #e0e0e0' 
+            }}>
+              <Box sx={{ flex: 1, pr: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Наименование</Typography>
+              </Box>
+          
               {modalMode === 'order' && (
                 <>
-                  <Grid item xs={1}>
-                    <Typography>{row.currentQuantity}</Typography>
-                  </Grid>
-
-                  <Grid item xs={1}>
-                    <Typography>{row.minQuantity}</Typography>
-                  </Grid>
+                  <Box sx={{ width: 85, pr: 1, textAlign: 'center' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', lineHeight: 1.2 }}>Текущий остаток</Typography>
+                  </Box>
+                  <Box sx={{ width: 85, pr: 1, textAlign: 'center' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', lineHeight: 1.2 }}>Мин. остаток</Typography>
+                  </Box>
                 </>
               )}
 
-              {/* <Divider orientation='vartical'></Divider> */}
-              <Grid item xs={3}>
-                <TextField
-                  type="number"
-                  size="small"
-                  fullWidth
-                  value={row.quantity}
-                  onChange={(e) =>
-                    handleQuantityChange(row.id, e.target.value)
-                  }
-                />
-              </Grid>
-                
-              <Grid item xs={1}>
-                <Typography>{row.unit}</Typography>
-              </Grid>
-                
-              {modalMode === 'writeOff' &&  
-                <Grid item xs={4}>
-                  <FormControl fullWidth size="small">
-                    <Select
-                      value={row.operationType}
-                      onChange={(e) =>
-                        handleOperationChange(row.id, e.target.value)
-                      }
-                    >
-                      <MenuItem value="writeOff">Списание</MenuItem>
-                      <MenuItem value="correction">Корректировка</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              }
-                  
-            </Grid>
-          ))}
-          
-        </>
+              <Box sx={{ width: 100, pr: 2 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Количество</Typography>
+              </Box>
+            
+              <Box sx={{ width: 50, pr: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Ед. изм.</Typography>
+              </Box>
+            
+              {/* Тип операции только для Списания */}
+              {modalMode === 'writeOff' && (
+                <Box sx={{ width: 140 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Тип операции</Typography>
+                </Box>
+              )}
+            </Box>
+            
+            {writeOffRows.map(row => (
+              <Box key={row.id} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+
+                <Box sx={{ flex: 1, pr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <Typography title={row.name}>{row.name}</Typography>
+                </Box>
+            
+                {modalMode === 'order' && (
+                  <>
+                    <Box sx={{ width: 85, pr: 1, textAlign: 'center' }}>
+                      <Typography>{row.currentQuantity}</Typography>
+                    </Box>
+                    <Box sx={{ width: 85, pr: 1, textAlign: 'center' }}>
+                      <Typography>{row.minQuantity}</Typography>
+                    </Box>
+                  </>
+                )}
+
+                <Box sx={{ width: 100, pr: 2 }}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={row.quantity}
+                    onChange={(e) => handleQuantityChange(row.id, e.target.value)}
+                  />
+                </Box>
+              
+                <Box sx={{ width: 50, pr: 1 }}>
+                  <Typography>{row.unit}</Typography>
+                </Box>
+              
+                {modalMode === 'writeOff' && (
+                  <Box sx={{ width: 140 }}>
+                    <FormControl fullWidth size="small">
+                      <Select
+                        value={row.operationType || 'writeOff'}
+                        onChange={(e) => handleOperationChange(row.id, e.target.value)}
+                      >
+                        <MenuItem value="writeOff">Списание</MenuItem>
+                        <MenuItem value="correction">Корректировка</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                )}
+              </Box>
+            ))}
+          </Box>
         )}
+
 
         {(modalMode === 'delete' || modalMode === 'restore' && currentRecord) 
           && 

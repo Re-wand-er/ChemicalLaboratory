@@ -266,14 +266,7 @@ const Reagents = () => {
     }
   
     try {
-      const response = await fetch('/api/reagent/export-order-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderPayload), 
-        credentials: 'include'
-      });
+      const response = await fetchPostData('/api/reagent/export-order-pdf', orderPayload, true);
   
       if (!response.ok) {
         throw new Error(`Ошибка сервера: ${response.status}`);

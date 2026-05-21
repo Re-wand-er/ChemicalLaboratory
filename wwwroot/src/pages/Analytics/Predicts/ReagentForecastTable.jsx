@@ -1,58 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ruRU } from '@mui/x-data-grid/locales';
-import { Chip } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-
-import { fetchGetData } from '../../../api/fetch';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
 
 import styles from '../../../components/DataTable/dataTable.module.css'; // Неправильно, но делать правильно лень
-
-const columns = [
-  // { field: 'id', headerName: 'ID', width: 50 },
-  { field: 'name', headerName: 'Реактив', flex: 3 },
-  { field: 'currentQuantity', headerName: 'Остаток', type: 'number', width: 100 },
-  { field: 'minQuantity', headerName: 'Мин. кол-во', type: 'number', width: 100 },
-  { field: 'unit', headerName: 'Ед. изм.', width: 90 },
-  { field: 'avgConsumption', headerName: 'Среднее потр. в день', minWidth: 200, flex: 1 },
-  { field: 'daysToExpiry', headerName: 'Дней до просрочки', width: 150 },
-  { 
-    field: 'daysToZero', 
-    headerName: 'Дней до исчерпания (Остаток/Ср. потр.)', 
-    width: 170,
-    renderCell: (params) => (
-       params.value != 999 ? params.value :'–'
-    ),
-  },
-  { 
-    field: 'recommendedOrder', 
-    headerName: 'Заказ', 
-    renderCell: (params) => (
-      params.value > 0 ? <Chip label={params.value} color="error" /> : "—"
-    ), 
-    width: 100 
-  },
-  // { 
-  //   field: 'orderDeadline', 
-  //   headerName: 'Крайний срок', 
-  //   width: 130,
-  // },
-];
 
 /**
  * Прогноз просрочки отвечает на вопрос: «Какие реактивы и когда станут непригодными к использованию из-за истечения срока годности?»
  * 
  */ 
-const ReagentForecastTable = () => {
+const ReagentForecastTable = ({ columns, rows, onSelectionCountChange }) => {
+  const apiRef = useGridApiRef();
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
-  const [rows, setRows] = useState([]);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
     page: 0,
   });
-  
-  useEffect(() => {
-    fetchGetData('/api/reagent/forecast', setRows);
-  }, []);
+
+  const handleSelectionChange = () => {
+    setRowSelectionModel(apiRef.current.getSelectedRows());
+    
+    // Пробрасываем длину массива (количество выбранных строк) вверх
+    if (apiRef.current.getSelectedRows()) {
+      onSelectionCountChange(apiRef.current.getSelectedRows());
+    }
+  };
 
   return (
     <DataGrid 
@@ -68,7 +39,8 @@ const ReagentForecastTable = () => {
         },
       }}
 
-      onRowSelectionModelChange={setRowSelectionModel}
+      apiRef={apiRef}
+      onRowSelectionModelChange={handleSelectionChange}
 
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
