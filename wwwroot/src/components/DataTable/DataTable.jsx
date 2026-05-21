@@ -5,9 +5,10 @@ import { Stack, IconButton, useTheme, Paper } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import CustomToolBar from './CustomToolBar.jsx';
-import { exportCsvFile, exportJsonFile } from '../../utils/dataExportFotmat.js';
 
 import styles from './dataTable.module.css';
 
@@ -16,9 +17,20 @@ const columnsWithActions = (props) => [
   {
     field: 'actions',
     headerName: 'Действия',
-    width: 120,
+    width: 200,
     sortable: false,
     renderCell: (params) => {
+
+      const handleWriteOff = () => {
+        if (props.onWriteOff) props.onWriteOff(params.row);
+        else console.error('Не найден обработчик для обновления записи');
+      };
+
+      const handleIncome = () => {
+        if (props.onIncome) props.onIncome(params.row);
+        else console.error('Не найден обработчик для обновления записи');
+      };
+
       const handleEdit = () => {
         if (props.onEdit) props.onEdit(params.row);
         else console.error('Не найден обработчик для обновления записи');
@@ -36,6 +48,22 @@ const columnsWithActions = (props) => [
 
       return (
         <Stack direction="row" spacing={1}>
+          <IconButton
+            color="warning"
+            onClick={handleWriteOff}
+            size="medium"
+          >
+            <RemoveCircleOutlineIcon />
+          </IconButton>
+
+          <IconButton
+            color="success"
+            onClick={handleIncome}
+            size="medium"
+          >
+            <AddCircleOutlineIcon />
+          </IconButton>
+
           <IconButton
             color="primary"
             onClick={handleEdit}
@@ -75,12 +103,10 @@ const DataTable = (props) => {
   const apiRef = useGridApiRef();
   const theme = useTheme();
 
-  const [rowSelectionMode, setRowSelectionModel] = useState([]);
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [localLoading, setLocalLoading] = useState(false);
 
   const isLoading = props.loading || localLoading;
-  const useAutoHeight = props.rows.length < 10;
-
 
   ///// Служат адапторами для шапки ///////////////////
   const handleCreate = () => props.onAdd?.();
@@ -97,13 +123,26 @@ const DataTable = (props) => {
     if (rows.size > 0) { props.onDelete?.(rows);}
   };
 
-	const handleCsvExportClick = () => {
-		exportCsvFile(props.fileName || "data", props.rows);
-	}
+  const handleWriteOff = () => {
+    const selectedMap = apiRef.current.getSelectedRows(); 
+    if (selectedMap.size > 0) { 
+      const selectedArray = Array.from(selectedMap.values());
+      props.onWriteOff?.(selectedArray); 
+    }
+  };
 
-	const handleJsonExportClick = () => {
-		exportJsonFile(props.fileName || "data", props.rows);
-	}
+  const handleOrder = () => {
+    const selectedMap = apiRef.current.getSelectedRows(); 
+    if (selectedMap.size > 0) { 
+      const selectedArray = Array.from(selectedMap.values());
+      props.onOrder?.(selectedArray); 
+    }
+  };
+
+  const handleIncome = () => {
+    const rows = apiRef.current.getSelectedRows(); 
+    if (rows.size > 0) { props.onIncome?.(rows);}
+  };
   /////////////////////////////////////////////////////
 
   return (
@@ -113,7 +152,7 @@ const DataTable = (props) => {
         width: '100%',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 3, // Твои 12px
+        borderRadius: 3, 
         overflow: 'hidden',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)'
       }}
@@ -139,8 +178,12 @@ const DataTable = (props) => {
             onCreate: handleCreate,
             onRefresh: handleRefresh,
             onDelete: handleDeleteClick,
-						onCsvFileCreate: handleCsvExportClick,
-						onJsonFileCreate: handleJsonExportClick,
+            onWriteOff: handleWriteOff,
+            onIncome: handleIncome,
+            onOrder: handleOrder,
+            onQrIncome: props.onQrIncome,
+            rows: props.rows,
+            columns: columnsWithActions(props)
           }
         }}
         sx={{

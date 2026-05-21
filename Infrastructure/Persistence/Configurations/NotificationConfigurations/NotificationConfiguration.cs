@@ -32,6 +32,9 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.Property(x => x.IsRead)
                 .HasDefaultValue(false);
 
+            builder.Property(x => x.FilePath)
+                .HasMaxLength(200);    
+
             builder.HasOne(x => x.Reagent)
                 .WithMany(x => x.Notifications)
                 .HasForeignKey(x => x.ReagentId);

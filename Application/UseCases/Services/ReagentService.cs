@@ -13,12 +13,23 @@ namespace ChemicalLaboratory.Application.UseCases.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
+        private readonly GeneratePDFService _generatePdfService;
+        private readonly QrDecoderService _qrDecoderService;
         private readonly ILogger<ReagentService> _logger;
 
-        public ReagentService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, ILogger<ReagentService> logger)
+        public ReagentService
+        (
+            IUnitOfWork unitOfWork, 
+            ICurrentUserService currentUserService, 
+            GeneratePDFService generatePdfService, 
+            QrDecoderService qrDecoderService,
+            ILogger<ReagentService> logger
+        )
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _generatePdfService = generatePdfService;
+            _qrDecoderService = qrDecoderService;
             _logger = logger;
         }
 
@@ -103,28 +114,6 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             await _unitOfWork.SaveAsync();
         }
 
-        // public async Task<ReagentDTO> UpdateAsync(ReagentUpdateDTO dto)
-        // {
-        //     var userId = _currentUserService.GetRequiredUserId();
-
-        //     _logger.LogInformation($"Updated reagent with id: {dto.Id}");
-
-        //     var existingReagent = await _unitOfWork.Reagents.GetByIdAsync(dto.Id);
-        //     if (existingReagent == null) 
-        //         throw new KeyNotFoundException("Reagent not found");
-
-        //     var reagentDto = existingReagent.Adapt<ReagentDTO>();
-        //     dto.Adapt(existingReagent);
-
-        //     var historyEntry = ReagentOperation.Create(userId, OperationTypeEnum.Update, existingReagent, "Редактирование параметров реактива");
-            
-        //     await _unitOfWork.ReagentOperations.AddAsync(historyEntry);
-        //     await _unitOfWork.SaveAsync();
-
-        //     return existingReagent.Adapt<ReagentDTO>();
-        // }
-
-
         public async Task<ReagentDTO> UpdateAsync(ReagentUpdateDTO dto)
         {
             var userId = _currentUserService.GetRequiredUserId();
@@ -164,6 +153,140 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             // CategoryName почему-то пустой
             return existingReagent.Adapt<ReagentDTO>(); 
         }
+
+        public async Task<List<ReagentDTO>> UpdateBatchAsync(
+            List<ReagentUpdateDTO> dtos)
+        {
+            var userId = _currentUserService.GetRequiredUserId();
+            var updatedReagents = new List<ReagentDTO>();
+            var lowStockReagets = new List<ReagentDTO>();
+
+            foreach (var dto in dtos)
+            {
+                var reagent = await _unitOfWork.Reagents.GetByIdAsync(dto.Id);
+
+                if (reagent == null)
+                    throw new KeyNotFoundException(
+                        $"Reagent with id {dto.Id} not found");
+
+                dto.Adapt(reagent);
+
+                var historyEntry = ReagentOperation.Create(
+                    userId,
+                    OperationTypeEnum.Update,
+                    reagent,
+                    "Массовое редактирование реактивов"
+                );
+
+                await _unitOfWork.ReagentOperations.AddAsync(historyEntry);
+
+                if(reagent.CurrentQuantity < reagent.MinQuantity)
+                    lowStockReagets.Add(reagent.Adapt<ReagentDTO>());
+
+                updatedReagents.Add(reagent.Adapt<ReagentDTO>());
+            }
+
+            await _unitOfWork.SaveAsync();
+
+            string pdfRelativePath = await _generatePdfService.GenerateLowStockInvoicePdfAsync(lowStockReagets);
+
+            if (!string.IsNullOrEmpty(pdfRelativePath))
+            {
+                var batchNotification = Notification.Create(
+                    userId,
+                    null,
+                    "Low_Quantity", 
+                    "Обнаружен дефицит реагентов",
+                    "Сформирована накладная на закупку.",
+                    pdfRelativePath 
+                );
+
+                await _unitOfWork.Notifications.AddAsync(batchNotification);
+                await _unitOfWork.SaveAsync();
+            }
+
+            return updatedReagents;
+        }
+
+
+        public async Task<string> CreateOrderInvoiceFromInputsAsync(List<ReagentOrderInputDTO> orderItems)
+        {
+            if (orderItems == null || !orderItems.Any())
+                return string.Empty;
+
+            var reagentDTOs = new List<ReagentDTO>();
+
+            foreach (var item in orderItems)
+            {
+                var reagent = await GetByIdAsync(item.Id);
+                if (reagent != null)
+                {
+                    var baseDto = reagent.Adapt<ReagentDTO>();
+
+                    var modifiedDto = baseDto with 
+                    { 
+                        MinQuantity = item.Quantity, 
+                        CurrentQuantity = 0 
+                    };
+
+                    reagentDTOs.Add(modifiedDto);
+                }
+            }
+
+            return await _generatePdfService.GenerateLowStockInvoicePdfAsync(reagentDTOs);
+        }
+  
+
+
+        public async Task<List<ReagentDTO>> ProcessIncomeFromQrImagesAsync(List<Stream> imageStreams)
+        {
+            var userId = _currentUserService.GetRequiredUserId();
+
+            var recognizedItems = await _qrDecoderService.DecodeReagentQrCodesAsync(imageStreams);
+
+            if (!recognizedItems.Any())
+                throw new InvalidOperationException("На загруженных фотографиях не обнаружено читаемых QR-кодов.");
+
+            var aggregatedItems = recognizedItems
+                .GroupBy(x => x.Id)
+                .Select(g => new QrReagentData(g.Key, g.Sum(x => x.Quantity)))
+                .ToList();
+
+            var updateDtos = new List<ReagentUpdateDTO>();
+
+            // 2. Для каждого распознанного QR запрашиваем текущие данные из БД и готовим UpdateDTO
+            foreach (var item in aggregatedItems)
+            {
+                var reagent = await _unitOfWork.Reagents.GetByIdAsync(item.Id);
+                if (reagent == null)
+                    throw new KeyNotFoundException($"Реактив с ID {item.Id} из QR-кода не найден в системе.");
+
+                // Рассчитываем новое количество (Приход: Текущее + Из QR)
+                decimal newQuantity = reagent.CurrentQuantity + item.Quantity;
+
+                // Создаем DTO для обновления, сохраняя старые параметры, но меняя количество
+                var dto = new ReagentUpdateDTO(
+                    Id: reagent.Id,
+                    Name: reagent.Name,
+                    ChemicalFormula: reagent.ChemicalFormula,
+                    Unit: reagent.Unit,
+                    CurrentQuantity: newQuantity, // Наше новое количество
+                    MinQuantity: reagent.MinQuantity,
+                    ExpirationDate: reagent.ExpirationDate,
+                    StorageLocation: reagent.StorageLocation,
+                    CategoryId: reagent.CategoryId,
+                    IsActive: reagent.IsActive
+                );
+
+                updateDtos.Add(dto);
+            }
+
+            // 3. Вызываем твой пакетный метод UpdateBatchAsync!
+            // Он сам запишет историю как "Массовое редактирование реактивов", 
+            // проверит дефицит и сгенерирует накладную, если это необходимо.
+            return await UpdateBatchAsync(updateDtos);
+        }
+
 
 
         public async Task<ReagentStockReportDTO> GetStockReportAsync()

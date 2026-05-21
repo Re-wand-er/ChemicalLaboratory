@@ -41,8 +41,9 @@ const columns = [
 /**
  * Прогноз просрочки отвечает на вопрос: «Какие реактивы и когда станут непригодными к использованию из-за истечения срока годности?»
  * 
- */
+ */ 
 const ReagentForecastTable = () => {
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [rows, setRows] = useState([]);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
@@ -58,6 +59,7 @@ const ReagentForecastTable = () => {
       rows={rows} 
       columns={columns} 
       density="standard"
+      checkboxSelection
       keepNonExistentRowsSelected
       localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
       initialState={{
@@ -65,6 +67,9 @@ const ReagentForecastTable = () => {
           sortModel: [{ field: 'recommendedOrder', sort: 'desc' }]
         },
       }}
+
+      onRowSelectionModelChange={setRowSelectionModel}
+
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
       pageSizeOptions={[10, 20, 50]}

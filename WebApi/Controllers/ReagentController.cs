@@ -84,6 +84,53 @@ namespace ChemicalLaboratory.WebApi.Controllers
             return Ok(updatedValue);
         }
 
+		[HttpPut("batch")]
+		public async Task<IActionResult> UpdateReagentsBatch(
+		    [FromBody] List<ReagentUpdateDTO> reagents)
+		{
+		    if (reagents == null || !reagents.Any())
+		        return BadRequest("Empty update list");
+		
+		    _logger.LogInformation($"Batch update reagents count = {reagents.Count}");
+		
+		    var result = await _reagentService.UpdateBatchAsync(reagents);
+		
+		    return Ok(result);
+		}
+
+
+		[HttpPost("income-by-qr")]
+    	public async Task<IActionResult> UploadQrImages([FromForm] List<IFormFile> files)
+    	{
+    	    if (files == null || !files.Any())
+    	        return BadRequest("Файлы изображений не переданы.");
+	
+    	    var streams = new List<Stream>();
+    	    try
+    	    {
+    	        foreach (var file in files)
+    	        {
+    	            var memoryStream = new MemoryStream();
+    	            await file.CopyToAsync(memoryStream);
+					
+					memoryStream.Position = 0; 
+    	            streams.Add(memoryStream);
+    	        }
+	
+    	        // Запускаем наш процесс распознавания и пакетного обновления
+    	        var result = await _reagentService.ProcessIncomeFromQrImagesAsync(streams);
+    	        return Ok(result);
+    	    }
+    	    finally
+    	    {
+    	        // Обязательно освобождаем потоки из памяти
+    	        foreach (var stream in streams)
+    	        {
+    	            await stream.DisposeAsync();
+    	        }
+    	    }
+    	}
+
 
         [HttpGet("stock-distribution")]
         public async Task<IActionResult> GetStockDistribution()
@@ -110,5 +157,28 @@ namespace ChemicalLaboratory.WebApi.Controllers
         [HttpGet("report")]
         public async Task<ActionResult<List<ReagentReportDTO>>> GetReagentReport([FromQuery] int? categoryId)
 			=> Ok(await _reagentService.GetReagentReportAsync(categoryId));
+
+
+		[HttpPost("export-order-pdf")]
+		public async Task<IActionResult> DownloadOrderPdf([FromBody] List<ReagentOrderInputDTO> orderItems)
+		{
+		    if (orderItems == null || !orderItems.Any())
+		        return BadRequest("Список заказа пуст.");
+
+		    string relativePath = await _reagentService.CreateOrderInvoiceFromInputsAsync(orderItems);
+
+		    if (string.IsNullOrEmpty(relativePath))
+		        return NotFound("Не удалось сформировать отчет. Реагенты не найдены.");
+
+		    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", relativePath.TrimStart('/'));
+		    if (!System.IO.File.Exists(fullPath))
+		        return NotFound("Файл отчета отсутствует на сервере.");
+
+		    var fileBytes = await System.IO.File.ReadAllBytesAsync(fullPath);
+		    string fileDownloadName = $"Заявка_Закупка_{DateTime.Now:dd_MM_yyyy}.pdf";
+
+		    return File(fileBytes, "application/pdf", fileDownloadName);
+		}
+
     }
 }

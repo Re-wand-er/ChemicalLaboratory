@@ -47,6 +47,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                 Title = n.Title,
                 Message = n.Message,
                 ReagentName = n.Reagent?.Name ?? "Общее",
+                FilePath = n.FilePath ?? null,
                 IsRead = n.IsRead,
                 CreatedAt = FormatRelativeTime(n.CreatedAt) 
             }).ToList();

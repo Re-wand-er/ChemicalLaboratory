@@ -22,7 +22,7 @@ const Predicts = () => {
           Прогноз
         </Typography>
         
-        {/* <Paper
+        <Paper
           elevation={0}
           sx={{
             border: 1,
@@ -50,7 +50,7 @@ const Predicts = () => {
               Экспорт в json
             </Button>
           </Stack> 
-        </Paper>*/}
+        </Paper>
       </Box>
 
       <ReagentForecastTable />

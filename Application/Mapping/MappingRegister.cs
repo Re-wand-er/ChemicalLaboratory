@@ -14,7 +14,7 @@ namespace ChemicalLaboratory.Application.Mapping
         {
             // Notifications ----------------------------------------
             config.NewConfig<Notification, NotificationDTO>()
-                .Map(dest => dest.ReagentName, src => src.Reagent.Name)
+                .Map(dest => dest.ReagentName, src => src.Reagent != null ? src.Reagent.Name : null)
                 .Map(dest => dest.UserName, src => src.User != null 
                     ? $"{src.User.LastName} {src.User.FirstName[0]}. {src.User.MiddleName[0]}."
                     : null);

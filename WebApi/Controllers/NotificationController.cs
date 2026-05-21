@@ -84,17 +84,25 @@ namespace ChemicalLaboratory.WebApi.Controllers
             return NoContent();
         }
 
-        // [HttpPost("bulk-delete")]
-        // public async Task<IActionResult> DeleteCategory([FromBody] DeleteManyRequestDTO request)
-        // {
-        //     _logger.LogInformation($"Deleted reagent with ids in ReagentController");
+        [HttpGet("{id:int}/download")]
+        public async Task<IActionResult> DownloadInvoice(int id)
+        {
+            var notification = await _notificationService.GetByIdAsync(id);
 
-        //     if (request.Ids == null || !request.Ids.Any())
-        //         return BadRequest("No ids provided.");
+            if (notification == null || string.IsNullOrEmpty(notification.FilePath))
+                return NotFound("Файл отчета не найден для данного уведомления.");
 
-        //     await _notificationService.DeleteAsync(request.Ids);
-        //     return Ok(new { succes = true });
-        // }
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", notification.FilePath.TrimStart('/'));
+
+            if (!System.IO.File.Exists(fullPath))
+                return NotFound("Файл физически отсутствует на сервере.");
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(fullPath);
+
+            var userFriendlyName = $"Накладная_Дефицит_{DateTime.Now:dd_MM_yyyy}.pdf";
+
+            return File(fileBytes, "application/pdf", userFriendlyName);
+        }
 
     }
 }

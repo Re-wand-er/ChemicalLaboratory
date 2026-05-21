@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react';
 import { 
-  Dialog, DialogTitle, DialogContent,
+  Dialog, DialogTitle, DialogContent, Box,
   TextField, Grid, FormControl, InputLabel, 
-  Select, MenuItem, FormControlLabel, Switch
+  Select, MenuItem, Typography
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
    
+
+import QrIncomeUploader from '../../Inventory/Reagents/QrIncomeUploader.jsx';
+
 import { DataTableDialogActions, DataTableDialogLabel } from "../../../components/DataTable/DataTableDialogElements.jsx";
 import { formatDate, dateConverter } from "../../../utils/formatDate.js";
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
 
 const deleteColumns = [
-  { field: 'id',              headerName: 'ID',             width: 30 },
+  //{ field: 'id',              headerName: 'ID',             width: 30 },
   { field: 'name',            headerName: 'Название',       width: 170, },
-  { field: 'unit',            headerName: 'Ед. изм.',       width: 80, },
   { field: 'currentQuantity', headerName: 'Кол-во',         width: 80,  type: 'number', valueFormatter: (value) => `${value || 0}`, },
+  { field: 'unit',            headerName: 'Ед. изм.',       width: 80, },
   { field: 'expirationDate',  headerName: 'Срок годности',  width: 140, type: 'date',   valueFormatter: (value) => formatDate(value, 'date'), },
 ];
+
+const orderColumns = [
+  //{ field: 'id',              headerName: 'ID',             width: 30 },
+  { field: 'name',            headerName: 'Название',       width: 170, },
+  { field: 'currentQuantity', headerName: 'Кол-во',         width: 80,  type: 'number', valueFormatter: (value) => `${value || 0}`, },
+  { field: 'minQuantity',     headerName: 'Мин. кол-во',    width: 100, type: 'number', valueFormatter: (value) => `${value || 0}`, },
+  { field: 'unit',            headerName: 'Ед. изм.',       width: 80, },
+  //{ field: 'expirationDate',  headerName: 'Срок годности',  width: 120, type: 'date',   valueFormatter: (value) => formatDate(value, 'date'), },
+];
+
 const units = ['мл', 'л', 'г', 'кг', 'мг', 'шт']; 
 
 const getFormData = (record = {}) => ({
@@ -32,8 +45,14 @@ const getFormData = (record = {}) => ({
   isActive: record.isActive !== undefined ? record.isActive : true
 });
 
-const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, handleSave, handleDelete, handleRestore, handleAdd } ) => {    
+const DialogReagents = ({ 
+    modalMode, currentRecord, categories, 
+    handleClose, handleSave, handleDelete, 
+    handleRestore, handleWriteOff, handleOrder, 
+    handleQrIncome, handleAdd }) => {    
 	const [formData, setFormData] = useState(getFormData());
+  const [writeOffRows, setWriteOffRows] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 	
   useEffect(() => {
     if (modalMode === 'add') {
@@ -43,6 +62,22 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
     }
   }, [modalMode]);
 
+  useEffect(() => {
+    if ((modalMode === 'writeOff' || modalMode === 'income' || modalMode === 'order') && currentRecord) {
+      const rows = getRecordsArray(currentRecord).map(item => ({
+        id: item.id,
+        name: item.name,
+        currentQuantity: item.currentQuantity,
+        minQuantity: item.minQuantity,
+        unit: item.unit,
+        quantity: '',
+        operationType: 'writeOff' 
+      }));
+  
+      setWriteOffRows(rows);
+    }
+  }, [modalMode, currentRecord]);
+
   const handleChange = (field) => (event) => {
     setFormData({
         ...formData,
@@ -50,20 +85,181 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
     });
   };
 
+  const handleWriteOffChange = (field) => (event) => {
+    setFormData({
+        ...writeOffRows,
+        [field]: event.target.value
+    });
+  };
+
+  const handleQuantityChange = (id, value) => {
+    setWriteOffRows(prev =>
+      prev.map(row =>
+        row.id === id
+          ? { ...row, quantity: value }
+          : row
+      )
+    );
+  };
+
+  const handleOperationChange = (id, value) => {
+    setWriteOffRows(prev =>
+      prev.map(row =>
+        row.id === id
+          ? { ...row, operationType: value }
+          : row
+      )
+    );
+  };
+
   // Адаптеры
   const onAdd = () =>{
     handleAdd(formData);
   }
+ 
+  const onSave = () => {
+    if (modalMode === 'add' || modalMode === 'edit') {
+      handleSave(formData);
+      return;
+    }
+  
+    if (modalMode === 'writeOff' || modalMode === 'income') {
+      
+      const hasChanges = writeOffRows.some(row => Number(row.quantity) > 0);
+      if (!hasChanges) {
+        return;
+      }
+  
+      const originalRecords = getRecordsArray(currentRecord);
+  
+      const payload = originalRecords.map(item => {
+        const rowUpdate = writeOffRows.find(row => row.id === item.id);
+        const userEnteredQuantity = rowUpdate ? Number(rowUpdate.quantity || 0) : 0;
+  
+        let newQuantity = Number(item.currentQuantity || 0);
+        
+        if (modalMode === 'writeOff') {
+          newQuantity -= userEnteredQuantity;
+        } else if (modalMode === 'income') {
+          newQuantity += userEnteredQuantity;
+        }
+  
+        return {
+          ...item,
+          currentQuantity: newQuantity,
+          chemicalFormula: item.chemicalFormula || null,
+          storageLocation: item.storageLocation || null,
+          expirationDate: item.expirationDate || null,
+          isActive: item.isActive ?? true 
+        };
+      });
 
-  const onSave = () =>{
-    handleSave(formData);
-  }
+      handleWriteOff(payload); 
+    }
+  };
+  
+  const onOrder = () => {
+    const changedRows = writeOffRows.filter(row => Number(row.quantity) > 0);
+    
+    if (changedRows.length === 0) {
+      return; 
+    }
+  
+    const payload = changedRows.map(row => ({
+      id: row.id,
+      quantity: Number(row.quantity)
+    }));
+  
+    handleOrder(payload); 
+  };
+  
+  const handleConfirmQrIncome = async () => {
+    if (uploadedFiles.length === 0) {
+      alert("Пожалуйста, выберите хотя бы одну фотографию с QR-кодом.");
+      return;
+    }
+  
+    //setIsLoading(true); // Включаем крутилку MUI (CircularProgress)
+    try {
+      await handleQrIncome(uploadedFiles);
+      
+      setUploadedFiles([]); 
+    } finally {
+      //setIsLoading(false); // Выключаем крутилку
+    }
+  };
 
   return (        
     <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
       <DialogContent>
+        {((modalMode === 'writeOff' || modalMode === 'income' || modalMode === 'order') && currentRecord)
+          &&
+        (
+          <>
+            <DialogTitle>
+              {modalMode === 'writeOff' ? 'Списание' : modalMode === 'income' ? 'Внесение' : 'Заказ'}
+            </DialogTitle>
+
+            {writeOffRows.map(row => (
+            <Grid container spacing={2} alignItems="center" key={row.id} sx={{ mb: 2 }}>
+
+              <Grid item xs={4}>
+                <Typography>{row.name}</Typography>
+              </Grid>
+              
+              {modalMode === 'order' && (
+                <>
+                  <Grid item xs={1}>
+                    <Typography>{row.currentQuantity}</Typography>
+                  </Grid>
+
+                  <Grid item xs={1}>
+                    <Typography>{row.minQuantity}</Typography>
+                  </Grid>
+                </>
+              )}
+
+              {/* <Divider orientation='vartical'></Divider> */}
+              <Grid item xs={3}>
+                <TextField
+                  type="number"
+                  size="small"
+                  fullWidth
+                  value={row.quantity}
+                  onChange={(e) =>
+                    handleQuantityChange(row.id, e.target.value)
+                  }
+                />
+              </Grid>
+                
+              <Grid item xs={1}>
+                <Typography>{row.unit}</Typography>
+              </Grid>
+                
+              {modalMode === 'writeOff' &&  
+                <Grid item xs={4}>
+                  <FormControl fullWidth size="small">
+                    <Select
+                      value={row.operationType}
+                      onChange={(e) =>
+                        handleOperationChange(row.id, e.target.value)
+                      }
+                    >
+                      <MenuItem value="writeOff">Списание</MenuItem>
+                      <MenuItem value="correction">Корректировка</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              }
+                  
+            </Grid>
+          ))}
+          
+        </>
+        )}
+
         {(modalMode === 'delete' || modalMode === 'restore' && currentRecord) 
-          ? 
+          && 
         (
           <>
             <DataTableDialogLabel
@@ -87,8 +283,26 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
             />
             
           </>
-        )
-          : 
+        )}
+
+
+        {modalMode === 'qrIncome' && (
+          <Box sx={{ p: 1 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: 'primary.main' }}>
+              Пакетное зачисление реагентов по фото QR
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Загрузите фотографии этикеток с QR-кодами. АИС автоматически распознает идентификаторы реактивов и увеличит их текущий остаток на складе.
+            </Typography>
+        
+            <QrIncomeUploader 
+              onFilesSelected={setUploadedFiles} 
+            />
+          </Box>
+        )}
+
+        {( modalMode === 'add' || modalMode === 'edit' && currentRecord)
+          &&
         (
           <>
             <DialogTitle children={modalMode === 'add' ? 'Добавить реагент' : `Изменить реагент`} />
@@ -184,19 +398,6 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
                   </Select>
                 </FormControl>
               </Grid>
-
-              {/* <Grid>
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.isActive}
-                      onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                    />
-                  }
-                  label="Активен"
-                />
-              </Grid> */}
             </Grid>
 
           </>
@@ -211,6 +412,10 @@ const DialogReagents = ( { modalMode, currentRecord, categories, handleClose, ha
         handleRestore={handleRestore}
         handleSave={onSave} 
         handleClose={handleClose}
+        handleWriteOff={onSave} //handleWriteOff
+        handleIncome={onSave} //handleIncome
+        handleOrder={onOrder}
+        handleQrIncome={handleConfirmQrIncome}
         />
 
     </Dialog>

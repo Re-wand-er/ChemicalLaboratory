@@ -29,6 +29,29 @@ const DataTableDialogActions = (props) =>{
         </Button>
       }
 
+      { props.modalMode === 'writeOff' &&
+        <Button onClick={props.handleWriteOff} variant="contained" color="warning">
+          Списать
+        </Button>
+      }
+
+      { props.modalMode === 'income' &&
+        <Button onClick={props.handleIncome} variant="contained" color="success">
+          Внести
+        </Button>
+      }
+
+      { props.modalMode === 'order' &&
+        <Button onClick={props.handleOrder} variant="contained" color="secondary">
+          Заказать
+        </Button>
+      }
+
+      { props.modalMode === 'qrIncome' &&
+        <Button onClick={props.handleQrIncome} variant="contained" color="success">
+          Добавить
+        </Button>
+      }
     </DialogActions>
   );
 };
@@ -39,7 +62,10 @@ const DataTableDialogLabel = ({modalMode, size, deleteOne, deleteMany, restoreOn
 			return size > 1 ? deleteMany : deleteOne;
 		}
 		if (modalMode === 'restore') {
-       return size > 1 ? restoreMany : restoreOne;
+      return size > 1 ? restoreMany : restoreOne;
+    }
+    if (modalMode === 'order') {
+      return size > 1 ? deleteMany : deleteOne;
     }
     return '';
 	}

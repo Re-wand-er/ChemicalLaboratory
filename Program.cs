@@ -39,6 +39,8 @@ namespace ChemicalLaboratory
             builder.Host.UseSerilog();
 
             //------------------------------------------------------------------------------------------------------------
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            //------------------------------------------------------------------------------------------------------------
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -122,6 +124,8 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<SupplierService>();
             builder.Services.AddScoped<NotificationService>();
+            builder.Services.AddScoped<GeneratePDFService>();
+            builder.Services.AddScoped<QrDecoderService>();
 
             //------------------------------------------------------------------------------------------------------------
 

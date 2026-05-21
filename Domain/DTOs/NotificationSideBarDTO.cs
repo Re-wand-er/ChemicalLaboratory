@@ -6,6 +6,7 @@
         public string Title { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public string ReagentName { get; set; } = string.Empty;
+        public string? FilePath {get; set; } = string.Empty;
         public string CreatedAt { get; set; } = string.Empty;
         public bool IsRead { get; set; }
     }
