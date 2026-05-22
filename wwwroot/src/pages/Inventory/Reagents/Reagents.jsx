@@ -333,7 +333,6 @@ const Reagents = () => {
       }
   
       const updatedReagents = await response.json();
-      
       if (typeof handleQrUpdateSuccess === 'function') {
         handleQrUpdateSuccess(updatedReagents);
       }
@@ -363,6 +362,7 @@ const Reagents = () => {
         onOrder={handleOpenOrder}
         onQrIncome={handleOpenQrIncome}
         isSuperAdmin={isSuperAdmin}
+        isReagent={true}
       />
 
       <DialogReagents 

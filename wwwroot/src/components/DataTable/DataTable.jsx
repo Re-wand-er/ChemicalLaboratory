@@ -17,7 +17,7 @@ const columnsWithActions = (props) => [
   {
     field: 'actions',
     headerName: 'Действия',
-    width: 200,
+    flex: 2,
     sortable: false,
     renderCell: (params) => {
 
@@ -48,21 +48,25 @@ const columnsWithActions = (props) => [
 
       return (
         <Stack direction="row" spacing={1}>
-          <IconButton
-            color="warning"
-            onClick={handleWriteOff}
-            size="medium"
-          >
-            <RemoveCircleOutlineIcon />
-          </IconButton>
+          {props.isReagent &&
+            <>
+              <IconButton
+                color="warning"
+                onClick={handleWriteOff}
+                size="medium"
+              >
+                <RemoveCircleOutlineIcon />
+              </IconButton>
 
-          <IconButton
-            color="success"
-            onClick={handleIncome}
-            size="medium"
-          >
-            <AddCircleOutlineIcon />
-          </IconButton>
+              <IconButton
+                color="success"
+                onClick={handleIncome}
+                size="medium"
+              >
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </>
+          }
 
           <IconButton
             color="primary"
@@ -141,7 +145,7 @@ const DataTable = (props) => {
 
   const handleIncome = () => {
     const rows = apiRef.current.getSelectedRows(); 
-    if (rows.size > 0) { props.onIncome?.(rows);}
+    if (rows.size > 0) { props.onIncome?.(rows); }
   };
   /////////////////////////////////////////////////////
 
@@ -174,6 +178,7 @@ const DataTable = (props) => {
         slotProps={{
           toolbar: {
             isLoading,
+            isReagent: props.isReagent,
             selectedCount: apiRef.current ? apiRef.current.getSelectedRows().size : 0,
             onCreate: handleCreate,
             onRefresh: handleRefresh,

@@ -11,7 +11,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import ExportFormat from '../../pages/Reports/ExportFormat';
 
-const CustomToolbar = ({ isLoading, selectedCount, onCreate, onDelete, onWriteOff, onIncome, onOrder, onQrIncome, columns, rows }) => {
+const CustomToolbar = ({ isLoading, selectedCount, onCreate, onDelete, onWriteOff, onIncome, onOrder, onQrIncome, columns, rows, isReagent = false }) => {
   return (
     <Toolbar 
       sx={{ 
@@ -32,49 +32,52 @@ const CustomToolbar = ({ isLoading, selectedCount, onCreate, onDelete, onWriteOf
             Создать
           </Button>
         
-
-          <Button 
-            variant="contained" 
-            color="success" 
-            startIcon={<QrCodeScannerIcon />} 
-            onClick={onQrIncome} 
-            size="small"
-          >
-            Внести по Qr
-          </Button>
-
-          <Button 
-            variant="contained" 
-            color="warning" 
-            startIcon={<RemoveCircleOutlineIcon />} 
-            onClick={onWriteOff} 
-            size="small"
-            disabled={selectedCount === 0}
-          >
-            Списание {selectedCount > 0 && `(${selectedCount})`}
-          </Button>
-
-          <Button 
-            variant="contained" 
-            color="success" 
-            startIcon={<AddCircleOutlineIcon />} 
-            onClick={onIncome} 
-            size="small"
-            disabled={selectedCount === 0}
-          >
-            Внесение {selectedCount > 0 && `(${selectedCount})`}
-          </Button>
-
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            startIcon={<PictureAsPdfIcon />}
-            onClick={onOrder} 
-            size="small"
-            disabled={selectedCount === 0}
-          >
-            Заказать {selectedCount > 0 && `(${selectedCount})`}
-          </Button>
+          {isReagent &&
+            <>
+              <Button 
+                variant="contained" 
+                color="success" 
+                startIcon={<QrCodeScannerIcon />} 
+                onClick={onQrIncome} 
+                size="small"
+              >
+                Внести по Qr
+              </Button>
+            
+              <Button 
+                variant="contained" 
+                color="warning" 
+                startIcon={<RemoveCircleOutlineIcon />} 
+                onClick={onWriteOff} 
+                size="small"
+                disabled={selectedCount === 0}
+              >
+                Списание {selectedCount > 0 && `(${selectedCount})`}
+              </Button>
+            
+              <Button 
+                variant="contained" 
+                color="success" 
+                startIcon={<AddCircleOutlineIcon />} 
+                onClick={onIncome} 
+                size="small"
+                disabled={selectedCount === 0}
+              >
+                Внесение {selectedCount > 0 && `(${selectedCount})`}
+              </Button>
+            
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                startIcon={<PictureAsPdfIcon />}
+                onClick={onOrder} 
+                size="small"
+                disabled={selectedCount === 0}
+              >
+                Заказать {selectedCount > 0 && `(${selectedCount})`}
+              </Button>
+            </>
+          }
         </Stack>
 
         <Stack direction="row" spacing={1}>
