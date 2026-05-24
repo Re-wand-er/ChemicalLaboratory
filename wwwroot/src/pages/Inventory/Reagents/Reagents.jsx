@@ -20,15 +20,15 @@ const columns = [
   {
     field: 'name',
     headerName: 'Название',
-    minWidth: 200,
-    flex: 2,
+    minWidth: 150,
+    flex: 1.5,
     // editable: true,
   },
   {
     field: 'chemicalFormula',
     headerName: 'Хим. формула',
-    minWidth: 150,
-    flex: 1,
+    minWidth: 100,
+    flex: 1.5,
   },
   {
     field: 'unit',
@@ -37,7 +37,7 @@ const columns = [
   },
   {
     field: 'currentQuantity',
-    headerName: 'Текущее кол-во',
+    headerName: 'Тек. кол-во',
     width: 90,
     type: 'number',
     valueFormatter: (value) => `${value || 0}`,
@@ -298,52 +298,123 @@ const Reagents = () => {
   
   
 
-///// QR ///////////////////////////////////////
-  const handleQrUpdateSuccess = (updatedBatchFromApi) => {
-    setData(prevItems =>
-      prevItems.map(oldItem => {
-        const updatedItem = updatedBatchFromApi.find(newItem => newItem.id === oldItem.id);
-        return updatedItem ? { ...oldItem, ...updatedItem } : oldItem;
-      })
-    );
-    
-    updateCount(); 
-    handleClose();
-  };
+  ///// QR ///////////////////////////////////////
 
-  const handleQrIncome = async (filesArray) => {
+  const handleQrIncome = async (filesArray, onScanSuccess, setScanning) => {
+    // 1. Защита: если лаборант нажал кнопку, но файлы не выбраны
     if (!filesArray || filesArray.length === 0) return;
-  
+
+    // 2. Включаем лоадер (блокируем кнопки интерфейса)
+    setScanning(true);
+
+    // 3. Создаем контейнер FormData для передачи файлов как multipart/form-data
     const formData = new FormData();
-    
+
+    // Имя ключа 'files' должно строго совпадать с аргументом в C# (List<IFormFile> files)
     filesArray.forEach((file) => {
       formData.append('files', file);
     });
-  
+
     try {
-      const response = await fetch('/api/reagent/income-by-qr', {
+      // 4. Отправляем POST-запрос на C# бэкенд для ПЕРВИЧНОГО распознавания (без сохранения в БД)
+      const response = await fetch('/api/reagent/scan-qr-preview', {
         method: 'POST',
         body: formData, 
-        credentials: 'include' 
+        credentials: 'include' // Передаем куки сессии авторизации
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || `Ошибка сервера: ${response.status}`);
       }
-  
-      const updatedReagents = await response.json();
-      if (typeof handleQrUpdateSuccess === 'function') {
-        handleQrUpdateSuccess(updatedReagents);
+
+      // 5. Получаем от C# легкий JSON-массив пар [ { "id": 11, "quantity": 5.0 }, ... ]
+      const data = await response.json(); 
+
+      // 6. ВЫЗОВ КОЛБЭКА: Записываем этот массив в стейт qrChanges внутри ReagentDialog.jsx
+      // Это мгновенно переключит интерфейс диалога с загрузчика на таблицу сверки
+      if (typeof onScanSuccess === 'function') {
+        onScanSuccess(data); 
       }
-  
-      alert(`Успешно распознано и внесено реактивов: ${updatedReagents.length}`);
+
     } catch (error) {
       console.error("Ошибка при обработке QR-фотографий:", error.message);
-      alert(`Не удалось обработать изображения. Qr-код не распознан!`);
-      throw error;
+      alert(`Не удалось распознать изображения: ${error.message}`);
+    } finally {
+      // 7. Всегда выключаем лоадер в конце (при успехе или ошибке)
+      setScanning(false);
     }
   };
+
+    // 1. Метод Шага 1: Отправка фото на C# для распознавания кодов
+  const handleUploadAndScan = async (filesArray, onScanSuccess, setScanning) => {
+    if (!filesArray || filesArray.length === 0) return;
+
+    setScanning(true);
+    const formData = new FormData();
+    filesArray.forEach(file => formData.append('files', file));
+
+    try {
+      const response = await fetch('/api/reagent/scan-qr-preview', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Не удалось распознать коды');
+      }
+
+      const data = await response.json(); // [ { id, quantity } ]
+      onScanSuccess(data); // Передаем результат обратно в стейт Диалога
+    } catch (err) {
+      alert(`Ошибка сканирования: ${err.message}`);
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  // 2. Метод Шага 2: Финальный приход через UpdateBatchAsync
+  const handleFinalSubmitIncome = async (qrChangesArray, rowsMaster, onSaveSuccess, setScanning, closeDialog) => {
+    if (!qrChangesArray || qrChangesArray.length === 0) return;
+
+    setScanning(true);
+
+    // Собираем Payload, скрещивая черновик qrChanges с глобальным rowsMaster
+    const payload = qrChangesArray.map(change => {
+      const original = rowsMaster.find(r => r.id === change.id);
+      return {
+        ...original,
+        currentQuantity: Number(original.currentQuantity) + Number(change.quantity),
+        chemicalFormula: original.chemicalFormula || null,
+        storageLocation: original.storageLocation || null,
+        expirationDate: original.expirationDate || null,
+        isActive: original.isActive ?? true
+      };
+    });
+
+    try {
+      const result = await fetchPutData('/api/reagent/batch', payload, true);
+      if (result) {
+        setData(prevItems =>
+          prevItems.map(oldItem => {
+            const updatedItem = result.find(newItem => newItem.id === oldItem.id);
+            return updatedItem ? { ...oldItem, ...updatedItem } : oldItem;
+          })
+        );
+        updateCount(); 
+        handleClose();
+        alert("Реактивы успешно зачислены.");
+      }
+    } catch (err) {
+      alert("Ошибка сохранения: " + err.message);
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  ///// QR ///////////////////////////////////////
 
 
   return (
@@ -378,6 +449,13 @@ const Reagents = () => {
         handleOrder={handleOrder}
         handleQrIncome={handleQrIncome}
         //handleIncome={handleIncome}
+
+        // Qr
+        rows={data} // Передаем все данные для маппинга названий
+        onScanQr={handleUploadAndScan} // Метод Шага 1
+        onSaveQrIncome={handleFinalSubmitIncome} // Метод Шага 2
+        // Qr
+
       />
 
     </PageContainer>

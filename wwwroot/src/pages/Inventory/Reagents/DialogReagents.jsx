@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { 
   Dialog, DialogTitle, DialogContent, Box,
   TextField, Grid, FormControl, InputLabel, 
-  Select, MenuItem, Typography
+  Select, MenuItem, Typography, TableContainer,
+  Table, Paper, TableHead, TableRow, TableCell, 
+  TableBody, IconButton, FormHelperText
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
    
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import QrIncomeUploader from '../../Inventory/Reagents/QrIncomeUploader.jsx';
 
@@ -49,12 +52,22 @@ const DialogReagents = ({
     modalMode, currentRecord, categories, 
     handleClose, handleSave, handleDelete, 
     handleRestore, handleWriteOff, handleOrder, 
-    handleQrIncome, handleAdd }) => {    
+    handleAdd, 
+  
+    onScanQr, onSaveQrIncome,
+
+    rows
+  }) => {   
+
 	const [formData, setFormData] = useState(getFormData());
+  const [errors, setErrors] = useState({});
   const [writeOffRows, setWriteOffRows] = useState([]);
+
+  // Qr-действия
   const [uploadedFiles, setUploadedFiles] = useState([]);
 	
   useEffect(() => {
+    setErrors({});
     if (modalMode === 'add') {
         setFormData(getFormData());
     } else if (modalMode === 'edit' && currentRecord) {
@@ -85,23 +98,6 @@ const DialogReagents = ({
     });
   };
 
-  const handleWriteOffChange = (field) => (event) => {
-    setFormData({
-        ...writeOffRows,
-        [field]: event.target.value
-    });
-  };
-
-  const handleQuantityChange = (id, value) => {
-    setWriteOffRows(prev =>
-      prev.map(row =>
-        row.id === id
-          ? { ...row, quantity: value }
-          : row
-      )
-    );
-  };
-
   const handleOperationChange = (id, value) => {
     setWriteOffRows(prev =>
       prev.map(row =>
@@ -112,15 +108,62 @@ const DialogReagents = ({
     );
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+  
+    // Валидация Названия (обязательно)
+    if (!formData.name || !formData.name.trim()) {
+      newErrors.name = "Название реагента обязательно для заполнения";
+    }
+  
+    if (formData.name.length > 50) {
+      newErrors.name = "Слишком длинное название для реагента";
+    }
+
+    if (formData.chemicalFormula === "") {
+      newErrors.chemicalFormula = "Химическая формула не может быть пустой";
+    }
+
+    // Валидация Единиц измерения (обязательно)
+    if (!formData.unit) {
+      newErrors.unit = "Выберите единицу измерения";
+    }
+  
+    // Валидация Текущего количества (не может быть отрицательным)
+    if (formData.currentQuantity === "" || Number(formData.currentQuantity) < 0) {
+      newErrors.currentQuantity = "Количество не может быть отрицательным";
+    }
+  
+    // Валидация Минимального количества (не может быть отрицательным)
+    if (formData.minQuantity === 0 || Number(formData.minQuantity) < 0) {
+      newErrors.minQuantity = "Минимум не может быть 0 или меньше 0";
+    }
+  
+    // Валидация Категории (обязательно, значение 0 считается не выбранным)
+    if (!formData.categoryId || formData.categoryId === 0) {
+      newErrors.categoryId = "Необходимо выбрать категорию";
+    }
+  
+    setErrors(newErrors);
+    
+    // Возвращает true, если объект с ошибками пуст (форма валидна)
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Адаптеры
   const onAdd = () =>{
-    handleAdd(formData);
+    if (validateForm()) {      
+      handleAdd(formData);
+      return;
+    }
   }
  
   const onSave = () => {
     if (modalMode === 'add' || modalMode === 'edit') {
-      handleSave(formData);
-      return;
+      if (validateForm()) {      
+        handleSave(formData);
+        return;
+      }
     }
   
     if (modalMode === 'writeOff' || modalMode === 'income') {
@@ -173,21 +216,35 @@ const DialogReagents = ({
     handleOrder(payload); 
   };
   
-  const handleConfirmQrIncome = async () => {
-    if (uploadedFiles.length === 0) {
-      alert("Пожалуйста, выберите хотя бы одну фотографию с QR-кодом.");
-      return;
-    }
-  
-    //setIsLoading(true); // Включаем крутилку MUI (CircularProgress)
-    try {
-      await handleQrIncome(uploadedFiles);
-      
-      setUploadedFiles([]); 
-    } finally {
-      //setIsLoading(false); // Выключаем крутилку
-    }
+  // Qr
+  const [qrChanges, setQrChanges] = useState([]);
+  const [isScanning, setIsScanning] = useState(false);
+
+  const resetQrForm = () => {
+    setQrChanges([]);
+    setUploadedFiles([]);
   };
+
+  const triggerScan = () => {
+    onScanQr(uploadedFiles, setQrChanges, setIsScanning);
+  };
+
+  const handleQuantityWriteOffChange = (id, newValue) => {
+    setWriteOffRows(prev => 
+      prev.map(item => item.id === id ? { ...item, quantity: Number(newValue) } : item)
+    );
+  };
+
+  const handleQuantityQrChange = (id, newValue) => {
+    setQrChanges(prev => 
+      prev.map(item => item.id === id ? { ...item, quantity: Number(newValue) } : item)
+    );
+  };
+
+  const triggerSave = () => {
+    onSaveQrIncome(qrChanges, rows, resetQrForm, setIsScanning, handleClose);
+  };
+  // Qr
 
   return (        
     <Dialog open={modalMode !== null} onClose={handleClose} disableRestoreFocus>
@@ -208,7 +265,7 @@ const DialogReagents = ({
               <Box sx={{ flex: 1, pr: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Наименование</Typography>
               </Box>
-          
+              
               {modalMode === 'order' && (
                 <>
                   <Box sx={{ width: 85, pr: 1, textAlign: 'center' }}>
@@ -260,7 +317,7 @@ const DialogReagents = ({
                     size="small"
                     fullWidth
                     value={row.quantity}
-                    onChange={(e) => handleQuantityChange(row.id, e.target.value)}
+                    onChange={(e) => handleQuantityWriteOffChange(row.id, e.target.value)}
                   />
                 </Box>
               
@@ -316,17 +373,83 @@ const DialogReagents = ({
 
 
         {modalMode === 'qrIncome' && (
-          <Box sx={{ p: 1 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: 'primary.main' }}>
+          <Box sx={{ p: 1}}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: 'primary.main' }}>
               Пакетное зачисление реагентов по фото QR
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Загрузите фотографии этикеток с QR-кодами. АИС автоматически распознает идентификаторы реактивов и увеличит их текущий остаток на складе.
-            </Typography>
-        
-            <QrIncomeUploader 
-              onFilesSelected={setUploadedFiles} 
-            />
+            
+            {/* ШАГ 1: ЗОНА ЗАГРУЗКИ ФАЙЛОВ */}
+            {qrChanges.length === 0 ? (
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Загрузите фотографии этикеток с QR-кодами. АИС автоматически распознает идентификаторы реактивов и увеличит их текущий остаток на складе.
+                </Typography>
+                
+                {/* Передаем функцию сохранения файлов в локальный стейт диалога */}
+                <QrIncomeUploader 
+                  onFilesSelected={setUploadedFiles} 
+                  loading={isScanning} 
+                />
+              </Box>
+            ) : (
+              /* ШАГ 2: ИНТЕРАКТИВНАЯ ТАБЛИЦА СВЕРКИ */
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Проверьте распознанные данные. Вы можете скорректировать добавляемое количество или удалить ошибочные позиции.
+                </Typography>
+            
+                <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+                  <Table size="small" stickyHeader>
+                    <TableHead>
+                      <TableRow sx={{ '& th': { backgroundColor: 'background.default', fontWeight: 700 } }}>
+                        <TableCell>Наименование</TableCell>
+                        <TableCell align="right">Тек. остаток</TableCell>
+                        <TableCell align="right">Мин. остаток</TableCell>
+                        <TableCell sx={{ width: 140 }}>Добавить количество</TableCell>
+                        <TableCell align="center">Ед. изм.</TableCell>
+                        <TableCell align="center">Действие</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {qrChanges.map((changeItem) => {
+                        // Находим справочные данные реагента в твоем известном глобальном массиве rows страницы Reagents.jsx
+                        const reagentInfo = rows.find(r => r.id === changeItem.id);
+                      
+                        // Защита: если по QR пришел неизвестный ID, строку пропускаем
+                        if (!reagentInfo) return null; 
+                      
+                        return (
+                          <TableRow key={changeItem.id} hover>
+                            <TableCell sx={{ fontWeight: 600 }}>{reagentInfo.name}</TableCell>
+                            <TableCell align="right">{Number(reagentInfo.currentQuantity).toFixed(2)}</TableCell>
+                            <TableCell align="right">{Number(reagentInfo.minQuantity).toFixed(2)}</TableCell>
+                            <TableCell>
+                              {/* Инпут с возможностью изменения количества из QR */}
+                              <TextField
+                                type="number"
+                                size="small"
+                                value={changeItem.quantity}
+                                onChange={(e) => handleQuantityQrChange(changeItem.id, e.target.value)}
+                                inputProps={{ min: 0, step: 0.1 }}
+                                //disabled={isScanning}
+                                fullWidth
+                              />
+                            </TableCell>
+                            <TableCell align="center" sx={{ color: 'text.secondary' }}>{reagentInfo.unit}</TableCell>
+                            <TableCell align="center">
+                              {/* Кнопка удаления, если лаборант не хочет вносить этот реагент */}
+                              <IconButton color="error" size="small" onClick={() => handleRemoveRow(changeItem.id)} disabled={isScanning}>
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            )}
           </Box>
         )}
 
@@ -344,6 +467,8 @@ const DialogReagents = ({
                   fullWidth
                   value={formData.name}
                   onChange={handleChange('name')}
+                  error={!!errors.name} 
+                  helperText={errors.name}
                 />
               </Grid>
 
@@ -353,6 +478,8 @@ const DialogReagents = ({
                   fullWidth
                   value={formData.chemicalFormula}
                   onChange={handleChange('chemicalFormula')}
+                  error={!!errors.chemicalFormula} 
+                  helperText={errors.chemicalFormula}
                 />
               </Grid>
 
@@ -368,6 +495,7 @@ const DialogReagents = ({
                         <MenuItem key={unit} value={unit}>{unit}</MenuItem>
                       ))}
                   </Select>
+                  {errors.unit && <FormHelperText style={{color:'red'}}>{errors.unit}</FormHelperText>}
                 </FormControl>
               </Grid>
 
@@ -378,6 +506,8 @@ const DialogReagents = ({
                   fullWidth
                   value={formData.currentQuantity}
                   onChange={handleChange('currentQuantity')}
+                  error={!!errors.currentQuantity}
+                  helperText={errors.currentQuantity}
                 />
               </Grid>
 
@@ -388,6 +518,8 @@ const DialogReagents = ({
                   fullWidth
                   value={formData.minQuantity}
                   onChange={handleChange('minQuantity')}
+                  error={!!errors.minQuantity}
+                  helperText={errors.minQuantity}
                 />
               </Grid>    
 
@@ -425,6 +557,7 @@ const DialogReagents = ({
                     ))}
 
                   </Select>
+                  {errors.categoryId && <FormHelperText style={{color:'red'}}>{errors.categoryId}</FormHelperText>}
                 </FormControl>
               </Grid>
             </Grid>
@@ -444,7 +577,14 @@ const DialogReagents = ({
         handleWriteOff={onSave} //handleWriteOff
         handleIncome={onSave} //handleIncome
         handleOrder={onOrder}
-        handleQrIncome={handleConfirmQrIncome}
+        //handleQrIncome={handleConfirmQrIncome}
+
+        qrChanges={qrChanges}
+        setQrChanges={setQrChanges}
+        isScanning={isScanning}
+        hasFiles={uploadedFiles.length > 0}
+        onScanClick={triggerScan}
+        onSaveClick={triggerSave}
         />
 
     </Dialog>

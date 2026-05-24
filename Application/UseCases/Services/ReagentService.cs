@@ -288,6 +288,23 @@ namespace ChemicalLaboratory.Application.UseCases.Services
         }
 
 
+        public async Task<List<QrReagentData>> ScanQrImagesOnlyAsync(List<Stream> imageStreams)
+        {
+            // 1. Просто вызываем твой готовый сервис низкоуровневого декодирования ZXing
+                var recognizedItems = await _qrDecoderService.DecodeReagentQrCodesAsync(imageStreams);
+
+            if (!recognizedItems.Any())
+                    throw new InvalidOperationException("На загруженных фотографиях не обнаружено читаемых QR-кодов.");
+
+            // 2. Группируем по Id и суммируем количество, если один реактив сфоткан дважды
+            var aggregatedItems = recognizedItems
+                .GroupBy(x => x.Id)
+                .Select(g => new QrReagentData(g.Key, g.Sum(x => x.Quantity)))
+                    .ToList();
+
+            return aggregatedItems;
+        }
+
 
         public async Task<ReagentStockReportDTO> GetStockReportAsync()
         {

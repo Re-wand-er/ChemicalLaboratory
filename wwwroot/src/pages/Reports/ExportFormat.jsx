@@ -6,7 +6,7 @@ import { exportCsvFile, exportJsonFile } from '../../utils/dataExportFotmat';
 import { generateExcel } from "../../utils/generateExcel";
 import { generatePDF } from "../../utils/generatePDF";
 
-const ExportFormat = ({ title, columns, rows }) => {
+const ExportFormat = ({ title, columns, rows, generatePdfReport, divider = true }) => {
   const [exportSelect, setExportSelect] = useState("pdf");
 
   const handleExportFile = () => {
@@ -15,7 +15,10 @@ const ExportFormat = ({ title, columns, rows }) => {
         generateExcel(title, columns, rows);
         break;
       case 'pdf':
-        generatePDF(title, columns, rows);
+        if(typeof generatePdfReport === 'function')
+          generatePdfReport(title, columns, rows);
+        else
+          generatePDF(title, columns, rows);
         break;
       case 'csv':
         exportCsvFile(title, rows);
@@ -30,11 +33,13 @@ const ExportFormat = ({ title, columns, rows }) => {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Divider 
-        orientation="vertical" 
-        flexItem 
-        sx={{ marginRight: 1.5, height: 32, alignSelf: 'center', borderColor: 'var(--mui-palette-background-border)' }} 
-      />
+      {divider &&
+        <Divider 
+          orientation="vertical" 
+          flexItem 
+          sx={{ marginRight: 1.5, height: 32, alignSelf: 'center', borderColor: 'var(--mui-palette-background-border)' }} 
+        />
+      } 
 
       <ButtonGroup variant="outlined" size="small">
 

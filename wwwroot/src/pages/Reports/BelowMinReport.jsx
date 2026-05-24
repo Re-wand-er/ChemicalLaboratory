@@ -44,7 +44,6 @@ const columns = [
 const BelowMinReport = () => {
   const [rows, setRows] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [exportSelect, setExportSelect] = useState("pdf");
   const [filters, setFilters] = useState({
     categoryId: 0,
     criticalPercent: 100,
@@ -92,7 +91,7 @@ const BelowMinReport = () => {
     <ReportTemplate
       rows={rows}
       columns={columns}
-      title='Реагенты ниже минимального уровня'
+      title='Отчет по реагентам ниже минимального уровня'
       exportTitle='Отчет реагентов ниже нуля'
     >
       <Grid size={4}>

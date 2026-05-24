@@ -87,7 +87,7 @@ const ForecastReport = () => {
     <ReportTemplate
       rows={rows}
       columns={columns}
-      title="Прогноз расхода реагентов"
+      title="Отчет по прогнозу расхода реагентов"
       exportTitle="Отчет по прогнозу заказов"
     >
       <Grid>

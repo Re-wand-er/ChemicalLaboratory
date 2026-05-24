@@ -132,6 +132,36 @@ namespace ChemicalLaboratory.WebApi.Controllers
     	}
 
 
+		[HttpPost("scan-qr-preview")]
+		public async Task<IActionResult> ScanQrPreview([FromForm] List<IFormFile> files)
+		{
+		    if (files == null || !files.Any())
+		        return BadRequest("Файлы изображений не переданы.");
+		
+		    var streams = new List<Stream>();
+		    try
+		    {
+		        foreach (var file in files)
+		        {
+		            var memoryStream = new MemoryStream();
+		            await file.CopyToAsync(memoryStream);
+		            memoryStream.Position = 0; // Наш проверенный сброс каретки
+		            streams.Add(memoryStream);
+		        }
+		
+		        // Получаем легкий список пар Id и Quantity
+		        var result = await _reagentService.ScanQrImagesOnlyAsync(streams);
+		
+		        // Сервер отдает лаборанту строго: [ {"id": 11, "quantity": 5.0}, {"id": 9, "quantity": 1.5} ]
+		        return Ok(result);
+		    }
+		    finally
+		    {
+		        foreach (var stream in streams) await stream.DisposeAsync();
+		    }
+		}
+
+
         [HttpGet("stock-distribution")]
         public async Task<IActionResult> GetStockDistribution()
         {
@@ -179,6 +209,5 @@ namespace ChemicalLaboratory.WebApi.Controllers
 
 		    return File(fileBytes, "application/pdf", fileDownloadName);
 		}
-
     }
 }

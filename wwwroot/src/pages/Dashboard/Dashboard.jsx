@@ -19,7 +19,7 @@ const Dashboard = () => {
   if (!kpi) return null;
 
   const kpiItems = [
-    { label: 'Активные реактивы', value: kpi.activeReagentsCount, unit: '', color: 'var(--mui-palette-status-ownBlue)' },
+    { label: 'Годные реагенты', value: kpi.activeReagentsCount, unit: '', color: 'var(--mui-palette-status-ownBlue)' },
     { label: 'Дефицит запасов', value: kpi.lowStockPercentage, unit: '%', color: 'var(--mui-palette-status-ownRed)' },
     { label: 'Просрочено', value: kpi.expiredPercentage, unit: '%', color: 'var(--mui-palette-status-ownOrange)' },
     { label: 'Истекают (30 дн.)', value: kpi.expiringSoonPercentage, unit: '%', color: 'var(--mui-palette-status-ownOrange)' },

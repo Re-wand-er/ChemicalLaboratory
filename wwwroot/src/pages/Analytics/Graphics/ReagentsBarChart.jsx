@@ -51,13 +51,13 @@ const ReagentsBarChart = ({ startPeriod = 'Month', localeWidth = '800px', filter
         alignItems="center" 
         sx={{ 
           mb: 2, 
-          justifyContent: filterBar ? "space-between" : "center" 
+          justifyContent: title && filterBar ? "space-between" : "center" 
         }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }} color='var(--mui-palette-text-secondary)'>
           {title}
         </Typography>
-
+        
         {filterBar && (
           <Stack direction="row" spacing={1}>
             <FormControl size="small" sx={{ minWidth: 100 }}>

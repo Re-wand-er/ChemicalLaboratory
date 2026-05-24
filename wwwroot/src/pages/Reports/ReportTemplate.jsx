@@ -1,14 +1,105 @@
+import { useEffect, useState } from "react";
 import {
   Box,
   Grid,
   Paper,
-  Typography
+  Typography,
+  Button,
+  Divider,
+  CircularProgress
 } from "@mui/material";
+import { Download as DownloadIcon, PlayArrow as GenerateIcon } from '@mui/icons-material';
 
 import ReportDataTable from "../../components/DataTable/ReportDataTable";
-import ExportFormat from "./ExportFormat.jsx";
 
-const ReportTemplate = ({ title, exportTitle, children, rows, columns }) => {
+import ReportPage from "./ReportPage.jsx";
+import jsPDF from "jspdf";
+
+const ReportTemplate = ({ title, exportTitle, children, rows, columns, pdfGenerator, filters }) => {
+  const [reportCreate, setReportCreate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
+  const [pdfInstance, setPdfInstance] = useState(null);
+  
+  const generatePdfReport = async (data) => {
+    setLoading(true);
+    try {
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  
+      // Указываем относительный путь к вашей папке assets от корня wwwroot
+      const fontUrl = "/src/assets/Roboto.ttf"; 
+      const response = await fetch(fontUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Файл шрифта не найден по пути: ${fontUrl}. Проверьте вкладку Network в F12.`);
+      }
+      
+      const blobFont = await response.blob();
+      
+      // Переводим файл в base64 для jsPDF
+      const buffer = await blobFont.arrayBuffer();
+      const arr = new Uint8Array(buffer);
+      const binary = Array.from(arr).map(b => String.fromCharCode(b)).join('');
+      const base64Font = btoa(binary);
+      
+      // Регистрируем шрифт под точным именем "Robot"
+      doc.addFileToVFS("Roboto.ttf", base64Font);
+      doc.addFont("Roboto.ttf", "Roboto", "normal");
+      doc.setFont("Roboto"); // Активируем его
+  
+      const activeFilters = filters || {
+        dateFrom: "",
+        dateTo: "",
+        categoryId: 0,
+        reagentId: 0,
+        minQuantity: ""
+      };
+  
+      // Вызываем наполнение отчета
+      pdfGenerator(doc, title, columns, data, activeFilters);
+  
+      // Создаем ссылку для превью
+      const blob = doc.output('blob');
+      const blobUrl = URL.createObjectURL(blob);
+  
+      setPdfBlobUrl(blobUrl);
+      setPdfInstance(doc);
+  
+    } catch (error) {
+      console.error("Ошибка генерации PDF:", error);
+      alert(`Ошибка: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  
+
+  const handleGeneratePdfReport = async (e) => {
+    e.preventDefault();
+    setReportCreate(true);
+    setLoading(true);
+    setPdfBlobUrl(null); 
+  
+    try {
+      if (rows && rows.length > 0) {
+        generatePdfReport(rows);
+      } else {
+        throw "Ошибка генерации";
+      }
+    } catch (error) {
+      console.error("Ошибка при получении данных:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (pdfInstance) {
+      pdfInstance.save(`${title || 'отчет'}.pdf`);
+    }
+  };
+
   if (!rows || !columns) return <Typography>Загрузка данных...</Typography>;
 
   return (
@@ -31,9 +122,23 @@ const ReportTemplate = ({ title, exportTitle, children, rows, columns }) => {
           </Grid>
           
           <Grid size={{ md:'auto' }}>
-            {columns.length > 0 && (
-              <ExportFormat title={exportTitle || title || 'Отчет'} columns={columns} rows={rows} />
-            )}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Divider 
+                orientation="vertical" 
+                flexItem 
+                sx={{ marginRight: 1.5, height: 32, alignSelf: 'center', borderColor: 'var(--mui-palette-background-border)' }} 
+              />
+
+              <Button 
+                size="small"
+                variant="contained" 
+                onClick={handleGeneratePdfReport}
+                startIcon={<GenerateIcon />}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Сформировать'}
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Paper>
@@ -43,6 +148,15 @@ const ReportTemplate = ({ title, exportTitle, children, rows, columns }) => {
           <ReportDataTable rows={rows} columns={columns} />
         ) : (
           <Typography sx={{ p: 3, textAlign: 'center' }}>Нет данных для отображения</Typography>
+        )}
+
+        {reportCreate && (
+          <ReportPage 
+            title={title}
+            pdfBlob={pdfBlobUrl}
+            docInstance={pdfInstance}
+            handleDownload={handleDownload}
+          />
         )}
       </Box>
     </Box>

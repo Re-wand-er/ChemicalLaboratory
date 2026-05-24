@@ -88,7 +88,7 @@ const TopUsageReport = () => {
     <ReportTemplate
       rows={rows}
       columns={columns}
-      title="Топ используемых реагентов"
+      title="Отчет по топу используемых реагентов"
     >
       <Grid>
           <TextField

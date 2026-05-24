@@ -7,6 +7,7 @@ import DialogCategories from "./DialogCategories.jsx";
 
 import { fetchGetData, fetchGetSuperAdminData, fetchPostData, fetchDeleteByIds, fetchPutData } from '../../../api/fetch.js';
 import { getRecordsArray } from '../../../utils/getRecordsArray.js';
+import { flex } from "@mui/system";
 
 const columns = [
     // {
@@ -18,13 +19,29 @@ const columns = [
     {
         field: 'name',
         headerName: 'Наименование',
-        width: 200,
+        flex: 2,
     },
     {
         field: 'description',
         headerName: 'Описание',
-        width: 600,
-    }
+        flex: 4,
+    },
+    {
+      field: 'isActive',
+      headerName: 'Активен',
+      flex: 0.5,
+      type: 'boolean',
+      renderCell: (params) => (
+        <span
+          style={{
+            color: params.value ? 'green' : 'red',
+            fontWeight: 'bold',
+          }}
+        >
+          {params.value ? '✓ Да' : '✗ Нет'}
+        </span>
+      ),
+    },
 ];
 
 const Categories = () => {
