@@ -22,22 +22,22 @@ namespace ChemicalLaboratory
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Log.Logger = new LoggerConfiguration()
-            //     .MinimumLevel.Debug()
-            //     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            //     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-            //     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
-            //     .Enrich.FromLogContext()
-            //     .WriteTo.File
-            //     (
-            //         path: "log/log.log",
-            //         fileSizeLimitBytes: 5_000_000,
-            //         rollOnFileSizeLimit: true,
-            //         shared: true, 
-            //         outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}"
-            //     )
-            //     .CreateLogger();
-            // builder.Host.UseSerilog();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
+                .Enrich.FromLogContext()
+                .WriteTo.File
+                (
+                    path: "log/log.log",
+                    fileSizeLimitBytes: 5_000_000,
+                    rollOnFileSizeLimit: true,
+                    shared: true, 
+                    outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}"
+                )
+                .CreateLogger();
+            builder.Host.UseSerilog();
 
             //------------------------------------------------------------------------------------------------------------
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
@@ -55,7 +55,7 @@ namespace ChemicalLaboratory
                         ValidateAudience = false,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
                     };
 
                     options.Events = new JwtBearerEvents
