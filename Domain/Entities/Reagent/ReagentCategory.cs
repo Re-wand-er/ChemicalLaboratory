@@ -10,6 +10,6 @@ namespace ChemicalLaboratory.Domain.Entities
         public DateTime? DeletedAt { get; set; }
         public bool IsActive { get; set; } = true;
 
-        public ICollection<Reagent> Reagents { get; set; } = new List<Reagent>();
+        public ICollection<Reagent> Reagents { get; set; } = [];
     }
 }

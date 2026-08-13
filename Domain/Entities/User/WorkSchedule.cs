@@ -9,6 +9,6 @@ namespace ChemicalLaboratory.Domain.Entities
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
-        public ICollection<User> Users { get; set; } = new List<User>();
+        public ICollection<User> Users { get; set; } = [];
     }
 }

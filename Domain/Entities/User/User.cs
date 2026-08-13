@@ -20,7 +20,7 @@ namespace ChemicalLaboratory.Domain.Entities
 
         public WorkSchedule WorkSchedule { get; set; } = null!;
         public SystemRole SystemRole { get; set; } = null!;
-        public ICollection<ReagentOperation> ReagentOperations { get; set; } = new List<ReagentOperation>();
-        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<ReagentOperation> ReagentOperations { get; set; } = [];
+        public ICollection<Notification> Notifications { get; set; } = [];
     }
 }

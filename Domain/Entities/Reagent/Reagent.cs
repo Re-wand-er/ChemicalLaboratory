@@ -18,8 +18,8 @@ namespace ChemicalLaboratory.Domain.Entities
         public bool IsActive { get; set; } = true;
 
         public ReagentCategory Category { get; set; } = null!;
-        public ICollection<ReagentOperation> Operations { get; set; } = new List<ReagentOperation>();
-        public ICollection<ReagentReceipt> Receipts { get; set; } = new List<ReagentReceipt>();
-        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<ReagentOperation> Operations { get; set; } = [];
+        public ICollection<ReagentReceipt> Receipts { get; set; } = [];
+        public ICollection<Notification> Notifications { get; set; } = [];
     }
 }

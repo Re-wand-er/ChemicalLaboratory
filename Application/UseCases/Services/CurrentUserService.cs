@@ -1,6 +1,5 @@
 ﻿using ChemicalLaboratory.Application.Interfaces;
 using ChemicalLaboratory.Domain.Enums;
-using Microsoft.Identity.Client;
 using System.Security.Claims;
 
 namespace ChemicalLaboratory.Application.UseCases.Services

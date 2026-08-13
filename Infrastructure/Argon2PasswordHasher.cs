@@ -1,8 +1,9 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using ChemicalLaboratory.Application.Interfaces;
 using Konscious.Security.Cryptography;
+
+namespace ChemicalLaboratory.Infrastructure;
 
 public class Argon2PasswordHasher : IPasswordHasher
 {

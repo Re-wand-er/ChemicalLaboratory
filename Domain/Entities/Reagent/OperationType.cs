@@ -10,7 +10,7 @@ namespace ChemicalLaboratory.Domain.Entities
         public bool AffectsQuantity { get; set; }
         public bool IsActive { get; set; }
 
-        public ICollection<ReagentOperation> ReagentOperations { get; set; } = new List<ReagentOperation>();
+        public ICollection<ReagentOperation> ReagentOperations { get; set; } = [];
 
     }
 }

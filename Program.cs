@@ -1,7 +1,8 @@
 using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Application.UseCases.Services;
-using ChemicalLaboratory.Infrastructure.Persistence;
 using ChemicalLaboratory.Infrastructure.Persistence.Repositories;
+using ChemicalLaboratory.Infrastructure.Persistence;
+using ChemicalLaboratory.Infrastructure;
 using ChemicalLaboratory.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -104,15 +105,7 @@ namespace ChemicalLaboratory
             builder.Services.AddDbContext<DataBaseContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IReagentRepository, ReagentRepository>();
-            builder.Services.AddScoped<IReagentCategoryRepository, ReagentCategoryRepository>();
-            builder.Services.AddScoped<IReagentOperationRepository, ReagentOperationRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
-            builder.Services.AddScoped<ISystemRoleRepository, SystemRoleRepository>();
-            builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScopedRepository();
 
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -124,6 +117,7 @@ namespace ChemicalLaboratory
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<SupplierService>();
             builder.Services.AddScoped<NotificationService>();
+            
             builder.Services.AddScoped<GeneratePDFService>();
             builder.Services.AddScoped<QrDecoderService>();
 
