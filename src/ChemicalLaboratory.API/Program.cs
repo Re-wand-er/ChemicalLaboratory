@@ -1,18 +1,16 @@
-using ChemicalLaboratory.Domain.Interfaces;
 using ChemicalLaboratory.Application.UseCases.Services;
-using ChemicalLaboratory.Infrastructure.Persistence.Repositories;
 using ChemicalLaboratory.Infrastructure.Persistence;
+using ChemicalLaboratory.Infrastructure.Email;
 using ChemicalLaboratory.Infrastructure;
 using ChemicalLaboratory.Application.Interfaces;
+using ChemicalLaboratory.Application.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Serilog.Events;
+using System.Text;
 using Serilog;
 using Mapster;
-using ChemicalLaboratory.Infrastructure.Email;
-using ChemicalLaboratory.Application.Mapping;
 
 namespace ChemicalLaboratory
 {
@@ -103,7 +101,7 @@ namespace ChemicalLaboratory
             //------------------------------------------------------------------------------------------------------------
 
             builder.Services.AddDbContext<DataBaseContext>(options => 
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScopedRepository();
 

@@ -1,0 +1,35 @@
+services:
+  database:
+    build:
+      context: ./db                    
+      dockerfile: Dockerfile
+    container_name: db
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-#root42}
+      - POSTGRES_DB=${DB_NAME:-ChemicalLaboratory}
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .                      
+      dockerfile: src/ChemicalLaboratory.API/Dockerfile 
+    container_name: backend
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION:-Host=${DB_PATH:-database};Port=5432;Database=${DB_NAME:-ChemicalLaboratory};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-"#root42"}}
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./client-app             
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
