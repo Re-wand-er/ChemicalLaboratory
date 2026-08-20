@@ -1,0 +1,1 @@
+import{t,u as s,s as a}from"./index-BpEqYYQ1.js";import{c as i}from"./createGrid-CNAN4rV3.js";const d=i({createStyledComponent:a("div",{name:"MuiGrid",slot:"Root",overridesResolver:(e,o)=>{const{ownerState:r}=e;return[o.root,r.container&&o.container]}}),componentName:"MuiGrid",useThemeProps:e=>s({props:e,name:"MuiGrid"}),useTheme:t});export{d as G};

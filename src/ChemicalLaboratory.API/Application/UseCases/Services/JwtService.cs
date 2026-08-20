@@ -35,7 +35,7 @@ public class JwtService : IJwtService
         // 3. Формируем токен
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddDays(1), 
+            expires: DateTime.UtcNow.AddDays(1), 
             signingCredentials: creds
         );
 

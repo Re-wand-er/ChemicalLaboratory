@@ -1,0 +1,30 @@
+# .NET
+**/bin/
+**/obj/
+
+# Node
+**/node_modules/
+
+# IDE
+**/.vs/
+**/.vscode/
+**/.cursor/
+**/.idea/
+
+# Git
+.git/
+
+# Local configuration
+**/appsettings.Development.json
+**/Properties/launchSettings.json
+**/*.user
+**/*.suo
+
+# Logs
+**/logs/
+**/*.log
+
+# Environment
+.env
+.env.*
+!.env.example

@@ -64,7 +64,7 @@ namespace ChemicalLaboratory.WebApi.Controllers
         private CookieOptions GetCookieOptions(DateTime? expires = null) => new()
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = false,// временно false пока не будет подключен SSL. потом установить true
             SameSite = SameSiteMode.Lax,
             Expires = expires,
             Path = "/"
