@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    image: rewander/postgres:1.0
+    container_name: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: "#root42"
+      POSTGRES_DB: ChemicalLaboratory
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
+
+
+# Аналогия такого кода
+# docker run --name postres \
+#   -e POSTGRES_USER=root \
+#   -e POSTGRES_PASSWORD=#root42 \
+#   -e POSTGRES_DB=ChemicalLaboratory \
+#   -v postgres_data:/var/lib/postgresql/data \
+#   -p 5432:5432 \
+#   -d rewander/postgres:1.0

@@ -1,0 +1,67 @@
+services:
+
+  database:
+    build:
+      context: ./db                    
+      dockerfile: Dockerfile
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-#root42}
+    volumes:
+      - chem_lab_db_data:/var/lib/postgresql/data
+    #deploy:
+    #  resources:
+    #    limits:
+    #      memory: 96M
+    networks:
+      - db_net
+    restart: always
+
+  backend:
+    build:
+      context: ./src/ChemicalLaboratory.API                      
+      dockerfile: Dockerfile 
+    container_name: backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION:-Host=database;Port=5432;Database=${DB_NAME:-ChemicalLaboratory};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-"#root42"}}
+    #ограничение потребления оперативной памяти
+    #deploy:
+    #  resources:
+    #    limits:
+    #      memory: 400M
+    networks:
+      - web_net
+      - db_net
+    depends_on:
+      - database
+    restart: always
+
+
+  frontend:
+    build:
+      context: ./client-app             
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    #deploy:
+    #  resources:
+    #    limits:
+    #      memory: 16M
+    networks:
+      - web_net
+    depends_on:
+      - backend
+    restart: always
+
+
+networks:
+  web_net:
+  db_net:
+    
+    
+volumes:
+  chem_lab_db_data:
