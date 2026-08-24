@@ -11,6 +11,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.ToTable("ReagentReceipts");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+                .UseIdentityByDefaultColumn();
 
             builder.Property(x => x.Quantity)
                 .HasColumnType("decimal(10,2)")

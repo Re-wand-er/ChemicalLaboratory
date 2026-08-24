@@ -11,6 +11,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations.UserConfi
             builder.ToTable("SystemRoles");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+                .UseIdentityByDefaultColumn();
 
             builder.Property(x => x.Name)
                 .HasMaxLength(50)

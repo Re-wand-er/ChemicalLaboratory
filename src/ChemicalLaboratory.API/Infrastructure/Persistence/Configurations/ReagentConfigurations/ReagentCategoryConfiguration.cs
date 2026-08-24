@@ -9,7 +9,10 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<ReagentCategory> builder)
         {
             builder.ToTable("ReagentCategories");
+
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+                .UseIdentityByDefaultColumn();
 
             builder.HasQueryFilter(x => x.IsActive);
 
