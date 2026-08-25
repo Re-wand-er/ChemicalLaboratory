@@ -1,1 +1,0 @@
-import{t,u as s,s as a}from"./index-CHWlmvC4.js";import{c as i}from"./createGrid-B00Tjhfl.js";const d=i({createStyledComponent:a("div",{name:"MuiGrid",slot:"Root",overridesResolver:(e,o)=>{const{ownerState:r}=e;return[o.root,r.container&&o.container]}}),componentName:"MuiGrid",useThemeProps:e=>s({props:e,name:"MuiGrid"}),useTheme:t});export{d as G};

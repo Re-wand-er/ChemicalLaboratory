@@ -11,6 +11,7 @@ import {
 import { Download as DownloadIcon, PlayArrow as GenerateIcon } from '@mui/icons-material';
 
 import ReportDataTable from "../../components/DataTable/ReportDataTable";
+import robotoFontUrl from "../../assets/Roboto.ttf";
 
 import ReportPage from "./ReportPage.jsx";
 import jsPDF from "jspdf";
@@ -27,11 +28,11 @@ const ReportTemplate = ({ title, exportTitle, children, rows, columns, pdfGenera
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   
       // Указываем относительный путь к вашей папке assets от корня wwwroot
-      const fontUrl = "/src/assets/Roboto.ttf"; 
-      const response = await fetch(fontUrl);
+      //const fontUrl = "../../assets/Roboto.ttf"; 
+      const response = await fetch(robotoFontUrl);
       
       if (!response.ok) {
-        throw new Error(`Файл шрифта не найден по пути: ${fontUrl}. Проверьте вкладку Network в F12.`);
+        throw new Error(`Файл шрифта не найден по пути: ${robotoFontUrl}. Проверьте вкладку Network в F12.`);
       }
       
       const blobFont = await response.blob();
@@ -83,7 +84,7 @@ const ReportTemplate = ({ title, exportTitle, children, rows, columns, pdfGenera
   
     try {
       if (rows && rows.length > 0) {
-        generatePdfReport(rows);
+        await generatePdfReport(rows);
       } else {
         throw "Ошибка генерации";
       }

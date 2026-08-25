@@ -10,7 +10,7 @@ import { fetchGetData } from "../../../api/fetch";
 import ReportTemplate from "../ReportTemplate";
 
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable'; 
+import { autoTable } from 'jspdf-autotable'; 
 import { blue } from "@mui/material/colors";
 
 const columns = [
@@ -138,8 +138,8 @@ const ReagentOperationReport = ({ title, path }) => {
       
       theme: 'striped',
       headStyles: {
-        fillColor: 'lightBlue', // Красивый синий цвет шапки таблицы
-        textColor:'black',
+        fillColor: [25, 118, 210], // Красивый синий цвет шапки таблицы
+        textColor: [255, 255, 255],
         fontSize: 9,
         font: 'Roboto', // Применяем русский Robot к шапке
         fontStyle: 'normal'
