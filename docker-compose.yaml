@@ -7,6 +7,8 @@ services:
     container_name: db
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD:-#root42}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_DB=${DB_NAME:-chemical_laboratory}
     volumes:
       - chem_lab_db_data:/var/lib/postgresql/data
     #deploy:
@@ -25,7 +27,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=${DB_CONNECTION:-Host=database;Port=5432;Database=${DB_NAME:-ChemicalLaboratory};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-"#root42"}}
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION:-Host=database;Port=5432;Database=${DB_NAME:-chemical_laboratory};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-"#root42"}}
     #ограничение потребления оперативной памяти
     #deploy:
     #  resources:

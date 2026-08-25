@@ -8,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<WorkSchedule> builder)
         {
-            builder.ToTable("WorkSchedule");
+            builder.ToTable("work_schedule");
 
             builder.HasKey(x => x.Id);
 

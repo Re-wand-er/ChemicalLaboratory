@@ -8,7 +8,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Users");
+            builder.ToTable("users");
+
             builder.HasKey(x => x.Id);
 
             builder.HasQueryFilter(x => x.IsActive);
@@ -54,10 +55,9 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 
             builder.HasOne(x => x.WorkSchedule)
                 .WithMany(x => x.Users)
-                .HasForeignKey(x => x.IdWorkSchedule);
+                .HasForeignKey(x => x.WorkScheduleId);
 
-            builder.Property(x => x.SystemRoleId)
-                .HasColumnName("SystemRoleId"); 
+            builder.Property(x => x.SystemRoleId);
 
             builder.HasOne(x => x.SystemRole)
                 .WithMany(r => r.Users)

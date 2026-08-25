@@ -3,7 +3,7 @@
     public record UserUpdateDTO
     (
         int Id,
-        int IdWorkSchedule,
+        int WorkScheduleId,
         string FirstName,
         string MiddleName,
         string LastName,

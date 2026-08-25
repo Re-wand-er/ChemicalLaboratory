@@ -8,7 +8,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Supplier> builder)
         {
-            builder.ToTable("Suppliers");
+            builder.ToTable("suppliers");
+
             builder.HasKey(x => x.Id);
 
             builder.HasQueryFilter(x => x.IsActive);

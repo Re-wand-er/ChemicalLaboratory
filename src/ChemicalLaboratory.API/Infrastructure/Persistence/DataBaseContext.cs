@@ -39,16 +39,6 @@ namespace ChemicalLaboratory.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationSettingConfiguration());
 
-
-            // PostgreSQL lowercase для наименований таблиц
-            // foreach (var entity in modelBuilder.Model.GetEntityTypes())
-            // {
-            //     var tableName = entity.GetTableName();
-
-            //     if (tableName != null)
-            //         entity.SetTableName(tableName.ToLowerInvariant());
-            // }
-
             base.OnModelCreating(modelBuilder);
         }
 

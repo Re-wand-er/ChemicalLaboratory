@@ -8,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ReagentOperation> builder)
         {
-            builder.ToTable("ReagentOperations");
+            builder.ToTable("reagent_operations");
 
             builder.HasKey(x => x.Id);
 
@@ -17,7 +17,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.OperationDate)
-                .HasDefaultValueSql("SYSDATETIME()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(x => x.Comment)
                 .HasMaxLength(2048);

@@ -2,7 +2,8 @@
 {
     public record UserCreateDTO
     (
-        int IdWorkSchedule,
+        int WorkScheduleId,
+        int SystemRoleId,
         string FirstName,
         string MiddleName,
         string LastName,
