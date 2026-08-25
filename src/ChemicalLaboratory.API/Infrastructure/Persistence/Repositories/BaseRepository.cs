@@ -1,9 +1,5 @@
-﻿using ChemicalLaboratory.Domain.DTOs;
-using ChemicalLaboratory.Domain.Entities;
-using ChemicalLaboratory.Domain.Interfaces;
+﻿using ChemicalLaboratory.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
 {

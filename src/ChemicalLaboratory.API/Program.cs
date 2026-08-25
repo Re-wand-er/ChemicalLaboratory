@@ -18,6 +18,10 @@ namespace ChemicalLaboratory
     {
         public static void Main(string[] args)
         {
+            // Считать любое время как UTC - костыль
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            // Нужно убрать
+
             var builder = WebApplication.CreateBuilder(args);
 
             Log.Logger = new LoggerConfiguration()
@@ -26,14 +30,15 @@ namespace ChemicalLaboratory
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
                 .Enrich.FromLogContext()
-                .WriteTo.File
-                (
-                    path: "log/log.log",
-                    fileSizeLimitBytes: 5_000_000,
-                    rollOnFileSizeLimit: true,
-                    shared: true, 
-                    outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}"
-                )
+                .WriteTo.Console(outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}")
+                // .WriteTo.File
+                // (
+                //     path: "log/log.log",
+                //     fileSizeLimitBytes: 5_000_000,
+                //     rollOnFileSizeLimit: true,
+                //     shared: true, 
+                //     outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}"
+                // )
                 .CreateLogger();
             builder.Host.UseSerilog();
 

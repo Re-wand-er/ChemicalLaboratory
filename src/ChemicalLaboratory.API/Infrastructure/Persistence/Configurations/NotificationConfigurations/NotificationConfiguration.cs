@@ -11,6 +11,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.ToTable("notifications");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+                .UseIdentityByDefaultColumn(); 
 
             builder.Property(x => x.NotificationType)
                 .HasMaxLength(50)

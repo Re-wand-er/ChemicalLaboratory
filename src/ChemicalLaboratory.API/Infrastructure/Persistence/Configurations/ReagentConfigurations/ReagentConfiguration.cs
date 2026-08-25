@@ -11,6 +11,8 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
             builder.ToTable("reagents");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+                .UseIdentityByDefaultColumn();
 
             builder.HasQueryFilter(x => x.IsActive);
 

@@ -165,8 +165,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                     Category = r.Category.Name,
                     ExpirationDate = r.ExpirationDate,
                     CurrentQuantity = r.CurrentQuantity,
-                    DaysRemaining =
-                        EF.Functions.DateDiffDay(today, r.ExpirationDate!.Value).ToString()
+                    DaysRemaining = (r.ExpirationDate!.Value.Date - today).Days.ToString()
                 })
                 .ToListAsync();
         }
@@ -221,7 +220,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Repositories
                     Unit = r.Unit,
                     ExpirationDate = r.ExpirationDate,
                     DaysToExpiry = r.ExpirationDate.HasValue
-                        ? EF.Functions.DateDiffDay(DateTime.UtcNow, r.ExpirationDate.Value) : 999,
+                        ?  (r.ExpirationDate.Value.Date - DateTime.UtcNow.Date).Days : 999,
                     AvgDailyConsumption = r.Operations
                         .Where(o => o.OperationDate >= startDate && o.Quantity < 0) //OperationTypeId == 2
                         .Select(o => (decimal?)Math.Abs(o.Quantity))
