@@ -48,6 +48,9 @@ services:
       context: ./client-app             
       dockerfile: Dockerfile
     container_name: frontend
+    volumes:
+      - /var/www/certbot:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - "80:80"
       - "443:443"
