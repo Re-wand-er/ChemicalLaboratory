@@ -32,13 +32,13 @@ const columns =(schedules) => [
     width: 130 
   },
   { 
-    field: 'idworkSchedule', //idworkSchedule
+    field: 'workScheduleId', //workScheduleId
     headerName: 'График работы', 
     width: 130,
     valueGetter: (value, row) => {
       if (!schedules || schedules.length === 0) return 'Загрузка...';
   
-      const currentId = value || row?.idWorkSchedule;
+      const currentId = value || row?.workScheduleId;
       const foundSchedule = schedules.find(s => s.id === currentId);
   
       if (foundSchedule) {

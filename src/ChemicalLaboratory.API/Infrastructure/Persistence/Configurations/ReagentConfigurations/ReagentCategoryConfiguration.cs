@@ -8,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ReagentCategory> builder)
         {
-            builder.ToTable("ReagentCategories");
+            builder.ToTable("reagent_categories");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

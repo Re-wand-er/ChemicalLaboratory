@@ -8,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Notification> builder)
         {
-            builder.ToTable("Notifications");
+            builder.ToTable("notifications");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
@@ -27,7 +27,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.CreatedAt)
-                .HasDefaultValueSql("SYSDATETIME()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(x => x.DeletedAt);
 

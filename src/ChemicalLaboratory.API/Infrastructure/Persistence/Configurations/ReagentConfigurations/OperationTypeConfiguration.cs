@@ -8,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<OperationType> builder)
         {
-            builder.ToTable("OperationTypes");
+            builder.ToTable("operation_types");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

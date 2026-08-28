@@ -3,7 +3,7 @@
     public record UserReadDTO
     (
         int Id,
-        int IdWorkSchedule,
+        int WorkScheduleId,
         int SystemRoleId, 
         string FirstName,
         string MiddleName,

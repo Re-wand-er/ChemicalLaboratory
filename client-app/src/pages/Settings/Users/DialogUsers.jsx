@@ -32,9 +32,9 @@ import { systemRoles } from '../../../constants/roles.js';
     email: record.email || '',
     jobPosition: record.jobPosition || '',
     sex: record.sex || '',
-    systemRole: record.systemRoleId || '',
+    systemRoleId: record.systemRoleId || '',
     isActive: record.isActive !== undefined ? record.isActive : 1,
-    idWorkSchedule: record.idWorkSchedule != null ? record.idWorkSchedule : 0,
+    workScheduleId: record.workScheduleId != null ? record.workScheduleId : 0,
     password: record.password || ''
   });
 
@@ -180,9 +180,9 @@ const DialogUsers = ({ modalMode, currentRecord, schedules, handleClose, handleS
                 <FormControl fullWidth>
                   <InputLabel>Системная роль</InputLabel>
                   <Select
-                    value={formData.systemRole}
+                    value={formData.systemRoleId}
                     label="Системная роль"
-                    onChange={handleChange('systemRole')}
+                    onChange={handleChange('systemRoleId')}
                   >
                     {systemRoles.map(option => (
                       <MenuItem key={option.id} value={option.id}>
@@ -217,10 +217,10 @@ const DialogUsers = ({ modalMode, currentRecord, schedules, handleClose, handleS
                 <FormControl fullWidth>
                   <InputLabel>График работы</InputLabel>
                   <Select
-                    value={formData.idWorkSchedule}
+                    value={formData.workScheduleId}
                     label="График работы"
                     required
-                    onChange={handleChange('idWorkSchedule')}
+                    onChange={handleChange('workScheduleId')}
                   >
                     <MenuItem value={0}>Не выбран</MenuItem>
                     {schedules.map(schedule => (

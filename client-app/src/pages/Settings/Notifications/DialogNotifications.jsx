@@ -49,7 +49,7 @@ const getFormData = (record = {}) => ({
   userId: record.userId || 0, 
   title: record.title || '',
   message: record.message || '',
-  type: record.notificationType || 'info',
+  notificationType: record.notificationType || 'info',
   isRead: record.isRead !== undefined ? record.isRead : false,
   createdAt: record.createdAt || ''
 });

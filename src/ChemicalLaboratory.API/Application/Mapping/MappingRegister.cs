@@ -66,9 +66,10 @@ namespace ChemicalLaboratory.Application.Mapping
             config.NewConfig<SupplierDTO, Supplier>();
                 //.Ignore(s => s.Id);
 
-            config.NewConfig<SupplierDTO, SupplierWithoutIdDTO>();
-            config.NewConfig<SupplierWithoutIdDTO, SupplierDTO>()
-                .Ignore(r => r.Id);
+            config.NewConfig<Supplier, SupplierWithoutIdDTO>();
+            config.NewConfig<SupplierWithoutIdDTO, Supplier>()
+                .Ignore(r => r.Id)
+                .Map(d => d.IsActive, _ => true);
         }
     }
 }

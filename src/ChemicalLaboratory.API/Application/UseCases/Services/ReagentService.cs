@@ -64,6 +64,13 @@ namespace ChemicalLaboratory.Application.UseCases.Services
             _logger.LogInformation($"Creating reagent with Name={dto.Name} with CurrentQuantity={dto.CurrentQuantity}");
             
             var reagent = dto.Adapt<Reagent>();
+            // для postgre
+            reagent.CreatedAt = DateTime.UtcNow;
+            if (reagent.ExpirationDate.HasValue)
+            {
+                reagent.ExpirationDate = reagent.ExpirationDate.Value.ToUniversalTime();
+            }
+
             await _unitOfWork.Reagents.AddAsync(reagent);
 
             var historyEntry = ReagentOperation.Create(userId, OperationTypeEnum.Receipt, reagent);

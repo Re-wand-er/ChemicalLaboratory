@@ -8,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations.UserConfi
     {
         public void Configure(EntityTypeBuilder<SystemRole> builder)
         {
-            builder.ToTable("SystemRoles");
+            builder.ToTable("system_roles");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

@@ -113,7 +113,7 @@ const Notifications = () => {
 
     if(response.ok)
     {      
-      //fetchGetData('/api/notification', setData)
+      fetchGetData('/api/notification', setData)
       handleClose();
     }
   }

@@ -1,7 +1,6 @@
 ﻿using ChemicalLaboratory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Org.BouncyCastle.Pkix;
 
 namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
 {
@@ -9,7 +8,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Reagent> builder)
         {
-            builder.ToTable("Reagents");
+            builder.ToTable("reagents");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
@@ -40,7 +39,7 @@ namespace ChemicalLaboratory.Infrastructure.Persistence.Configurations
                 .HasMaxLength(100);
 
             builder.Property(x => x.CreatedAt)
-                .HasDefaultValueSql("SYSDATETIME()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);

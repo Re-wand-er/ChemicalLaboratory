@@ -114,11 +114,11 @@ const ProfileForm = () => {
             <Select
               label="Рабочая смена"
               value={
-                schedules.some(s => s.id === data.idWorkSchedule)
-                  ? data.idWorkSchedule 
+                schedules.some(s => s.id === data.workScheduleId)
+                  ? data.workScheduleId 
                   : (schedules.length > 0 ? schedules[0].id : '') 
               }
-              onChange={handleChange('idWorkSchedule')}
+              onChange={handleChange('workScheduleId')}
             >
               {schedules.map(s => (
                 <MenuItem key={s.id} value={s.id}>
