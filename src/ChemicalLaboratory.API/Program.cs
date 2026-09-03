@@ -61,15 +61,59 @@ namespace ChemicalLaboratory
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
                     };
 
+                    // options.Events = new JwtBearerEvents
+                    // {
+                    //     OnMessageReceived = context =>
+                    //     {
+                    //         if (context.Request.Cookies.ContainsKey("jwtToken"))
+                    //         {
+                    //             context.Token = context.Request.Cookies["jwtToken"];
+                    //         }
+
+                    //         return Task.CompletedTask;
+                    //     }
+                    // };
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            if (context.Request.Cookies.ContainsKey("jwtToken"))
+                            var token = context.Request.Cookies["jwtToken"];
+                    
+                            if (!string.IsNullOrEmpty(token))
                             {
-                                context.Token = context.Request.Cookies["jwtToken"];
+                                context.Token = token;
+                    
+                                Console.WriteLine(
+                                    $"JWT FOUND | {context.Request.Method} {context.Request.Path}"
+                                );
                             }
-
+                            else
+                            {
+                                Console.WriteLine(
+                                    $"JWT NOT FOUND | {context.Request.Method} {context.Request.Path}"
+                                );
+                            }
+                    
+                            return Task.CompletedTask;
+                        },
+                    
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine(
+                                $"JWT AUTH FAILED | {context.Request.Path} | " +
+                                $"{context.Exception.GetType().Name} | " +
+                                $"{context.Exception.Message}"
+                            );
+                    
+                            return Task.CompletedTask;
+                        },
+                    
+                        OnChallenge = context =>
+                        {
+                            Console.WriteLine(
+                                $"JWT CHALLENGE | {context.Request.Path}"
+                            );
+                    
                             return Task.CompletedTask;
                         }
                     };
