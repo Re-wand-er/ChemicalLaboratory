@@ -31,14 +31,6 @@ namespace ChemicalLaboratory
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}")
-                // .WriteTo.File
-                // (
-                //     path: "log/log.log",
-                //     fileSizeLimitBytes: 5_000_000,
-                //     rollOnFileSizeLimit: true,
-                //     shared: true, 
-                //     outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}"
-                // )
                 .CreateLogger();
             builder.Host.UseSerilog();
 
@@ -61,15 +53,59 @@ namespace ChemicalLaboratory
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
                     };
 
+                    // options.Events = new JwtBearerEvents
+                    // {
+                    //     OnMessageReceived = context =>
+                    //     {
+                    //         if (context.Request.Cookies.ContainsKey("jwtToken"))
+                    //         {
+                    //             context.Token = context.Request.Cookies["jwtToken"];
+                    //         }
+
+                    //         return Task.CompletedTask;
+                    //     }
+                    // };
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            if (context.Request.Cookies.ContainsKey("jwtToken"))
+                            var token = context.Request.Cookies["jwtToken"];
+                    
+                            if (!string.IsNullOrEmpty(token))
                             {
-                                context.Token = context.Request.Cookies["jwtToken"];
+                                context.Token = token;
+                    
+                                Console.WriteLine(
+                                    $"JWT FOUND | {context.Request.Method} {context.Request.Path}"
+                                );
                             }
-
+                            else
+                            {
+                                Console.WriteLine(
+                                    $"JWT NOT FOUND | {context.Request.Method} {context.Request.Path}"
+                                );
+                            }
+                    
+                            return Task.CompletedTask;
+                        },
+                    
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine(
+                                $"JWT AUTH FAILED | {context.Request.Path} | " +
+                                $"{context.Exception.GetType().Name} | " +
+                                $"{context.Exception.Message}"
+                            );
+                    
+                            return Task.CompletedTask;
+                        },
+                    
+                        OnChallenge = context =>
+                        {
+                            Console.WriteLine(
+                                $"JWT CHALLENGE | {context.Request.Path}"
+                            );
+                    
                             return Task.CompletedTask;
                         }
                     };
@@ -77,24 +113,19 @@ namespace ChemicalLaboratory
             
             builder.Services.AddAuthorization();
 
-            // ��� ���������� ���� � ����� �� �����
             builder.Services.AddDistributedMemoryCache();
 
             //------------------------------------------------------------------------------------------------------------
 
             var frontendIP = builder.Configuration["FrontendIP"];
-            // 1. ��������� �������� CORS
-            // ��� ��������� �������� �� ������� ������
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins(frontendIP!) // ����� ������ ���������
+                    policy.WithOrigins(frontendIP!) 
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
-                    // ��� ���������� ����� ��������� ��:
-                    // policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
 
@@ -138,7 +169,7 @@ namespace ChemicalLaboratory
 
             app.UseRouting();
 
-            app.UseCors("AllowFrontend"); // ��� CORS
+            app.UseCors("AllowFrontend"); 
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -156,15 +187,16 @@ namespace ChemicalLaboratory
                 app.UseHsts();
             }
 
-            //app.Use(async (context, next) =>
-            //{
-            //    if (context.Request.Path == "/")
-            //    {
-            //        context.Response.Redirect("/index.html");
-            //        return;
-            //    }
-            //    await next();
-            //});
+            // app.Use(async (context, next) =>
+            // {
+            //     // добавление заголовка в http ответ
+            //     context.Response.Headers.Append("Content-Security-Policy",
+            //                                     "default-src 'self';" +
+            //                                     "frame-ancestore 'self';"); // тоже что и X-Frame-Options
+            //     context.Response.Headers.Append("X-Frame-Options","SAMEORIGIN;"); // запрещает открытие через iframe кроме себя
+
+            //     await next();
+            // });
 
             app.Run();
         }
