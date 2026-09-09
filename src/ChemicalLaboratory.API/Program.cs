@@ -31,14 +31,6 @@ namespace ChemicalLaboratory
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}")
-                // .WriteTo.File
-                // (
-                //     path: "log/log.log",
-                //     fileSizeLimitBytes: 5_000_000,
-                //     rollOnFileSizeLimit: true,
-                //     shared: true, 
-                //     outputTemplate: " {Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{SourceContext}{Exception}"
-                // )
                 .CreateLogger();
             builder.Host.UseSerilog();
 
@@ -121,24 +113,19 @@ namespace ChemicalLaboratory
             
             builder.Services.AddAuthorization();
 
-            // ��� ���������� ���� � ����� �� �����
             builder.Services.AddDistributedMemoryCache();
 
             //------------------------------------------------------------------------------------------------------------
 
             var frontendIP = builder.Configuration["FrontendIP"];
-            // 1. ��������� �������� CORS
-            // ��� ��������� �������� �� ������� ������
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins(frontendIP!) // ����� ������ ���������
+                    policy.WithOrigins(frontendIP!) 
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
-                    // ��� ���������� ����� ��������� ��:
-                    // policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
 
@@ -182,7 +169,7 @@ namespace ChemicalLaboratory
 
             app.UseRouting();
 
-            app.UseCors("AllowFrontend"); // ��� CORS
+            app.UseCors("AllowFrontend"); 
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -200,15 +187,16 @@ namespace ChemicalLaboratory
                 app.UseHsts();
             }
 
-            //app.Use(async (context, next) =>
-            //{
-            //    if (context.Request.Path == "/")
-            //    {
-            //        context.Response.Redirect("/index.html");
-            //        return;
-            //    }
-            //    await next();
-            //});
+            // app.Use(async (context, next) =>
+            // {
+            //     // добавление заголовка в http ответ
+            //     context.Response.Headers.Append("Content-Security-Policy",
+            //                                     "default-src 'self';" +
+            //                                     "frame-ancestore 'self';"); // тоже что и X-Frame-Options
+            //     context.Response.Headers.Append("X-Frame-Options","SAMEORIGIN;"); // запрещает открытие через iframe кроме себя
+
+            //     await next();
+            // });
 
             app.Run();
         }
